@@ -1,12 +1,7 @@
 ---
 name: wirescript
-description: |
-  WireScript DSL for AI-native wireframe creation. Use when:
-  - Creating or editing .wire files
-  - Designing UI layouts, screens, or components
-  - Generating wireframes from descriptions
-  Triggers: wireframe, .wire, WireScript, UI layout, screen, prototype
-allowed-tools: Read, Write, Edit, Grep, Glob, Bash
+description: This skill should be used when the user wants to "create a wireframe", "design a UI", "write a .wire file", "add a screen", "create a component", or needs guidance on WireScript DSL syntax for AI-native wireframe creation.
+version: 1.0.0
 ---
 
 # WireScript Language Guide
