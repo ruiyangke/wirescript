@@ -1,0 +1,306 @@
+{
+  "$schema": "https://biomejs.dev/schemas/2.3.11/schema.json",
+
+  // =============================================================================
+  // Severity Philosophy:
+  //   - error: Definitive bugs or issues that should block CI
+  //   - warn:  Code smells for gradual improvement
+  // =============================================================================
+
+  "vcs": {
+    "enabled": true,
+    "clientKind": "git",
+    "useIgnoreFile": true
+  },
+
+  "files": {
+    "ignoreUnknown": true,
+    "includes": [
+      "**",
+      "!**/node_modules",
+      "!**/dist",
+      "!**/*.min.js",
+      "!**/pnpm-lock.yaml",
+      // Lezer-generated parser files
+      "!**/packages/editor/src/language/parser.ts",
+      "!**/packages/editor/src/language/parser.terms.ts",
+      // Astro-generated files
+      "!**/apps/docs/.astro"
+    ]
+  },
+
+  "formatter": {
+    "enabled": true,
+    "indentStyle": "space",
+    "indentWidth": 2,
+    "lineWidth": 100
+  },
+
+  "assist": {
+    "actions": {
+      "source": {
+        "organizeImports": "on"
+      }
+    }
+  },
+
+  "linter": {
+    "enabled": true,
+    "rules": {
+      "recommended": true,
+
+      "correctness": {
+        // Dead code should fail CI - no ambiguity
+        "noUnusedImports": "error",
+        "noUnusedVariables": "error",
+        // Stale closures cause real bugs
+        "useExhaustiveDependencies": "error"
+      },
+
+      "style": {
+        // Proper type imports for tree-shaking
+        "useImportType": "error",
+        // Prefer Number.parseInt over global parseInt
+        "useNumberNamespace": "error",
+        // Gradual adoption - ! assertions can be risky
+        "noNonNullAssertion": "warn",
+        // Style preference: allow single-line if/else
+        "useBlockStatements": "off",
+        // Style preference: explicit else can improve readability
+        "noUselessElse": "off"
+      },
+
+      "suspicious": {
+        // Gradual adoption for stricter typing
+        "noExplicitAny": "warn",
+        // Array index keys cause React reconciliation bugs
+        "noArrayIndexKey": "error",
+        // Catches accidental = instead of ==
+        "noAssignInExpressions": "warn",
+        // Implicit any from uninitialized let
+        "noImplicitAnyLet": "warn"
+      },
+
+      "performance": {
+        // O(n²) spread in reduce patterns
+        "noAccumulatingSpread": "warn",
+        // delete is slow, prefer undefined assignment
+        "noDelete": "warn"
+      },
+
+      "complexity": {
+        // Default is 15, we use 25 as a reasonable limit
+        // Files exceeding this have targeted overrides below
+        "noExcessiveCognitiveComplexity": {
+          "level": "warn",
+          "options": { "maxAllowedComplexity": 25 }
+        }
+      },
+
+      "security": {
+        // Awareness of XSS risks - renderer components have overrides
+        "noDangerouslySetInnerHtml": "warn"
+      },
+
+      "a11y": {
+        // SVGs are decorative icons, not content
+        "noSvgWithoutTitle": "off"
+      },
+
+      "nursery": {
+        // Catches unhandled promise rejections
+        // Note: Nursery rules may change between Biome versions
+        "noFloatingPromises": "warn"
+      }
+    }
+  },
+
+  "javascript": {
+    "formatter": {
+      "quoteStyle": "single",
+      "trailingCommas": "es5",
+      "semicolons": "always"
+    },
+    "globals": ["requestIdleCallback"]
+  },
+
+  "css": {
+    "linter": {
+      "enabled": true
+    },
+    "parser": {
+      "cssModules": true,
+      "tailwindDirectives": true
+    }
+  },
+
+  "json": {
+    "linter": {
+      // Catches duplicate keys, validates structure
+      "enabled": true
+    },
+    "formatter": {
+      "enabled": true
+    }
+  },
+
+  "overrides": [
+    // -------------------------------------------------------------------------
+    // Tailwind CSS: @apply, @tailwind, @layer aren't standard CSS
+    // Only these files use Tailwind directives
+    // -------------------------------------------------------------------------
+    {
+      "includes": ["**/packages/renderer/src/styles/globals.css", "**/apps/viewer/src/index.css"],
+      "linter": {
+        "rules": {
+          "suspicious": {
+            "noUnknownAtRules": "off"
+          }
+        }
+      }
+    },
+
+    // -------------------------------------------------------------------------
+    // Docs CSS: !important needed to override Starlight/Expressive Code styles
+    // -------------------------------------------------------------------------
+    {
+      "includes": ["**/apps/docs/src/styles/**"],
+      "linter": {
+        "rules": {
+          "complexity": {
+            "noImportantStyles": "off"
+          }
+        }
+      }
+    },
+
+    // -------------------------------------------------------------------------
+    // Renderer library: renders wireframes, not interactive UIs
+    // a11y rules don't apply, innerHTML is intentional for raw content
+    // -------------------------------------------------------------------------
+    {
+      "includes": [
+        "**/packages/renderer/src/elements/**",
+        "**/packages/renderer/src/ui/**",
+        "**/packages/renderer/src/WireRenderer.tsx"
+      ],
+      "linter": {
+        "rules": {
+          "a11y": {
+            "recommended": false
+          },
+          "security": {
+            "noDangerouslySetInnerHtml": "off"
+          }
+        }
+      }
+    },
+
+    // -------------------------------------------------------------------------
+    // SSR: Static HTML generation for export
+    // No interactivity, array keys are stable (static render)
+    // -------------------------------------------------------------------------
+    {
+      "includes": ["**/apps/cli/src/ssr/**"],
+      "linter": {
+        "rules": {
+          "a11y": {
+            "recommended": false
+          },
+          "suspicious": {
+            "noArrayIndexKey": "off"
+          },
+          "security": {
+            "noDangerouslySetInnerHtml": "off"
+          }
+        }
+      }
+    },
+
+    // -------------------------------------------------------------------------
+    // Obsidian plugin: renders wireframes in Obsidian context
+    // -------------------------------------------------------------------------
+    {
+      "includes": ["**/apps/obsidian-plugin/src/WireScriptRenderer.tsx"],
+      "linter": {
+        "rules": {
+          "a11y": {
+            "recommended": false
+          }
+        }
+      }
+    },
+
+    // -------------------------------------------------------------------------
+    // Obsidian main: uses innerHTML for Obsidian's DOM manipulation API
+    // -------------------------------------------------------------------------
+    {
+      "includes": ["**/apps/obsidian-plugin/src/main.ts"],
+      "linter": {
+        "rules": {
+          "security": {
+            "noDangerouslySetInnerHtml": "off"
+          }
+        }
+      }
+    },
+
+    // -------------------------------------------------------------------------
+    // Interactive divs: These components use mouse/touch for drag resizing
+    // Keyboard alternatives don't make sense for continuous drag operations
+    // -------------------------------------------------------------------------
+    {
+      "includes": [
+        "**/apps/viewer/src/components/shared/ResizeHandle.tsx",
+        "**/apps/viewer/src/components/shared/EditorDrawerHandle.tsx",
+        "**/apps/viewer/src/components/shared/ConfirmDialog.tsx",
+        "**/apps/viewer/src/components/shared/InputDialog.tsx"
+      ],
+      "linter": {
+        "rules": {
+          "a11y": {
+            "useKeyWithClickEvents": "off",
+            "noStaticElementInteractions": "off"
+          }
+        }
+      }
+    },
+
+    // -------------------------------------------------------------------------
+    // Tests: Non-null assertions are fine in test code
+    // -------------------------------------------------------------------------
+    {
+      "includes": ["**/*.test.tsx", "**/*.test.ts"],
+      "linter": {
+        "rules": {
+          "style": {
+            "noNonNullAssertion": "off"
+          }
+        }
+      }
+    },
+
+    // -------------------------------------------------------------------------
+    // Complex files: These have legitimately high complexity (>25)
+    // Validation logic, CSS property mapping, and app-level orchestration
+    // TODO: Consider refactoring if complexity grows further
+    // -------------------------------------------------------------------------
+    {
+      "includes": [
+        "**/packages/dsl/src/validator.ts",
+        "**/packages/renderer/src/layout.ts",
+        "**/apps/viewer/src/App.tsx"
+      ],
+      "linter": {
+        "rules": {
+          "complexity": {
+            "noExcessiveCognitiveComplexity": {
+              "level": "warn",
+              "options": { "maxAllowedComplexity": 40 }
+            }
+          }
+        }
+      }
+    }
+  ]
+}

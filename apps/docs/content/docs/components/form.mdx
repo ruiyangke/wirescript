@@ -1,0 +1,89 @@
+---
+title: form
+description: Form container for inputs.
+---
+
+A semantic form container for grouping form inputs.
+
+## Usage
+
+```wire preview:250
+(form :col :gap 16
+  (input "Email" :type email)
+  (input "Password" :type password)
+  (button "Submit" :primary))
+```
+
+## Basic Example
+
+```wire preview:300
+(form :col :gap 16 :padding 24
+  (text "Sign Up" :high)
+  (input "Name")
+  (input "Email" :type email)
+  (input "Password" :type password)
+  (button "Create Account" :primary :full))
+```
+
+## Properties
+
+<PropsTable element="form" />
+
+## Examples
+
+### Login Form
+
+```wire preview:300
+(form :col :gap 16
+  (input "Email" :type email :placeholder "you@example.com")
+  (input "Password" :type password)
+  (input "Remember me" :type checkbox)
+  (button "Sign In" :primary :full)
+  (text "Forgot password?" :low :center))
+```
+
+### Contact Form
+
+```wire preview:400
+(form :col :gap 16
+  (box :row :gap 16
+    (input "First Name" :fill)
+    (input "Last Name" :fill))
+  (input "Email" :type email)
+  (input "Subject")
+  (input "Message" :type textarea :rows 5)
+  (button "Send Message" :primary))
+```
+
+### Settings Form
+
+```wire preview:400
+(form :col :gap 24
+  (box :col :gap 16
+    (text "Profile" :high)
+    (input "Display Name")
+    (input "Bio" :type textarea :rows 3)
+    (input "Website" :placeholder "https://"))
+  (divider)
+  (box :col :gap 16
+    (text "Preferences" :high)
+    (input "Email notifications" :type toggle)
+    (input "Dark mode" :type toggle))
+  (box :row :end :gap 12
+    (button "Cancel" :ghost)
+    (button "Save Changes" :primary)))
+```
+
+### Multi-Step Form
+
+```wire preview:300
+(form :col :gap 24
+  (progress :value 33)
+  (text "Step 1: Personal Info" :high)
+  (input "Full Name")
+  (input "Email" :type email)
+  (input "Phone" :type tel)
+  (box :row :between
+    (button "Back" :ghost :disabled)
+    (button "Next" :primary)))
+```

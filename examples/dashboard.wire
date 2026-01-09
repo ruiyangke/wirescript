@@ -1,0 +1,470 @@
+; Dashboard - Admin analytics dashboard showcasing:
+; - Sidebar navigation with icons
+; - Stat cards with icons and trends
+; - Charts and data visualizations
+; - Activity feed with user actions
+; - Quick actions and notifications
+; - Search and filters
+
+(wire
+  (meta
+    :title "Dashboard"
+    :context analytics
+    :audience "administrators"
+    :goal "monitor key metrics and activity")
+
+  ; Reusable Components
+  (define stat-card (icon label value change trend)
+    (card :col :fill :gap 12 :padding 20
+      (box :row :between
+        (box :col :center :padding 10
+          (icon $icon))
+        (badge $trend))
+      (box :col :gap 4
+        (text $label :low)
+        (text $value :high))
+      (text $change :low)))
+
+  (define activity-item (user action target time icon-name)
+    (box :row :gap 16 :padding 12
+      (avatar $user)
+      (box :col :fill :gap 4
+        (box :row :gap 8
+          (text $user :medium)
+          (text $action :low)
+          (text $target :medium))
+        (text $time :low))
+      (icon $icon-name)))
+
+  (define nav-item (icon label active)
+    (box :row :gap 12 :padding 12
+      (icon $icon)
+      (text $label)))
+
+  ; Main Dashboard Screen
+  (screen dashboard "Dashboard" :desktop
+    (box :row :full
+      ; Sidebar Navigation
+      (nav :col :gap 4 :padding 16 :width "260px"
+        ; Logo
+        (box :row :gap 12 :padding 12
+          (icon "activity")
+          (text "Analytics" :high))
+
+        (divider)
+
+        ; Main Nav
+        (box :col :gap 2
+          (box :row :gap 12 :padding 12 :active
+            (icon "house")
+            (text "Dashboard"))
+          (box :row :gap 12 :padding 12
+            (icon "chart-bar")
+            (text "Analytics"))
+          (box :row :gap 12 :padding 12
+            (icon "users")
+            (text "Users"))
+          (box :row :gap 12 :padding 12
+            (icon "file-text")
+            (text "Reports"))
+          (box :row :gap 12 :padding 12
+            (icon "credit-card")
+            (text "Billing")))
+
+        (divider)
+
+        ; Settings
+        (box :col :gap 2
+          (box :row :gap 12 :padding 12
+            (icon "settings")
+            (text "Settings" :low))
+          (box :row :gap 12 :padding 12
+            (icon "circle-question-mark")
+            (text "Help & Support" :low)))
+
+        ; Spacer
+        (box :col :fill)
+
+        ; User Profile
+        (divider)
+        (box :row :gap 12 :padding 12
+          (avatar "Admin User")
+          (box :col :fill :gap 2
+            (text "Admin User" :medium)
+            (text "admin@company.com" :low))
+          (icon "chevron-down")))
+
+      ; Main Content Area (scrollable)
+      (scroll :col :full
+        ; Top Header
+        (header :row :between :padding 20
+          (box :col :gap 4
+            (text "Dashboard" :high)
+            (text "Welcome back! Here's what's happening today." :low))
+          (box :row :gap 16
+            (input :type text :placeholder "Search...")
+            (button "Notifications" :ghost :to "#notifications")
+            (button "Export" :ghost)
+            (button "Add Widget" :primary :to "#add-widget")))
+
+        ; Stats Grid (wraps on narrow viewports)
+        (box :row :wrap :gap 20 :padding 20
+          (stat-card
+            :icon "users"
+            :label "Total Users"
+            :value "24,521"
+            :change "+12.5% from last month"
+            :trend "up")
+          (stat-card
+            :icon "dollar-sign"
+            :label "Revenue"
+            :value "$84,254"
+            :change "+8.2% from last month"
+            :trend "up")
+          (stat-card
+            :icon "shopping-cart"
+            :label "Orders"
+            :value "1,429"
+            :change "-3.1% from last month"
+            :trend "down")
+          (stat-card
+            :icon "eye"
+            :label "Page Views"
+            :value "142.5K"
+            :change "+24.3% from last month"
+            :trend "up"))
+
+        ; Charts Row
+        (box :row :gap 20 :padding 20
+          ; Main Chart
+          (card :col :fill :gap 16 :padding 24
+            (box :row :between
+              (box :col :gap 4
+                (text "Revenue Over Time" :medium)
+                (text "Monthly revenue for the past 12 months" :low))
+              (box :row :gap 8
+                (button "Week" :ghost)
+                (button "Month" :ghost :active)
+                (button "Year" :ghost)))
+            (chart "Area chart showing revenue trend over 12 months" :height "280px"))
+
+          ; Pie Chart
+          (card :col :gap 16 :padding 24 :width "360px"
+            (text "Traffic Sources" :medium)
+            (chart "Donut chart showing traffic distribution" :height "200px")
+            (box :col :gap 8
+              (box :row :between
+                (box :row :gap 8
+                  (badge "" :primary)
+                  (text "Direct" :low))
+                (text "42%" :medium))
+              (box :row :between
+                (box :row :gap 8
+                  (badge "" :success)
+                  (text "Organic" :low))
+                (text "28%" :medium))
+              (box :row :between
+                (box :row :gap 8
+                  (badge "" :warning)
+                  (text "Referral" :low))
+                (text "18%" :medium))
+              (box :row :between
+                (box :row :gap 8
+                  (badge "" :info)
+                  (text "Social" :low))
+                (text "12%" :medium)))))
+
+        ; Bottom Row
+        (box :row :gap 20 :padding 20
+          ; Recent Activity
+          (card :col :fill :gap 16 :padding 24
+            (box :row :between
+              (text "Recent Activity" :medium)
+              (button "View All" :ghost :to "activity"))
+            (box :col :gap 0
+              (activity-item
+                :user "Sarah Chen"
+                :action "created"
+                :target "new project"
+                :time "2 minutes ago"
+                :icon-name "folder-plus")
+              (divider)
+              (activity-item
+                :user "Mike Johnson"
+                :action "deployed"
+                :target "v2.4.0 to production"
+                :time "1 hour ago"
+                :icon-name "rocket")
+              (divider)
+              (activity-item
+                :user "Emily Davis"
+                :action "invited"
+                :target "3 team members"
+                :time "3 hours ago"
+                :icon-name "user-plus")
+              (divider)
+              (activity-item
+                :user "Alex Kim"
+                :action "completed"
+                :target "security audit"
+                :time "5 hours ago"
+                :icon-name "shield-check")
+              (divider)
+              (activity-item
+                :user "Jordan Lee"
+                :action "updated"
+                :target "billing settings"
+                :time "Yesterday"
+                :icon-name "credit-card")))
+
+          ; Quick Actions & Top Pages
+          (box :col :gap 20 :width "380px"
+            ; Quick Actions
+            (card :col :gap 16 :padding 24
+              (text "Quick Actions" :medium)
+              (box :grid :cols 2 :gap 12
+                (button "New User" :ghost :fill)
+                (button "New Report" :ghost :fill)
+                (button "Send Email" :ghost :fill)
+                (button "Schedule" :ghost :fill)))
+
+            ; Top Pages
+            (card :col :gap 16 :padding 24
+              (text "Top Pages" :medium)
+              (box :col :gap 12
+                (box :row :between
+                  (text "/dashboard" :low)
+                  (text "12,432 views" :medium))
+                (progress)
+                (box :row :between
+                  (text "/products" :low)
+                  (text "8,293 views" :medium))
+                (progress)
+                (box :row :between
+                  (text "/checkout" :low)
+                  (text "4,821 views" :medium))
+                (progress)))))))
+
+    ; Notifications Drawer
+    (drawer :id "notifications" :right
+      (box :col :gap 20 :padding 24 :width "380px"
+        (box :row :between
+          (text "Notifications" :high)
+          (button :icon :ghost :icon "x" :to :close))
+        (box :col :gap 0
+          (box :row :gap 12 :padding 16
+            (icon "circle-alert")
+            (box :col :fill :gap 4
+              (text "System Update" :medium)
+              (text "A new version is available. Update now for new features." :low)
+              (text "2 minutes ago" :low)))
+          (divider)
+          (box :row :gap 12 :padding 16
+            (icon "user-plus")
+            (box :col :fill :gap 4
+              (text "New Team Member" :medium)
+              (text "Sarah Chen joined the team." :low)
+              (text "1 hour ago" :low)))
+          (divider)
+          (box :row :gap 12 :padding 16
+            (icon "circle-check")
+            (box :col :fill :gap 4
+              (text "Task Completed" :medium)
+              (text "Q4 Report has been finalized." :low)
+              (text "3 hours ago" :low))))
+        (button "Mark All as Read" :ghost :full)))
+
+    ; Add Widget Modal
+    (modal :id "add-widget"
+      (box :col :gap 24 :padding 24 :width "500px"
+        (box :row :between
+          (text "Add Widget" :high)
+          (button :icon :ghost :icon "x" :to :close))
+        (text "Choose a widget to add to your dashboard" :low)
+        (box :grid :cols 2 :gap 16
+          (card :col :center :gap 12 :padding 24
+            (icon "chart-bar")
+            (text "Bar Chart" :medium)
+            (text "Compare values" :low))
+          (card :col :center :gap 12 :padding 24
+            (icon "chart-pie")
+            (text "Pie Chart" :medium)
+            (text "Show distribution" :low))
+          (card :col :center :gap 12 :padding 24
+            (icon "trending-up")
+            (text "Line Chart" :medium)
+            (text "Track trends" :low))
+          (card :col :center :gap 12 :padding 24
+            (icon "table")
+            (text "Data Table" :medium)
+            (text "List records" :low)))
+        (box :row :end :gap 12
+          (button "Cancel" :ghost :to :close)
+          (button "Add Widget" :primary)))))
+
+  ; Analytics Screen
+  (screen analytics "Analytics" :desktop
+    (box :row :full
+      ; Same sidebar
+      (nav :col :gap 4 :padding 16 :width "260px"
+        (box :row :gap 12 :padding 12
+          (icon "activity")
+          (text "Analytics" :high))
+        (divider)
+        (box :col :gap 2
+          (box :row :gap 12 :padding 12 :to "dashboard"
+            (icon "house")
+            (text "Dashboard"))
+          (box :row :gap 12 :padding 12 :active
+            (icon "chart-bar")
+            (text "Analytics"))
+          (box :row :gap 12 :padding 12
+            (icon "users")
+            (text "Users"))))
+
+      ; Analytics Content (scrollable)
+      (scroll :col :full :padding 24 :gap 24
+        (box :row :between
+          (text "Analytics" :high)
+          (box :row :gap 12
+            (input "Date Range" :type select :options "Last 7 days,Last 30 days,Last 90 days,Custom")
+            (button "Export" :primary)))
+
+        ; Detailed Charts (2x2 grid)
+        (box :grid :cols 2 :gap 24
+          (card :col :gap 16 :padding 24
+            (text "User Growth" :medium)
+            (chart "Line chart of user signups" :height "240px"))
+          (card :col :gap 16 :padding 24
+            (text "Session Duration" :medium)
+            (chart "Bar chart of avg session time" :height "240px"))
+          (card :col :gap 16 :padding 24
+            (text "Conversion Rate" :medium)
+            (chart "Funnel chart" :height "240px"))
+          (card :col :gap 16 :padding 24
+            (text "Geographic Distribution" :medium)
+            (chart "World map with heat zones" :height "240px"))))))
+
+  ; Activity Screen
+  (screen activity "Activity" :desktop
+    (box :row :full
+      ; Sidebar
+      (nav :col :gap 4 :padding 16 :width "260px"
+        (box :row :gap 12 :padding 12
+          (icon "activity")
+          (text "Analytics" :high))
+        (divider)
+        (box :col :gap 2
+          (box :row :gap 12 :padding 12 :to "dashboard"
+            (icon "house")
+            (text "Dashboard"))
+          (box :row :gap 12 :padding 12 :to "analytics"
+            (icon "chart-bar")
+            (text "Analytics"))
+          (box :row :gap 12 :padding 12 :active
+            (icon "clock")
+            (text "Activity"))))
+
+      ; Activity Content (scrollable)
+      (scroll :col :full :padding 24 :gap 24
+        (box :row :between
+          (text "Activity Log" :high)
+          (box :row :gap 12
+            (input :type text :placeholder "Search activity...")
+            (input "Filter" :type select :options "All,Created,Updated,Deleted,Deployed")
+            (input "User" :type select :options "All Users,Sarah Chen,Mike Johnson,Emily Davis")))
+
+        ; Activity Timeline
+        (card :col :full :padding 24 :gap 16
+          (box :row :between
+            (text "Today" :medium)
+            (badge "12 events"))
+
+          (box :row :gap 16 :padding 12
+            (box :col :center
+              (icon "folder-plus")
+              (text "10:32 AM" :low))
+            (box :col :fill :gap 4
+              (box :row :gap 8
+                (avatar "Sarah Chen")
+                (text "Sarah Chen" :medium)
+                (text "created" :low)
+                (text "new project" :medium))
+              (text "Project: Q1 Marketing Campaign" :low)))
+          (divider)
+
+          (box :row :gap 16 :padding 12
+            (box :col :center
+              (icon "rocket")
+              (text "9:15 AM" :low))
+            (box :col :fill :gap 4
+              (box :row :gap 8
+                (avatar "Mike Johnson")
+                (text "Mike Johnson" :medium)
+                (text "deployed" :low)
+                (text "v2.4.0" :medium))
+              (text "Successfully deployed to production environment" :low)))
+          (divider)
+
+          (box :row :gap 16 :padding 12
+            (box :col :center
+              (icon "user-plus")
+              (text "8:45 AM" :low))
+            (box :col :fill :gap 4
+              (box :row :gap 8
+                (avatar "Emily Davis")
+                (text "Emily Davis" :medium)
+                (text "invited" :low)
+                (text "3 team members" :medium))
+              (text "New members: john@example.com, jane@example.com, bob@example.com" :low))))
+
+        (card :col :full :padding 24 :gap 16
+          (box :row :between
+            (text "Yesterday" :medium)
+            (badge "8 events"))
+
+          (box :row :gap 16 :padding 12
+            (box :col :center
+              (icon "shield-check")
+              (text "4:30 PM" :low))
+            (box :col :fill :gap 4
+              (box :row :gap 8
+                (avatar "Alex Kim")
+                (text "Alex Kim" :medium)
+                (text "completed" :low)
+                (text "security audit" :medium))
+              (text "All systems passed security compliance check" :low)))
+          (divider)
+
+          (box :row :gap 16 :padding 12
+            (box :col :center
+              (icon "credit-card")
+              (text "2:15 PM" :low))
+            (box :col :fill :gap 4
+              (box :row :gap 8
+                (avatar "Jordan Lee")
+                (text "Jordan Lee" :medium)
+                (text "updated" :low)
+                (text "billing settings" :medium))
+              (text "Changed payment method to **** 4242" :low)))
+          (divider)
+
+          (box :row :gap 16 :padding 12
+            (box :col :center
+              (icon "file-text")
+              (text "11:20 AM" :low))
+            (box :col :fill :gap 4
+              (box :row :gap 8
+                (avatar "Sarah Chen")
+                (text "Sarah Chen" :medium)
+                (text "created" :low)
+                (text "documentation" :medium))
+              (text "Added API documentation for v2.4.0" :low))))
+
+        ; Pagination
+        (box :row :center :gap 8
+          (button "Previous" :ghost :disabled)
+          (badge "1" :primary)
+          (button "2" :ghost)
+          (button "3" :ghost)
+          (button "Next" :ghost))))))

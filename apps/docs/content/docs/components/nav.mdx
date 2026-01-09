@@ -1,0 +1,88 @@
+---
+title: nav
+description: Navigation container.
+---
+
+A semantic navigation container. Has a right border when vertical, top border when used at the bottom.
+
+## Usage
+
+```wire preview
+(nav :col :gap 8 :padding 16
+  (text "Home" :to home)
+  (text "Settings" :to settings))
+```
+
+## Sidebar Navigation
+
+```wire preview:300
+(nav :col :gap 8 :padding 16 :width "200px"
+  (text "Dashboard" :high)
+  (divider)
+  (button "Overview" :ghost :full :start :to overview)
+  (button "Analytics" :ghost :full :start :to analytics)
+  (button "Reports" :ghost :full :start :to reports)
+  (divider)
+  (button "Settings" :ghost :full :start :to settings))
+```
+
+## Top Navigation
+
+```wire preview
+(nav :row :gap 24 :padding 16
+  (text "Home" :to home)
+  (text "Products" :to products)
+  (text "About" :to about)
+  (text "Contact" :to contact))
+```
+
+## Bottom Navigation
+
+```wire preview:250
+(nav :row :around :padding 12 :sticky :bottom 0
+  (box :col :center :gap 4
+    (icon "home")
+    (text "Home" :low))
+  (box :col :center :gap 4
+    (icon "search")
+    (text "Search" :low))
+  (box :col :center :gap 4
+    (icon "user")
+    (text "Profile" :low)))
+```
+
+## Properties
+
+<PropsTable element="nav" />
+
+## Examples
+
+### App Sidebar
+
+```wire preview:400
+(nav :col :gap 4 :padding 16 :width "240px"
+  (box :row :gap 12 :padding 8
+    (icon "box")
+    (text "App Name" :high))
+  (divider)
+  (button "Dashboard" :ghost :full :start :to dashboard)
+  (button "Projects" :ghost :full :start :to projects)
+  (button "Team" :ghost :full :start :to team)
+  (button "Reports" :ghost :full :start :to reports)
+  (box :fill)
+  (divider)
+  (button "Settings" :ghost :full :start :to settings)
+  (button "Help" :ghost :full :start :to help))
+```
+
+### Nested Navigation
+
+```wire preview:300
+(nav :col :gap 2 :padding 16 :width "200px"
+  (text "Getting Started" :low)
+  (button "Introduction" :ghost :full :start :to intro)
+  (button "Installation" :ghost :full :start :to install)
+  (text "Guide" :low)
+  (button "Basics" :ghost :full :start :to basics)
+  (button "Advanced" :ghost :full :start :to advanced))
+```

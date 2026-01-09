@@ -1,0 +1,72 @@
+---
+title: group
+description: Generic grouping container.
+---
+
+A generic grouping element. Renders like `box` but provides semantic grouping meaning.
+
+## Usage
+
+```wire preview
+(group :row :gap 8
+  (button "Cancel" :ghost)
+  (button "Save" :primary))
+```
+
+## Basic Examples
+
+```wire preview
+; Button group
+(group :row :gap 8
+  (button "Edit" :ghost)
+  (button "Delete" :danger))
+
+; Icon group
+(group :row :gap 4
+  (icon "bold")
+  (icon "italic")
+  (icon "underline"))
+```
+
+## Properties
+
+<PropsTable element="group" />
+
+## Examples
+
+### Action Buttons
+
+```wire preview
+(group :row :gap 12 :end
+  (button "Cancel" :ghost)
+  (button "Save Draft" :secondary)
+  (button "Publish" :primary))
+```
+
+### Toggle Group
+
+```wire preview
+(group :row :gap 0
+  (button "Day" :ghost :active)
+  (button "Week" :ghost)
+  (button "Month" :ghost))
+```
+
+### Toolbar
+
+```wire preview
+(group :row :gap 16
+  (group :row :gap 4
+    (icon "bold")
+    (icon "italic")
+    (icon "underline"))
+  (divider)
+  (group :row :gap 4
+    (icon "align-left")
+    (icon "align-center")
+    (icon "align-right"))
+  (divider)
+  (group :row :gap 4
+    (icon "list")
+    (icon "list-ordered")))
+```

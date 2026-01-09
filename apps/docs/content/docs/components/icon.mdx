@@ -1,0 +1,124 @@
+---
+title: icon
+description: Lucide icons.
+---
+
+Displays an icon from the [Lucide](https://lucide.dev) icon set. The content string is the icon name.
+
+## Usage
+
+```wire preview
+(icon "home")
+```
+
+## Common Icons
+
+```wire preview:400
+(box :col :gap 16
+  (box :row :gap 12
+    (icon "home")
+    (icon "settings")
+    (icon "user")
+    (icon "menu"))
+  (box :row :gap 12
+    (icon "plus")
+    (icon "minus")
+    (icon "x")
+    (icon "check")
+    (icon "edit")
+    (icon "trash"))
+  (box :row :gap 12
+    (icon "arrow-left")
+    (icon "arrow-right")
+    (icon "chevron-down")
+    (icon "chevron-right"))
+  (box :row :gap 12
+    (icon "mail")
+    (icon "bell")
+    (icon "message-circle"))
+  (box :row :gap 12
+    (icon "image")
+    (icon "file")
+    (icon "folder"))
+  (box :row :gap 12
+    (icon "heart")
+    (icon "star")
+    (icon "share")
+    (icon "bookmark"))
+  (box :row :gap 12
+    (icon "info")
+    (icon "alert-circle")
+    (icon "check-circle")
+    (icon "x-circle")))
+```
+
+## Properties
+
+<PropsTable element="icon" />
+
+## Examples
+
+### Navigation Bar
+
+```wire preview
+(header :row :between :padding 16
+  (icon "menu")
+  (text "App" :high)
+  (box :row :gap 12
+    (icon "search")
+    (icon "bell")
+    (icon "user")))
+```
+
+### Bottom Navigation
+
+```wire preview:250
+(nav :row :around :padding 12
+  (box :col :center :gap 4
+    (icon "home")
+    (text "Home" :low))
+  (box :col :center :gap 4
+    (icon "search")
+    (text "Search" :low))
+  (box :col :center :gap 4
+    (icon "heart")
+    (text "Saved" :low))
+  (box :col :center :gap 4
+    (icon "user")
+    (text "Profile" :low)))
+```
+
+### Status Icons
+
+```wire preview:250
+(box :col :gap 8
+  (box :row :gap 8
+    (icon "check-circle")
+    (text "Task completed" :success))
+  (box :row :gap 8
+    (icon "alert-circle")
+    (text "Warning message" :warning))
+  (box :row :gap 8
+    (icon "x-circle")
+    (text "Error occurred" :danger)))
+```
+
+### Toolbar
+
+```wire preview
+(box :row :gap 4 :padding 8
+  (icon "bold")
+  (icon "italic")
+  (icon "underline")
+  (divider)
+  (icon "align-left")
+  (icon "align-center")
+  (icon "align-right")
+  (divider)
+  (icon "list")
+  (icon "list-ordered"))
+```
+
+## Icon Reference
+
+Browse all available icons at [lucide.dev/icons](https://lucide.dev/icons).

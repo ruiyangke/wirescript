@@ -1,0 +1,100 @@
+---
+title: card
+description: Container with border and shadow.
+---
+
+A styled container with border and subtle shadow, commonly used for grouping related content.
+
+## Usage
+
+```wire preview
+(card :padding 16
+  (text "Card content"))
+```
+
+## Basic Examples
+
+```wire preview:250
+; Simple card
+(card :padding 16
+  (text "Hello"))
+
+; Card with multiple children
+(card :col :gap 12 :padding 20
+  (text "Card Title" :high)
+  (text "Card description goes here" :low))
+```
+
+## Layout
+
+Cards support the same layout flags as `box`:
+
+```wire preview:300
+; Vertical layout
+(card :col :gap 16 :padding 20
+  (text "Title" :high)
+  (text "Description")
+  (button "Action" :primary))
+
+; Horizontal layout
+(card :row :between :padding 16
+  (text "Item name")
+  (badge "New"))
+```
+
+## Properties
+
+<PropsTable element="card" />
+
+## Examples
+
+### Info Card
+
+```wire preview:250
+(card :col :gap 12 :padding 20
+  (box :row :between
+    (text "Statistics" :high)
+    (icon "bar-chart"))
+  (divider)
+  (metric :label "Total Users" :value "12,345" :change "+12%" :trend up))
+```
+
+### Product Card
+
+```wire preview:400
+(card :col :padding 0
+  (image "Product" :height "200px")
+  (box :col :gap 8 :padding 16
+    (text "Product Name" :high)
+    (text "$99.00" :low)
+    (button "Add to Cart" :primary :full)))
+```
+
+### User Card
+
+```wire preview
+(card :row :gap 16 :padding 16
+  (avatar "John Doe")
+  (box :col :gap 4 :fill
+    (text "John Doe" :high)
+    (text "john@example.com" :low))
+  (button "Follow" :primary))
+```
+
+### Card Grid
+
+```wire preview:250
+(box :grid :cols 3 :gap 16
+  (card :col :padding 16
+    (icon "users")
+    (text "Users" :low)
+    (text "1,234" :high))
+  (card :col :padding 16
+    (icon "dollar-sign")
+    (text "Revenue" :low)
+    (text "$5,678" :high))
+  (card :col :padding 16
+    (icon "shopping-cart")
+    (text "Orders" :low)
+    (text "890" :high)))
+```

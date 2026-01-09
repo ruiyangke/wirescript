@@ -1,0 +1,98 @@
+---
+title: list
+description: List container for repeated items.
+---
+
+A semantic list container. Renders like `box` but provides semantic meaning for list content.
+
+## Usage
+
+```wire preview
+(list :col
+  (text "Item 1")
+  (text "Item 2")
+  (text "Item 3"))
+```
+
+## Basic Examples
+
+```wire preview:300
+; Simple list
+(list :col :gap 8
+  (text "First item")
+  (text "Second item")
+  (text "Third item"))
+
+; List with dividers
+(list :col :gap 0
+  (box :padding 12 (text "Item 1"))
+  (divider)
+  (box :padding 12 (text "Item 2"))
+  (divider)
+  (box :padding 12 (text "Item 3")))
+```
+
+## Properties
+
+<PropsTable element="list" />
+
+## Examples
+
+### User List
+
+```wire preview:250
+(list :col :gap 0
+  (box :row :gap 12 :padding 12
+    (avatar "Alice")
+    (box :col :gap 2 :fill
+      (text "Alice Johnson")
+      (text "alice@example.com" :low))
+    (icon "chevron-right"))
+  (divider)
+  (box :row :gap 12 :padding 12
+    (avatar "Bob")
+    (box :col :gap 2 :fill
+      (text "Bob Smith")
+      (text "bob@example.com" :low))
+    (icon "chevron-right")))
+```
+
+### Settings List
+
+```wire preview:300
+(list :col :gap 0
+  (box :row :between :padding 16
+    (box :col :gap 2
+      (text "Notifications")
+      (text "Receive push notifications" :low))
+    (input "" :type toggle))
+  (divider)
+  (box :row :between :padding 16
+    (box :col :gap 2
+      (text "Dark Mode")
+      (text "Use dark theme" :low))
+    (input "" :type toggle))
+  (divider)
+  (box :row :between :padding 16
+    (box :col :gap 2
+      (text "Language")
+      (text "English" :low))
+    (icon "chevron-right")))
+```
+
+### File List
+
+```wire preview:250
+(list :col :gap 0
+  (box :row :gap 12 :padding 12
+    (icon "file-text")
+    (text "document.pdf" :fill)
+    (text "2.4 MB" :low)
+    (icon "more-horizontal" :to "#file-menu"))
+  (divider)
+  (box :row :gap 12 :padding 12
+    (icon "image")
+    (text "photo.jpg" :fill)
+    (text "1.2 MB" :low)
+    (icon "more-horizontal" :to "#file-menu")))
+```

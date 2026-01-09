@@ -1,0 +1,682 @@
+; Admin Panel - Advanced example showcasing:
+; - All input types (text, email, password, textarea, select, toggle, checkbox, date)
+; - Complex form layouts with validation states
+; - Data tables with pagination
+; - Tabs and sections for organization
+; - Error, warning, success states
+; - Loading and skeleton states
+; - Empty states
+; - Toast notifications
+
+(wire
+  (meta
+    :title "Admin Panel"
+    :context admin
+    :audience "administrators"
+    :goal "manage system settings and users")
+
+  ; Component Definitions
+  (define data-table-row (id name email role status created)
+    (box :row :between :padding 12
+      (input :type checkbox)
+      (text $id :low :width "60px")
+      (box :row :gap 12 :fill
+        (avatar $name)
+        (box :col :gap 2
+          (text $name :medium)
+          (text $email :low)))
+      (text $role :width "100px")
+      (badge $status)
+      (text $created :low :width "120px")
+      (box :row :gap 4
+        (button "Edit" :ghost :to "#edit-user")
+        (dropdown
+          (button "View Profile" :ghost :full)
+          (button "Reset Password" :ghost :full)
+          (button "Send Invite Again" :ghost :full)
+          (divider)
+          (button "Suspend User" :warning :ghost :full)
+          (button "Delete User" :danger :ghost :full)))))
+
+  (define form-field (label hint required)
+    (box :col :gap 4
+      (box :row :gap 4
+        (text $label :medium)
+        (text "*" :danger))
+      (text $hint :low)))
+
+  (define stat-widget (icon label value change)
+    (card :row :gap 16 :padding 20 :fill
+      (box :col :center :padding 12
+        (icon $icon))
+      (box :col :fill :gap 4
+        (text $label :low)
+        (text $value :high)
+        (text $change :low))))
+
+  (define setting-row (label description)
+    (box :row :between :padding 16
+      (box :col :gap 2 :fill
+        (text $label :medium)
+        (text $description :low))
+      (input :type toggle)))
+
+  (define log-entry (time level message source)
+    (box :row :gap 16 :padding 8
+      (text $time :low :width "100px")
+      (badge $level)
+      (text $message :fill)
+      (text $source :low :width "80px")))
+
+  ; Screen 1: Dashboard
+  (screen dashboard "Dashboard" :desktop
+    (box :row :full
+      ; Sidebar
+      (nav :col :gap 4 :padding 16 :width "240px"
+        (box :row :gap 12 :padding 12
+          (icon "shield")
+          (text "Admin Panel" :high))
+        (divider)
+        (button "Dashboard" :ghost :full :start :active :to "dashboard")
+        (button "Users" :ghost :full :start :to "users")
+        (button "Settings" :ghost :full :start :to "settings")
+        (button "Logs" :ghost :full :start :to "logs")
+        (button "API Keys" :ghost :full :start :to "api-keys")
+        (divider)
+        (button "Documentation" :ghost :full :start)
+        (button "Support" :ghost :full :start)
+        (box :col :fill)
+        (divider)
+        (box :row :gap 12 :padding 12
+          (avatar "Admin")
+          (box :col
+            (text "Admin User" :medium)
+            (text "Super Admin" :low))))
+
+      ; Main Content (scrollable)
+      (scroll :col :full :padding 24 :gap 24
+        ; Header
+        (box :row :between
+          (box :col :gap 4
+            (text "Dashboard" :high)
+            (text "System overview and quick actions" :low))
+          (box :row :gap 12
+            (button "Refresh" :ghost)
+            (button "Export Report" :primary)))
+
+        ; Stats Row (wraps on narrow viewports)
+        (box :row :wrap :gap 16
+          (stat-widget :icon "users" :label "Total Users" :value "12,847" :change "+234 this week")
+          (stat-widget :icon "activity" :label "Active Sessions" :value "1,234" :change "Live now")
+          (stat-widget :icon "server" :label "API Calls Today" :value "847K" :change "+12% vs yesterday")
+          (stat-widget :icon "triangle-alert" :label "Errors (24h)" :value "23" :change "-5 from yesterday"))
+
+        ; Two Column Layout
+        (box :row :gap 24
+          ; Recent Activity
+          (card :col :fill :gap 16 :padding 24
+            (box :row :between
+              (text "Recent Activity" :medium)
+              (button "View All" :ghost :to "logs"))
+            (box :col :gap 8
+              (box :row :gap 12 :padding 8
+                (badge "INFO" :info)
+                (text "User john@example.com logged in" :fill)
+                (text "2m ago" :low))
+              (divider)
+              (box :row :gap 12 :padding 8
+                (badge "WARN" :warning)
+                (text "High memory usage detected" :fill)
+                (text "15m ago" :low))
+              (divider)
+              (box :row :gap 12 :padding 8
+                (badge "INFO" :info)
+                (text "New user registered: alice@test.com" :fill)
+                (text "1h ago" :low))
+              (divider)
+              (box :row :gap 12 :padding 8
+                (badge "ERROR" :danger)
+                (text "Failed login attempt from 192.168.1.1" :fill)
+                (text "2h ago" :low))
+              (divider)
+              (box :row :gap 12 :padding 8
+                (badge "INFO" :info)
+                (text "API key created for Production" :fill)
+                (text "3h ago" :low))))
+
+          ; System Health
+          (card :col :gap 16 :padding 24 :width "350px"
+            (text "System Health" :medium)
+            (box :col :gap 12
+              (box :row :between
+                (text "CPU Usage" :low)
+                (text "45%" :medium))
+              (progress)
+              (box :row :between
+                (text "Memory" :low)
+                (text "6.2 / 16 GB" :medium))
+              (progress)
+              (box :row :between
+                (text "Disk" :low)
+                (text "234 / 500 GB" :medium))
+              (progress)
+              (box :row :between
+                (text "Network" :low)
+                (text "125 Mbps" :medium))
+              (progress)))))))
+
+  ; Screen 2: Users Management
+  (screen users "Users" :desktop
+    (box :row :full
+      ; Sidebar (same as dashboard)
+      (nav :col :gap 4 :padding 16 :width "240px"
+        (box :row :gap 12 :padding 12
+          (icon "shield")
+          (text "Admin Panel" :high))
+        (divider)
+        (button "Dashboard" :ghost :full :start :to "dashboard")
+        (button "Users" :ghost :full :start :active :to "users")
+        (button "Settings" :ghost :full :start :to "settings")
+        (button "Logs" :ghost :full :start :to "logs")
+        (button "API Keys" :ghost :full :start :to "api-keys"))
+
+      ; Main Content (scrollable)
+      (scroll :col :full :padding 24 :gap 24
+        ; Header
+        (box :row :between
+          (box :col :gap 4
+            (text "User Management" :high)
+            (text "Manage users, roles, and permissions" :low))
+          (box :row :gap 12
+            (button "Import" :ghost)
+            (button "Export" :ghost)
+            (button "Add User" :primary :to "#add-user")))
+
+        ; Filters
+        (card :row :gap 16 :padding 16
+          (input "Search users..." :type text :fill)
+          (input "Role" :type select :options "All Roles,Admin,Editor,Viewer")
+          (input "Status" :type select :options "All Status,Active,Inactive,Pending")
+          (button "Apply Filters" :ghost))
+
+        ; Data Table
+        (card :col :full
+          ; Table Header
+          (box :row :between :padding 12
+            (input :type checkbox)
+            (text "ID" :low :width "60px")
+            (text "User" :low :fill)
+            (text "Role" :low :width "100px")
+            (text "Status" :low :width "80px")
+            (text "Created" :low :width "120px")
+            (text "Actions" :low :width "100px"))
+          (divider)
+
+          ; Table Rows
+          (data-table-row
+            :id "#1234"
+            :name "John Smith"
+            :email "john@example.com"
+            :role "Admin"
+            :status "Active"
+            :created "Mar 1, 2024")
+          (divider)
+          (data-table-row
+            :id "#1235"
+            :name "Alice Johnson"
+            :email "alice@example.com"
+            :role "Editor"
+            :status "Active"
+            :created "Feb 28, 2024")
+          (divider)
+          (data-table-row
+            :id "#1236"
+            :name "Bob Wilson"
+            :email "bob@example.com"
+            :role "Viewer"
+            :status "Inactive"
+            :created "Feb 25, 2024")
+          (divider)
+          (data-table-row
+            :id "#1237"
+            :name "Carol Davis"
+            :email "carol@example.com"
+            :role "Editor"
+            :status "Pending"
+            :created "Feb 20, 2024")
+          (divider)
+          (data-table-row
+            :id "#1238"
+            :name "David Chen"
+            :email "david@example.com"
+            :role "Admin"
+            :status "Active"
+            :created "Feb 15, 2024")
+
+          ; Pagination
+          (box :row :between :padding 16
+            (text "Showing 1-5 of 847 users" :low)
+            (box :row :gap 8
+              (button "Previous" :ghost :disabled)
+              (badge "1" :primary)
+              (button "2" :ghost)
+              (button "3" :ghost)
+              (button "..." :ghost :disabled)
+              (button "170" :ghost)
+              (button "Next" :ghost))))))
+
+    ; Modal: Add User
+    (modal :id "add-user"
+      (box :col :gap 24 :padding 24 :width "550px"
+        (box :row :between
+          (text "Add New User" :high)
+          (button :icon :ghost :icon "x" :to :close))
+        (form :col :gap 20
+          (box :row :gap 16
+            (box :col :gap 4 :fill
+              (text "First Name *" :medium)
+              (input :type text :placeholder "John"))
+            (box :col :gap 4 :fill
+              (text "Last Name *" :medium)
+              (input :type text :placeholder "Doe")))
+          (box :col :gap 4
+            (text "Email Address *" :medium)
+            (input :type email :placeholder "john.doe@example.com")
+            (text "We'll send an invitation to this email" :low))
+          (box :col :gap 4
+            (text "Role *" :medium)
+            (input :type select :options "Select role...,Admin,Editor,Viewer")
+            (text "Admins have full access, Editors can modify content, Viewers can only read" :low))
+          (box :col :gap 4
+            (text "Temporary Password *" :medium)
+            (input :type password :placeholder "Min 8 characters")
+            (text "User will be required to change on first login" :low))
+          (box :col :gap 8
+            (text "Options" :medium)
+            (box :row :gap 8
+              (input :type checkbox :checked true)
+              (text "Send welcome email"))
+            (box :row :gap 8
+              (input :type checkbox)
+              (text "Require 2FA setup"))
+            (box :row :gap 8
+              (input :type checkbox)
+              (text "Skip email verification"))))
+        (box :row :end :gap 12
+          (button "Cancel" :ghost :to :close)
+          (button "Create User" :primary :to :submit))))
+
+    ; Modal: Edit User
+    (modal :id "edit-user"
+      (box :col :gap 24 :padding 24 :width "550px"
+        (box :row :between
+          (text "Edit User" :high)
+          (button :icon :ghost :icon "x" :to :close))
+        (tabs
+          (tab "Profile" :active)
+          (tab "Permissions")
+          (tab "Activity"))
+        (form :col :gap 20 :padding 16
+          (box :row :gap 16
+            (box :col :gap 4 :fill
+              (text "First Name" :medium)
+              (input :type text :placeholder "John"))
+            (box :col :gap 4 :fill
+              (text "Last Name" :medium)
+              (input :type text :placeholder "Smith")))
+          (box :col :gap 4
+            (text "Email Address" :medium)
+            (input :type email :placeholder "john@example.com" :disabled)
+            (text "Email cannot be changed. Contact support if needed." :low))
+          (box :col :gap 4
+            (text "Role" :medium)
+            (input :type select :options "Admin,Editor,Viewer"))
+          (box :col :gap 4
+            (text "Status" :medium)
+            (input :type select :options "Active,Inactive,Suspended")))
+        (box :row :between :padding 16
+          (button "Delete User" :danger :ghost)
+          (box :row :gap 12
+            (button "Cancel" :ghost :to :close)
+            (button "Save Changes" :primary :to :submit))))))
+
+  ; Screen 3: Settings
+  (screen settings "Settings" :desktop
+    (box :row :full
+      ; Sidebar
+      (nav :col :gap 4 :padding 16 :width "240px"
+        (box :row :gap 12 :padding 12
+          (icon "shield")
+          (text "Admin Panel" :high))
+        (divider)
+        (button "Dashboard" :ghost :full :start :to "dashboard")
+        (button "Users" :ghost :full :start :to "users")
+        (button "Settings" :ghost :full :start :active :to "settings")
+        (button "Logs" :ghost :full :start :to "logs")
+        (button "API Keys" :ghost :full :start :to "api-keys"))
+
+      ; Main Content (scrollable)
+      (scroll :col :full :padding 24 :gap 24
+        (text "System Settings" :high)
+
+        ; Settings Tabs
+        (tabs
+          (tab "General" :active)
+          (tab "Security")
+          (tab "Email")
+          (tab "Integrations")
+          (tab "Billing"))
+
+        ; General Settings
+        (box :col :gap 24 :padding 16
+          ; Application Settings
+          (card :col :gap 0
+            (box :col :gap 4 :padding 20
+              (text "Application Settings" :medium)
+              (text "Basic configuration for your application" :low))
+            (divider)
+            (box :col :gap 16 :padding 20
+              (box :col :gap 4
+                (text "Application Name" :medium)
+                (input :type text :placeholder "My Application"))
+              (box :col :gap 4
+                (text "Application URL" :medium)
+                (input :type text :placeholder "https://app.example.com"))
+              (box :col :gap 4
+                (text "Support Email" :medium)
+                (input :type email :placeholder "support@example.com"))
+              (box :col :gap 4
+                (text "Default Timezone" :medium)
+                (input :type select :options "UTC,America/New_York,America/Los_Angeles,Europe/London,Asia/Tokyo"))
+              (box :col :gap 4
+                (text "Date Format" :medium)
+                (input :type select :options "MM/DD/YYYY,DD/MM/YYYY,YYYY-MM-DD"))))
+
+          ; Feature Toggles
+          (card :col :gap 0
+            (box :col :gap 4 :padding 20
+              (text "Feature Toggles" :medium)
+              (text "Enable or disable application features" :low))
+            (divider)
+            (setting-row :label "User Registration" :description "Allow new users to create accounts")
+            (divider)
+            (setting-row :label "Email Verification" :description "Require email verification for new accounts")
+            (divider)
+            (setting-row :label "Two-Factor Authentication" :description "Allow users to enable 2FA")
+            (divider)
+            (setting-row :label "API Access" :description "Enable API access for external integrations")
+            (divider)
+            (setting-row :label "Maintenance Mode" :description "Show maintenance page to all users"))
+
+          ; Danger Zone
+          (card :col :gap 0
+            (box :col :gap 4 :padding 20
+              (text "Danger Zone" :medium :danger)
+              (text "Irreversible and destructive actions" :low))
+            (divider)
+            (box :row :between :padding 20
+              (box :col :gap 2
+                (text "Reset All Settings" :medium)
+                (text "Reset all settings to their default values" :low))
+              (button "Reset" :danger :ghost :to "#confirm-reset"))
+            (divider)
+            (box :row :between :padding 20
+              (box :col :gap 2
+                (text "Delete All Data" :medium)
+                (text "Permanently delete all application data" :low))
+              (button "Delete" :danger :to "#confirm-delete")))
+
+          ; Save Button
+          (box :row :end
+            (button "Save Changes" :primary :to :submit)))))
+
+    ; Modal: Confirm Reset
+    (modal :id "confirm-reset"
+      (box :col :gap 24 :padding 24 :width "400px"
+        (box :col :gap 8
+          (text "Reset All Settings?" :high)
+          (text "This will reset all settings to their default values. This action cannot be undone." :low))
+        (box :row :end :gap 12
+          (button "Cancel" :ghost :to :close)
+          (button "Reset Settings" :danger :to :submit))))
+
+    ; Modal: Confirm Delete
+    (modal :id "confirm-delete"
+      (box :col :gap 24 :padding 24 :width "400px"
+        (box :col :gap 8
+          (text "Delete All Data?" :high :danger)
+          (text "This will permanently delete ALL application data including users, content, and settings. This action CANNOT be undone." :low))
+        (box :col :gap 8
+          (text "Type 'DELETE' to confirm:" :medium)
+          (input :type text :placeholder "DELETE"))
+        (box :row :end :gap 12
+          (button "Cancel" :ghost :to :close)
+          (button "Delete Everything" :danger :disabled :to :submit)))))
+
+  ; Screen 4: Logs
+  (screen logs "Logs" :desktop
+    (box :row :full
+      ; Sidebar
+      (nav :col :gap 4 :padding 16 :width "240px"
+        (box :row :gap 12 :padding 12
+          (icon "shield")
+          (text "Admin Panel" :high))
+        (divider)
+        (button "Dashboard" :ghost :full :start :to "dashboard")
+        (button "Users" :ghost :full :start :to "users")
+        (button "Settings" :ghost :full :start :to "settings")
+        (button "Logs" :ghost :full :start :active :to "logs")
+        (button "API Keys" :ghost :full :start :to "api-keys"))
+
+      ; Main Content (scrollable)
+      (scroll :col :full :padding 24 :gap 24
+        (box :row :between
+          (box :col :gap 4
+            (text "System Logs" :high)
+            (text "View application and system logs" :low))
+          (box :row :gap 12
+            (button "Export" :ghost)
+            (button "Clear Logs" :danger :ghost :to "#confirm-clear")))
+
+        ; Filters
+        (card :row :gap 16 :padding 16
+          (input "Search logs..." :type text :fill)
+          (input "Level" :type select :options "All Levels,DEBUG,INFO,WARN,ERROR,FATAL")
+          (input "Source" :type select :options "All Sources,API,Auth,Database,Worker")
+          (input "Date Range" :type select :options "Last Hour,Last 24 Hours,Last 7 Days,Custom")
+          (button "Auto-refresh" :ghost :active))
+
+        ; Log Table
+        (card :col :full
+          ; Header
+          (box :row :gap 16 :padding 12
+            (text "Time" :low :width "100px")
+            (text "Level" :low :width "80px")
+            (text "Message" :low :fill)
+            (text "Source" :low :width "80px"))
+          (divider)
+
+          ; Log Entries
+          (log-entry :time "14:32:15" :level "INFO" :message "User login successful: john@example.com" :source "Auth")
+          (divider)
+          (log-entry :time "14:32:10" :level "DEBUG" :message "Database query executed in 45ms" :source "DB")
+          (divider)
+          (log-entry :time "14:31:55" :level "WARN" :message "Rate limit approaching for API key: prod_xxx" :source "API")
+          (divider)
+          (log-entry :time "14:31:42" :level "ERROR" :message "Failed to send email: Connection timeout" :source "Mail")
+          (divider)
+          (log-entry :time "14:31:30" :level "INFO" :message "Scheduled job completed: cleanup_sessions" :source "Worker")
+          (divider)
+          (log-entry :time "14:31:15" :level "DEBUG" :message "Cache hit for user profile: #1234" :source "Cache")
+          (divider)
+          (log-entry :time "14:31:00" :level "INFO" :message "API request: GET /api/v1/users (200)" :source "API")
+          (divider)
+          (log-entry :time "14:30:45" :level "WARN" :message "Memory usage above 80% threshold" :source "System")
+          (divider)
+          (log-entry :time "14:30:30" :level "ERROR" :message "Invalid authentication token" :source "Auth")
+          (divider)
+          (log-entry :time "14:30:15" :level "INFO" :message "New user registered: alice@test.com" :source "Auth")
+
+          ; Load More
+          (box :row :center :padding 16
+            (button "Load More" :ghost :loading)))))
+
+    ; Modal: Confirm Clear Logs
+    (modal :id "confirm-clear"
+      (box :col :gap 24 :padding 24 :width "400px"
+        (box :col :center :gap 16
+          (icon "triangle-alert")
+          (text "Clear All Logs?" :high)
+          (text "This will permanently delete all system logs. This action cannot be undone." :low :center))
+        (box :row :end :gap 12
+          (button "Cancel" :ghost :to :close)
+          (button "Clear Logs" :danger :to :close)))))
+
+  ; Screen 5: API Keys
+  (screen api-keys "API Keys" :desktop
+    (box :row :full
+      ; Sidebar
+      (nav :col :gap 4 :padding 16 :width "240px"
+        (box :row :gap 12 :padding 12
+          (icon "shield")
+          (text "Admin Panel" :high))
+        (divider)
+        (button "Dashboard" :ghost :full :start :to "dashboard")
+        (button "Users" :ghost :full :start :to "users")
+        (button "Settings" :ghost :full :start :to "settings")
+        (button "Logs" :ghost :full :start :to "logs")
+        (button "API Keys" :ghost :full :start :active :to "api-keys"))
+
+      ; Main Content (scrollable)
+      (scroll :col :full :padding 24 :gap 24
+        (box :row :between
+          (box :col :gap 4
+            (text "API Keys" :high)
+            (text "Manage API keys for external integrations" :low))
+          (button "Create API Key" :primary :to "#create-api-key"))
+
+        ; Warning Banner
+        (card :row :gap 12 :padding 16 :warning
+          (icon "triangle-alert")
+          (text "API keys provide full access to your account. Keep them secure and never share them publicly." :medium))
+
+        ; API Keys List
+        (box :col :gap 16
+          ; Key 1 - Active
+          (card :col :gap 0
+            (box :row :between :padding 16
+              (box :col :gap 4
+                (box :row :gap 8
+                  (text "Production" :medium)
+                  (badge "Active" :success))
+                (text "pk_live_xxxxxxxxxxxx...xxxx" :low))
+              (box :row :gap 8
+                (button "Copy" :ghost)
+                (button "Regenerate" :ghost)
+                (dropdown
+                  (button "View Details" :ghost :full)
+                  (button "Edit Permissions" :ghost :full)
+                  (button "View Usage" :ghost :full)
+                  (divider)
+                  (button "Revoke Key" :danger :ghost :full))))
+            (divider)
+            (box :row :gap 24 :padding 16
+              (box :col :gap 2
+                (text "Created" :low)
+                (text "Jan 15, 2024" :medium))
+              (box :col :gap 2
+                (text "Last Used" :low)
+                (text "2 minutes ago" :medium))
+              (box :col :gap 2
+                (text "Requests (24h)" :low)
+                (text "12,847" :medium))))
+
+          ; Key 2 - Active
+          (card :col :gap 0
+            (box :row :between :padding 16
+              (box :col :gap 4
+                (box :row :gap 8
+                  (text "Development" :medium)
+                  (badge "Active" :success))
+                (text "pk_test_xxxxxxxxxxxx...xxxx" :low))
+              (box :row :gap 8
+                (button "Copy" :ghost)
+                (button "Regenerate" :ghost)
+                (dropdown
+                  (button "View Details" :ghost :full)
+                  (button "Edit Permissions" :ghost :full)
+                  (button "View Usage" :ghost :full)
+                  (divider)
+                  (button "Revoke Key" :danger :ghost :full))))
+            (divider)
+            (box :row :gap 24 :padding 16
+              (box :col :gap 2
+                (text "Created" :low)
+                (text "Feb 1, 2024" :medium))
+              (box :col :gap 2
+                (text "Last Used" :low)
+                (text "1 hour ago" :medium))
+              (box :col :gap 2
+                (text "Requests (24h)" :low)
+                (text "234" :medium))))
+
+          ; Key 3 - Revoked
+          (card :col :gap 0
+            (box :row :between :padding 16
+              (box :col :gap 4
+                (box :row :gap 8
+                  (text "Old Production" :medium)
+                  (badge "Revoked" :danger))
+                (text "pk_live_yyyyyyyyyyyy...yyyy" :low))
+              (box :row :gap 8
+                (button "Delete" :danger :ghost)))
+            (divider)
+            (box :row :gap 24 :padding 16
+              (box :col :gap 2
+                (text "Created" :low)
+                (text "Dec 1, 2023" :medium))
+              (box :col :gap 2
+                (text "Revoked" :low)
+                (text "Jan 14, 2024" :medium))
+              (box :col :gap 2
+                (text "Reason" :low)
+                (text "Key rotation" :medium)))))))
+
+    ; Modal: Create API Key
+    (modal :id "create-api-key"
+      (box :col :gap 24 :padding 24 :width "500px"
+        (box :row :between
+          (text "Create API Key" :high)
+          (button :icon :ghost :icon "x" :to :close))
+        (form :col :gap 20
+          (box :col :gap 4
+            (text "Key Name *" :medium)
+            (input :type text :placeholder "e.g., Production, Staging, CI/CD")
+            (text "A descriptive name to identify this key" :low))
+          (box :col :gap 4
+            (text "Environment" :medium)
+            (input :type select :options "Production,Development,Staging"))
+          (box :col :gap 8
+            (text "Permissions" :medium)
+            (box :col :gap 4
+              (box :row :gap 8
+                (input :type checkbox :checked true)
+                (text "Read access"))
+              (box :row :gap 8
+                (input :type checkbox :checked true)
+                (text "Write access"))
+              (box :row :gap 8
+                (input :type checkbox)
+                (text "Delete access"))
+              (box :row :gap 8
+                (input :type checkbox)
+                (text "Admin access"))))
+          (box :col :gap 4
+            (text "Rate Limit" :medium)
+            (input :type select :options "1,000 req/min (Default),5,000 req/min,10,000 req/min,Unlimited"))
+          (box :col :gap 4
+            (text "Expiration" :medium)
+            (input :type select :options "Never,30 days,90 days,1 year")))
+        (box :row :end :gap 12
+          (button "Cancel" :ghost :to :close)
+          (button "Create Key" :primary :to :submit))))))

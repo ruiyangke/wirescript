@@ -1,0 +1,1028 @@
+; Design System Showcase - Comprehensive example demonstrating:
+; - ALL component types (37 total)
+; - ALL flags and modifiers (25 total)
+; - ALL input types
+; - Layout patterns
+; - State variations
+; - Typography hierarchy
+; - Color variants
+
+(wire
+  (meta
+    :title "Design System"
+    :context design-system
+    :audience "designers-developers"
+    :goal "showcase all available components")
+
+  ; Reusable Section Component
+  (define showcase-section (title description)
+    (box :col :gap 16 :padding 24
+      (box :col :gap 4
+        (text $title :high)
+        (text $description :low))
+      (divider)))
+
+  (define component-demo (label)
+    (box :col :gap 8
+      (text $label :low)
+      (divider)))
+
+  ; Shared Layout with Navigation Sidebar
+  ; Auto-active: buttons with :to matching current screen get :active styling automatically
+  (layout sidebar-layout
+    (box :row :full
+      (nav :col :gap 4 :padding 16 :width "220px"
+        (text "Design System" :high)
+        (divider)
+        (button "Typography" :ghost :full :start :to "typography")
+        (button "Buttons" :ghost :full :start :to "buttons")
+        (button "Inputs" :ghost :full :start :to "inputs")
+        (button "Cards & Containers" :ghost :full :start :to "containers")
+        (button "Data Display" :ghost :full :start :to "data")
+        (button "Navigation" :ghost :full :start :to "navigation")
+        (button "Feedback" :ghost :full :start :to "feedback")
+        (button "Overlays" :ghost :full :start :to "overlays")
+        (button "Layouts" :ghost :full :start :to "layouts"))
+      (slot)))
+
+  ; Screen 1: Typography & Text
+  (screen typography "Typography" :desktop :layout sidebar-layout
+    (scroll :col :full :padding 32 :gap 32
+        (text "Typography & Text" :high)
+        (text "Text elements with different emphasis levels and styles" :low)
+
+        ; Emphasis Levels
+        (card :col :gap 24 :padding 24
+          (text "Emphasis Levels" :medium)
+          (box :col :gap 16
+            (box :row :between
+              (text "High Emphasis" :high)
+              (text ":high" :low))
+            (box :row :between
+              (text "Medium Emphasis" :medium)
+              (text ":medium" :low))
+            (box :row :between
+              (text "Low Emphasis" :low)
+              (text ":low" :low))
+            (box :row :between
+              (text "Default (no flag)")
+              (text "default" :low))))
+
+        ; Color Variants
+        (card :col :gap 24 :padding 24
+          (text "Color Variants" :medium)
+          (box :col :gap 16
+            (box :row :between
+              (text "Primary Text" :primary)
+              (text ":primary" :low))
+            (box :row :between
+              (text "Secondary Text" :secondary)
+              (text ":secondary" :low))
+            (box :row :between
+              (text "Success Text" :success)
+              (text ":success" :low))
+            (box :row :between
+              (text "Warning Text" :warning)
+              (text ":warning" :low))
+            (box :row :between
+              (text "Danger Text" :danger)
+              (text ":danger" :low))
+            (box :row :between
+              (text "Info Text" :info)
+              (text ":info" :low))))
+
+        ; Text with Icons
+        (card :col :gap 24 :padding 24
+          (text "Text with Icons" :medium)
+          (box :col :gap 16
+            (box :row :gap 8
+              (icon "check")
+              (text "Success message with icon"))
+            (box :row :gap 8
+              (icon "triangle-alert")
+              (text "Warning message with icon"))
+            (box :row :gap 8
+              (icon "circle-x")
+              (text "Error message with icon"))
+            (box :row :gap 8
+              (icon "info")
+              (text "Info message with icon"))))))
+
+  ; Screen 2: Buttons
+  (screen buttons "Buttons" :desktop :layout sidebar-layout
+    (scroll :col :full :padding 32 :gap 32
+      (text "Buttons" :high)
+      (text "Interactive button components with variants and states" :low)
+
+        ; Button Variants
+        (card :col :gap 24 :padding 24
+          (text "Button Variants" :medium)
+          (box :row :gap 16
+            (button "Primary" :primary)
+            (button "Secondary" :secondary)
+            (button "Ghost" :ghost)
+            (button "Danger" :danger))
+          (box :row :gap 16
+            (button "Success" :success)
+            (button "Warning" :warning)
+            (button "Info" :info)))
+
+        ; Button Sizes and Widths
+        (card :col :gap 24 :padding 24
+          (text "Button Widths" :medium)
+          (box :col :gap 16
+            (button "Default Width" :primary)
+            (button "Full Width Button" :primary :full)
+            (button "Fit Content" :primary :fit)))
+
+        ; Button States
+        (card :col :gap 24 :padding 24
+          (text "Button States" :medium)
+          (box :row :gap 16
+            (button "Normal" :primary)
+            (button "Active" :primary :active)
+            (button "Disabled" :primary :disabled)
+            (button "Loading" :primary :loading)))
+
+        ; Icon Buttons
+        (card :col :gap 24 :padding 24
+          (text "Buttons with Icons" :medium)
+          (box :row :gap 16
+            (button "Add Item" :primary :icon "plus")
+            (button "Download" :ghost :icon "download")
+            (button "Delete" :danger :ghost :icon "trash"))
+
+          ; Icon-only buttons
+          (text "Icon-only Buttons" :medium)
+          (box :row :gap 8
+            (button :icon :ghost :icon "menu")
+            (button :icon :ghost :icon "search")
+            (button :icon :ghost :icon "settings")
+            (button :icon :primary :icon "plus")))))
+
+  ; Screen 3: Inputs
+  (screen inputs "Inputs" :desktop :layout sidebar-layout
+    (scroll :col :full :padding 32 :gap 32
+        (text "Form Inputs" :high)
+        (text "All available input types and form controls" :low)
+
+        ; Text Inputs
+        (card :col :gap 24 :padding 24
+          (text "Text Inputs" :medium)
+          (box :grid :cols 2 :gap 24
+            (box :col :gap 4
+              (text "Text Input" :low)
+              (input "Label" :type text :placeholder "Enter text..."))
+            (box :col :gap 4
+              (text "Email Input" :low)
+              (input "Email" :type email :placeholder "email@example.com"))
+            (box :col :gap 4
+              (text "Password Input" :low)
+              (input "Password" :type password :placeholder "Enter password..."))
+            (box :col :gap 4
+              (text "Disabled Input" :low)
+              (input "Disabled" :type text :placeholder "Cannot edit" :disabled))))
+
+        ; Textarea
+        (card :col :gap 24 :padding 24
+          (text "Textarea" :medium)
+          (box :col :gap 4
+            (text "Multi-line Text" :low)
+            (input "Description" :type textarea :rows 4 :placeholder "Enter a longer description here...")))
+
+        ; Select & Date
+        (card :col :gap 24 :padding 24
+          (text "Select & Date" :medium)
+          (box :grid :cols 2 :gap 24
+            (box :col :gap 4
+              (text "Select Dropdown" :low)
+              (input "Country" :type select :options "United States,Canada,United Kingdom,Germany,France"))
+            (box :col :gap 4
+              (text "Date Picker" :low)
+              (input "Date" :type date))))
+
+        ; Toggles & Checkboxes
+        (card :col :gap 24 :padding 24
+          (text "Toggles & Checkboxes" :medium)
+          (box :row :gap 48
+            (box :col :gap 16
+              (text "Toggles" :low)
+              (box :row :between :gap 32
+                (text "Dark Mode")
+                (input :type toggle))
+              (box :row :between :gap 32
+                (text "Notifications")
+                (input :type toggle :checked true))
+              (box :row :between :gap 32
+                (text "Disabled")
+                (input :type toggle :disabled)))
+            (box :col :gap 16
+              (text "Checkboxes" :low)
+              (box :row :gap 8
+                (input :type checkbox)
+                (text "Unchecked"))
+              (box :row :gap 8
+                (input :type checkbox :checked true)
+                (text "Checked"))
+              (box :row :gap 8
+                (input :type checkbox :disabled)
+                (text "Disabled")))))
+
+        ; Radio Buttons
+        (card :col :gap 24 :padding 24
+          (text "Radio Buttons" :medium)
+          (box :col :gap 12
+            (input "Plan" :type radio :options "Free,Pro,Enterprise")
+            (text "Use :options to define choices" :low)))
+
+        ; Number & Slider
+        (card :col :gap 24 :padding 24
+          (text "Number & Slider" :medium)
+          (box :grid :cols 2 :gap 24
+            (box :col :gap 4
+              (text "Number Input" :low)
+              (input "Quantity" :type number :min 1 :max 100))
+            (box :col :gap 4
+              (text "Slider" :low)
+              (input "Volume" :type slider :min 0 :max 100))
+            (box :col :gap 4
+              (text "Time Input" :low)
+              (input "Time" :type time))
+            (box :col :gap 4
+              (text "Search Input" :low)
+              (input "Search" :type search :placeholder "Search..."))))
+
+        ; Standalone Datepicker
+        (card :col :gap 24 :padding 24
+          (text "Datepicker Component" :medium)
+          (box :row :gap 24
+            (box :col :gap 4
+              (text "Default" :low)
+              (datepicker :placeholder "Select date"))
+            (box :col :gap 4
+              (text "Disabled" :low)
+              (datepicker :placeholder "Select date" :disabled))
+            (box :col :gap 4
+              (text "With Error" :low)
+              (datepicker :placeholder "Select date" :error))))
+
+        ; Input States
+        (card :col :gap 24 :padding 24
+          (text "Input States" :medium)
+          (box :grid :cols 3 :gap 24
+            (box :col :gap 4
+              (text "Normal" :low)
+              (input :type text :placeholder "Normal input"))
+            (box :col :gap 4
+              (text "Error State" :low :danger)
+              (input :type text :placeholder "Error input" :error))
+            (box :col :gap 4
+              (text "Disabled" :low)
+              (input :type text :placeholder "Disabled input" :disabled))))))
+
+  ; Screen 4: Cards & Containers
+  (screen containers "Containers" :desktop :layout sidebar-layout
+    (scroll :col :full :padding 32 :gap 32
+        (text "Cards & Containers" :high)
+        (text "Container components for grouping and organizing content" :low)
+
+        ; Card Component
+        (card :col :gap 24 :padding 24
+          (text "Card Component" :medium)
+          (box :row :gap 24
+            (card :col :gap 12 :padding 16 :width "200px"
+              (text "Basic Card" :medium)
+              (text "Simple card with padding" :low))
+            (card :col :gap 12 :padding 16 :width "200px"
+              (image "Card image" :height "100px")
+              (text "Card with Image" :medium)
+              (text "Image at the top" :low))
+            (card :col :gap 12 :padding 16 :width "200px"
+              (text "Interactive Card" :medium)
+              (text "Card with button" :low)
+              (button "Action" :primary :full))))
+
+        ; Box Layouts
+        (card :col :gap 24 :padding 24
+          (text "Box Layouts" :medium)
+          (box :col :gap 16
+            (text ":row - Horizontal layout" :low)
+            (box :row :gap 8
+              (card :padding 16 (text "Item 1"))
+              (card :padding 16 (text "Item 2"))
+              (card :padding 16 (text "Item 3")))
+            (text ":col - Vertical layout" :low)
+            (box :col :gap 8
+              (card :padding 16 (text "Item 1"))
+              (card :padding 16 (text "Item 2")))
+            (text ":grid - Grid layout" :low)
+            (box :grid :cols 4 :gap 8
+              (card :center :padding 16 (text "1"))
+              (card :center :padding 16 (text "2"))
+              (card :center :padding 16 (text "3"))
+              (card :center :padding 16 (text "4")))))
+
+        ; Semantic Containers
+        (card :col :gap 24 :padding 24
+          (text "Semantic Containers" :medium)
+          (box :col :gap 16
+            (header :row :between :padding 16
+              (text "Header Component" :medium)
+              (button "Action" :ghost))
+            (section :col :padding 16 :gap 8
+              (text "Section Component" :medium)
+              (text "Used for grouping related content" :low))
+            (nav :row :gap 16 :padding 16
+              (text "Nav Item 1")
+              (text "Nav Item 2")
+              (text "Nav Item 3"))
+            (footer :row :between :padding 16
+              (text "Footer Component" :low)
+              (text "Right aligned" :low))))
+
+        ; Group & Form
+        (card :col :gap 24 :padding 24
+          (text "Group & Form" :medium)
+          (box :row :gap 24
+            (group :col :gap 8 :padding 16 :width "300px"
+              (text "Group Component" :medium)
+              (text "Generic grouping element" :low))
+            (form :col :gap 12 :padding 16 :width "300px"
+              (text "Form Component" :medium)
+              (input :type text :placeholder "Username")
+              (input :type password :placeholder "Password")
+              (button "Submit" :primary :full))))
+
+        ; Scroll Container
+        (card :col :gap 24 :padding 24
+          (text "Scroll Container" :medium)
+          (box :row :gap 24
+            (box :col :gap 8
+              (text "Vertical Scroll" :low)
+              (scroll :col :gap 8 :padding 8 :height "150px" :width "200px"
+                (card :padding 12 (text "Item 1"))
+                (card :padding 12 (text "Item 2"))
+                (card :padding 12 (text "Item 3"))
+                (card :padding 12 (text "Item 4"))
+                (card :padding 12 (text "Item 5"))
+                (card :padding 12 (text "Item 6"))))
+            (box :col :gap 8
+              (text "Horizontal Scroll" :low)
+              (scroll :row :gap 8 :padding 8 :width "300px"
+                (badge "Tag 1")
+                (badge "Tag 2")
+                (badge "Tag 3")
+                (badge "Tag 4")
+                (badge "Tag 5")
+                (badge "Tag 6")
+                (badge "Tag 7")
+                (badge "Tag 8")))))
+
+        ; Repeat Construct
+        (card :col :gap 24 :padding 24
+          (text "Repeat Construct" :medium)
+          (text "Generate repeated elements with :count" :low)
+          (box :col :gap 16
+            (text "Simple repeat (5 items)" :low)
+            (box :row :gap 8
+              (repeat :count 5
+                (skeleton :width "60px" :height "60px")))
+            (text "Repeat with index variable" :low)
+            (box :col :gap 4
+              (repeat :count 3 :as "i"
+                (box :row :gap 8 :padding 8
+                  (badge "${i}" :primary)
+                  (text "Item number ${i}"))))))))
+
+  ; Screen 5: Data Display
+  (screen data "Data Display" :desktop :layout sidebar-layout
+    (scroll :col :full :padding 32 :gap 32
+        (text "Data Display" :high)
+        (text "Components for displaying data and information" :low)
+
+        ; Badges
+        (card :col :gap 24 :padding 24
+          (text "Badges" :medium)
+          (box :row :gap 16
+            (badge "Default")
+            (badge "Primary" :primary)
+            (badge "Secondary" :secondary)
+            (badge "Success" :success)
+            (badge "Warning" :warning)
+            (badge "Danger" :danger)
+            (badge "Info" :info)))
+
+        ; Avatars
+        (card :col :gap 24 :padding 24
+          (text "Avatars" :medium)
+          (box :col :gap 12
+            (text "Default" :low)
+            (box :row :gap 16
+              (avatar "Alice")
+              (avatar "Bob")
+              (avatar "Carol"))
+            (text "With active status" :low)
+            (box :row :gap 16
+              (avatar "Alice" :active)
+              (avatar "Bob" :active)
+              (avatar "Carol"))
+            (text "Sizes with active" :low)
+            (box :row :gap 16
+              (avatar "SM" :low :active)
+              (avatar "MD" :active)
+              (avatar "LG" :high :active))))
+
+        ; Icons
+        (card :col :gap 24 :padding 24
+          (text "Icons" :medium)
+
+          ; Icon Sizes (using emphasis flags)
+          (box :col :gap 12
+            (text "Sizes (emphasis flags)" :low)
+            (box :row :gap 24
+              (box :col :center :gap 4
+                (icon "star" :low)
+                (text "low" :low))
+              (box :col :center :gap 4
+                (icon "star")
+                (text "default" :low))
+              (box :col :center :gap 4
+                (icon "star" :medium)
+                (text "medium" :low))
+              (box :col :center :gap 4
+                (icon "star" :high)
+                (text "high" :low))))
+
+          (divider)
+
+          ; Icon Color Variants
+          (box :col :gap 12
+            (text "Color Variants" :low)
+            (box :row :gap 24
+              (box :col :center :gap 4
+                (icon "heart")
+                (text "default" :low))
+              (box :col :center :gap 4
+                (icon "heart" :primary)
+                (text "primary" :low))
+              (box :col :center :gap 4
+                (icon "heart" :success)
+                (text "success" :low))
+              (box :col :center :gap 4
+                (icon "heart" :warning)
+                (text "warning" :low))
+              (box :col :center :gap 4
+                (icon "heart" :danger)
+                (text "danger" :low))
+              (box :col :center :gap 4
+                (icon "heart" :info)
+                (text "info" :low))))
+
+          (divider)
+
+          ; Navigation Icons
+          (box :col :gap 12
+            (text "Navigation" :low)
+            (box :row :gap 16
+              (icon "house")
+              (icon "menu")
+              (icon "search")
+              (icon "arrow-left")
+              (icon "arrow-right")
+              (icon "arrow-up")
+              (icon "arrow-down")
+              (icon "chevron-left")
+              (icon "chevron-right")
+              (icon "chevron-up")
+              (icon "chevron-down")
+              (icon "external-link")
+              (icon "refresh-cw")
+              (icon "log-out")))
+
+          ; Action Icons
+          (box :col :gap 12
+            (text "Actions" :low)
+            (box :row :gap 16
+              (icon "plus")
+              (icon "minus")
+              (icon "x")
+              (icon "check")
+              (icon "pencil")
+              (icon "pencil-line")
+              (icon "trash")
+              (icon "trash-2")
+              (icon "copy")
+              (icon "download")
+              (icon "upload")
+              (icon "share-2")
+              (icon "save")
+              (icon "send")))
+
+          ; Status Icons
+          (box :col :gap 12
+            (text "Status & Feedback" :low)
+            (box :row :gap 16
+              (icon "circle-check" :success)
+              (icon "circle-x" :danger)
+              (icon "circle-alert" :warning)
+              (icon "triangle-alert" :warning)
+              (icon "info" :info)
+              (icon "circle-question-mark")
+              (icon "bell")
+              (icon "bell-off")
+              (icon "eye")
+              (icon "eye-off")
+              (icon "lock")
+              (icon "lock-open")
+              (icon "shield")
+              (icon "shield-check" :success)))
+
+          ; User & Social Icons
+          (box :col :gap 12
+            (text "User & Social" :low)
+            (box :row :gap 16
+              (icon "user")
+              (icon "users")
+              (icon "user-plus")
+              (icon "user-minus")
+              (icon "user-x")
+              (icon "heart")
+              (icon "star")
+              (icon "bookmark")
+              (icon "thumbs-up")
+              (icon "message-circle")
+              (icon "message-square")
+              (icon "mail")
+              (icon "phone")
+              (icon "video")))
+
+          ; Media & File Icons
+          (box :col :gap 12
+            (text "Media & Files" :low)
+            (box :row :gap 16
+              (icon "file")
+              (icon "file-text")
+              (icon "folder")
+              (icon "folder-plus")
+              (icon "image")
+              (icon "camera")
+              (icon "mic")
+              (icon "play")
+              (icon "pause")
+              (icon "volume-2")
+              (icon "volume-x")
+              (icon "music")
+              (icon "film")
+              (icon "code")))
+
+          ; Business & Commerce Icons
+          (box :col :gap 12
+            (text "Business & Commerce" :low)
+            (box :row :gap 16
+              (icon "briefcase")
+              (icon "building")
+              (icon "calendar")
+              (icon "clock")
+              (icon "credit-card")
+              (icon "dollar-sign")
+              (icon "shopping-cart")
+              (icon "shopping-bag")
+              (icon "truck")
+              (icon "package")
+              (icon "tag")
+              (icon "percent")
+              (icon "chart-pie")
+              (icon "chart-bar")))
+
+          ; Tech & Development Icons
+          (box :col :gap 12
+            (text "Tech & Development" :low)
+            (box :row :gap 16
+              (icon "settings")
+              (icon "server")
+              (icon "database")
+              (icon "cloud")
+              (icon "wifi")
+              (icon "bluetooth")
+              (icon "smartphone")
+              (icon "monitor")
+              (icon "tablet")
+              (icon "cpu")
+              (icon "terminal")
+              (icon "git-branch")
+              (icon "github")
+              (icon "globe"))))
+
+        ; Metrics & Progress
+        (card :col :gap 24 :padding 24
+          (text "Metrics & Progress" :medium)
+          (box :row :gap 24
+            (metric
+              (text "Total Users" :low)
+              (text "12,847" :high))
+            (metric
+              (text "Revenue" :low)
+              (text "$45,230" :high))
+            (metric
+              (text "Growth" :low)
+              (text "+23.5%" :high :success)))
+          (box :col :gap 12
+            (text "Progress Bars" :low)
+            (box :row :gap 8
+              (text "Indeterminate" :low)
+              (progress :fill))
+            (box :row :gap 8
+              (text "Default (75%)" :low)
+              (progress :value 75 :fill))
+            (box :row :gap 8
+              (text "Success (100%)" :low)
+              (progress :value 100 :success :fill))
+            (box :row :gap 8
+              (text "Warning (60%)" :low)
+              (progress :value 60 :warning :fill))
+            (box :row :gap 8
+              (text "Danger (25%)" :low)
+              (progress :value 25 :danger :fill))
+            (box :row :gap 8
+              (text "Info (45%)" :low)
+              (progress :value 45 :info :fill))))
+
+        ; Charts & Images
+        (card :col :gap 24 :padding 24
+          (text "Charts & Images" :medium)
+          (box :row :gap 24
+            (chart "Bar chart visualization" :width "300px" :height "150px")
+            (image "Product image" :width "200px" :height "150px")))
+
+        ; Lists
+        (card :col :gap 24 :padding 24
+          (text "Lists" :medium)
+          (list :col :gap 0
+            (box :row :between :padding 12
+              (text "List Item 1")
+              (icon "chevron-right"))
+            (divider)
+            (box :row :between :padding 12
+              (text "List Item 2")
+              (icon "chevron-right"))
+            (divider)
+            (box :row :between :padding 12
+              (text "List Item 3")
+              (icon "chevron-right"))))
+
+        ; Skeleton Loading
+        (card :col :gap 24 :padding 24
+          (text "Skeleton Loading" :medium)
+
+          ; Variants
+          (box :col :gap 16
+            (text "Variants" :low)
+            (box :row :gap 24
+              (box :col :gap 8 :center
+                (skeleton :circle)
+                (text "Circle" :low))
+              (box :col :gap 8 :fill
+                (skeleton :text)
+                (text "Text (default)" :low))
+              (box :col :gap 8
+                (skeleton :width "120px" :height "32px")
+                (text "Custom" :low))))
+
+          (divider)
+
+          ; User List Pattern
+          (box :col :gap 16
+            (text "User List Pattern" :low)
+            (box :col :gap 0
+              (box :row :gap 12 :padding 12
+                (skeleton :circle :width "40px" :height "40px")
+                (box :col :gap 4 :fill
+                  (skeleton :height "16px" :width "60%")
+                  (skeleton :height "12px" :width "40%")))
+              (divider)
+              (box :row :gap 12 :padding 12
+                (skeleton :circle :width "40px" :height "40px")
+                (box :col :gap 4 :fill
+                  (skeleton :height "16px" :width "70%")
+                  (skeleton :height "12px" :width "50%")))
+              (divider)
+              (box :row :gap 12 :padding 12
+                (skeleton :circle :width "40px" :height "40px")
+                (box :col :gap 4 :fill
+                  (skeleton :height "16px" :width "55%")
+                  (skeleton :height "12px" :width "35%")))))
+
+          (divider)
+
+          ; Card Pattern
+          (box :col :gap 16
+            (text "Card Pattern" :low)
+            (box :row :gap 16
+              (card :col :gap 12 :padding 16 :width "200px"
+                (skeleton :height "100px")
+                (skeleton :height "20px" :width "80%")
+                (skeleton :height "14px")
+                (skeleton :height "32px"))
+              (card :col :gap 12 :padding 16 :width "200px"
+                (skeleton :height "100px")
+                (skeleton :height "20px" :width "70%")
+                (skeleton :height "14px")
+                (skeleton :height "32px"))))
+
+          (divider)
+
+          ; Stats Pattern
+          (box :col :gap 16
+            (text "Dashboard Stats Pattern" :low)
+            (box :row :gap 16
+              (card :col :gap 8 :padding 16 :fill
+                (skeleton :height "14px" :width "60%")
+                (skeleton :height "28px" :width "50%")
+                (skeleton :height "12px" :width "40%"))
+              (card :col :gap 8 :padding 16 :fill
+                (skeleton :height "14px" :width "70%")
+                (skeleton :height "28px" :width "45%")
+                (skeleton :height "12px" :width "50%"))
+              (card :col :gap 8 :padding 16 :fill
+                (skeleton :height "14px" :width "55%")
+                (skeleton :height "28px" :width "55%")
+                (skeleton :height "12px" :width "35%")))))))
+
+  ; Screen 6: Navigation
+  (screen navigation "Navigation" :desktop :layout sidebar-layout
+    (scroll :col :full :padding 32 :gap 32
+        (text "Navigation Components" :high)
+        (text "Components for navigation and wayfinding" :low)
+
+        ; Tabs
+        (card :col :gap 24 :padding 24
+          (text "Tabs" :medium)
+          (tabs
+            (tab "Tab 1" :active)
+            (tab "Tab 2")
+            (tab "Tab 3")
+            (tab "Tab 4")))
+
+        ; Breadcrumbs
+        (card :col :gap 24 :padding 24
+          (text "Breadcrumbs" :medium)
+          (breadcrumb
+            (crumb "Home" :to "typography")
+            (crumb "Products" :to "buttons")
+            (crumb "Category" :to "inputs")
+            (crumb "Current Page")))
+
+        ; Navigation Patterns
+        (card :col :gap 24 :padding 24
+          (text "Navigation Patterns" :medium)
+          (box :col :gap 16
+            (text "Horizontal Nav" :low)
+            (nav :row :gap 24 :padding 12
+              (text "Home" :active)
+              (text "Products")
+              (text "About")
+              (text "Contact"))
+            (text "Vertical Nav" :low)
+            (nav :col :gap 4 :padding 12 :width "200px"
+              (box :row :gap 8 :padding 8 :active
+                (icon "house")
+                (text "Dashboard"))
+              (box :row :gap 8 :padding 8
+                (icon "users")
+                (text "Users"))
+              (box :row :gap 8 :padding 8
+                (icon "settings")
+                (text "Settings")))))))
+
+  ; Screen 7: Feedback
+  (screen feedback "Feedback" :desktop :layout sidebar-layout
+    (scroll :col :full :padding 32 :gap 32
+        (text "Feedback Components" :high)
+        (text "Components for user feedback and notifications" :low)
+
+        ; Toast Notifications
+        (card :col :gap 24 :padding 24
+          (text "Toast Notifications" :medium)
+          (box :col :gap 16
+            (toast
+              (box :row :gap 12 :padding 12
+                (icon "circle-check")
+                (text "Success! Your changes have been saved." :success)))
+            (toast
+              (box :row :gap 12 :padding 12
+                (icon "triangle-alert")
+                (text "Warning: Your session will expire soon." :warning)))
+            (toast
+              (box :row :gap 12 :padding 12
+                (icon "circle-x")
+                (text "Error: Failed to save changes." :danger)))
+            (toast
+              (box :row :gap 12 :padding 12
+                (icon "info")
+                (text "Info: New updates are available." :info)))))
+
+        ; Tooltips
+        (card :col :gap 24 :padding 24
+          (text "Tooltips" :medium)
+          (box :col :gap 16
+            (text "Interactive (hover to see)" :low)
+            (box :row :gap 24
+              (tooltip "This is a helpful tooltip"
+                (button "Hover me" :ghost))
+              (tooltip "Click for more info"
+                (icon "circle-question-mark"))
+              (tooltip "Save your changes"
+                (button "Save" :primary)))
+            (text "Static tooltip appearance" :low)
+            (box :row :gap 16
+              (tooltip "Default tooltip")
+              (tooltip "Another tooltip example"))))
+
+        ; Empty States
+        (card :col :gap 24 :padding 24
+          (text "Empty States" :medium)
+          (empty
+            (box :col :center :gap 16 :padding 48
+              (icon "inbox")
+              (text "No items found" :medium)
+              (text "Try adjusting your filters or create a new item" :low)
+              (button "Create Item" :primary))))
+
+        ; Loading States
+        (card :col :gap 24 :padding 24
+          (text "Loading States" :medium)
+          (box :row :gap 24 :wrap
+            (box :col :center :gap 8 :width "150px"
+              (button "Loading..." :primary :loading)
+              (text "Button" :low))
+            (box :col :gap 8 :width "200px"
+              (text "Text lines" :low)
+              (skeleton)
+              (skeleton)
+              (skeleton :width "70%"))
+            (box :col :gap 8
+              (text "Avatar + text" :low)
+              (box :row :gap 12
+                (skeleton :circle :width "48px" :height "48px")
+                (box :col :gap 4
+                  (skeleton :width "120px" :height "16px")
+                  (skeleton :width "80px" :height "12px"))))
+            (box :col :gap 8
+              (text "Action card" :low)
+              (card :col :gap 8 :padding 12 :width "180px"
+                (skeleton :height "80px")
+                (skeleton :height "16px" :width "70%")
+                (skeleton :height "28px")))))))
+
+  ; Screen 8: Overlays
+  (screen overlays "Overlays" :desktop :layout sidebar-layout
+    (scroll :col :full :padding 32 :gap 32
+        (text "Overlay Components" :high)
+        (text "Modal, drawer, dropdown, and popover components" :low)
+
+        ; Overlay Triggers
+        (card :col :gap 24 :padding 24
+          (text "Overlay Components" :medium)
+          (text "Click the buttons to see each overlay type" :low)
+          (box :row :gap 16
+            (button "Open Modal" :primary :to "#demo-modal")
+            (button "Open Drawer" :secondary :to "#demo-drawer")
+            (dropdown "Dropdown Menu"
+              (button "Edit" :ghost :full)
+              (button "Duplicate" :ghost :full)
+              (button "Move" :ghost :full)
+              (divider)
+              (button "Archive" :ghost :full)
+              (button "Delete" :danger :ghost :full))
+            (button "Open Popover" :ghost :to "#demo-popover")))
+
+        ; Documentation
+        (card :col :gap 24 :padding 24
+          (text "Overlay & Menu Types" :medium)
+          (box :col :gap 16
+            (box :row :gap 16
+              (text "Modal" :medium :width "100px")
+              (text "Centered dialog for important actions or forms" :low))
+            (box :row :gap 16
+              (text "Drawer" :medium :width "100px")
+              (text "Side panel for secondary content or filters" :low))
+            (box :row :gap 16
+              (text "Dropdown" :medium :width "100px")
+              (text "Inline menu element that appears on click" :low))
+            (box :row :gap 16
+              (text "Popover" :medium :width "100px")
+              (text "Small overlay for contextual information" :low)))))
+
+    ; Demo Modal
+    (modal :id "demo-modal"
+      (box :col :gap 24 :padding 24 :width "450px"
+        (box :row :between
+          (text "Modal Title" :high)
+          (button :icon :ghost :icon "x" :to :close))
+        (text "This is a modal dialog. It's used for important interactions that require user attention." :low)
+        (form :col :gap 16
+          (input "Name" :type text :placeholder "Enter your name")
+          (input "Email" :type email :placeholder "Enter your email"))
+        (box :row :end :gap 12
+          (button "Cancel" :ghost :to :close)
+          (button "Submit" :primary :to :submit))))
+
+    ; Demo Drawer
+    (drawer :id "demo-drawer" :right
+      (box :col :gap 24 :padding 24 :width "350px"
+        (box :row :between
+          (text "Drawer Title" :high)
+          (button :icon :ghost :icon "x" :to :close))
+        (text "This is a drawer panel. It slides in from the side and is useful for filters, settings, or secondary content." :low)
+        (box :col :gap 16
+          (text "Filter Options" :medium)
+          (input "Category" :type select :options "All,Option 1,Option 2")
+          (input "Sort By" :type select :options "Newest,Oldest,Popular")
+          (box :row :gap 8
+            (input :type checkbox)
+            (text "Show archived")))
+        (box :row :gap 12
+          (button "Reset" :ghost :full)
+          (button "Apply" :primary :full :to :close))))
+
+    ; Demo Popover
+    (popover :id "demo-popover"
+      (box :col :gap 8 :padding 12 :width "200px"
+        (text "Quick Info" :medium)
+        (text "This is a popover with additional context" :low)
+        (button "Learn More" :ghost :full))))
+
+  ; Screen 9: Layouts
+  (screen layouts "Layouts" :desktop :layout sidebar-layout
+    (scroll :col :full :padding 32 :gap 32
+        (text "Layout Patterns" :high)
+        (text "Common layout patterns and alignment options" :low)
+
+        ; Flex Alignment
+        (card :col :gap 24 :padding 24
+          (text "Flex Alignment" :medium)
+          (box :col :gap 16
+            (text ":start - Align to start" :low)
+            (box :row :start :gap 8
+              (badge "1")
+              (badge "2")
+              (badge "3"))
+            (text ":center - Center alignment" :low)
+            (box :row :center :gap 8
+              (badge "1")
+              (badge "2")
+              (badge "3"))
+            (text ":end - Align to end" :low)
+            (box :row :end :gap 8
+              (badge "1")
+              (badge "2")
+              (badge "3"))
+            (text ":between - Space between" :low)
+            (box :row :between
+              (badge "1")
+              (badge "2")
+              (badge "3"))
+            (text ":around - Space around" :low)
+            (box :row :around
+              (badge "1")
+              (badge "2")
+              (badge "3"))))
+
+        ; Grid Layouts
+        (card :col :gap 24 :padding 24
+          (text "Grid Layouts" :medium)
+          (box :col :gap 16
+            (text "2 Columns" :low)
+            (box :grid :cols 2 :gap 8
+              (card :center :padding 16 (text "1"))
+              (card :center :padding 16 (text "2")))
+            (text "3 Columns" :low)
+            (box :grid :cols 3 :gap 8
+              (card :center :padding 16 (text "1"))
+              (card :center :padding 16 (text "2"))
+              (card :center :padding 16 (text "3")))
+            (text "4 Columns" :low)
+            (box :grid :cols 4 :gap 8
+              (card :center :padding 16 (text "1"))
+              (card :center :padding 16 (text "2"))
+              (card :center :padding 16 (text "3"))
+              (card :center :padding 16 (text "4")))))
+
+        ; Common Patterns
+        (card :col :gap 24 :padding 24
+          (text "Common Layout Patterns" :medium)
+          (box :col :gap 24
+            (text "Sidebar + Content" :low)
+            (box :row :gap 16 :height "150px"
+              (card :col :padding 16 :width "150px"
+                (text "Sidebar" :medium))
+              (card :col :fill :padding 16
+                (text "Main Content" :medium)))
+            (text "Header + Content + Footer" :low)
+            (box :col :gap 0 :height "200px"
+              (card :row :center :padding 12
+                (text "Header" :medium))
+              (card :col :fill :center :padding 12
+                (text "Content" :medium))
+              (card :row :center :padding 12
+                (text "Footer" :low))))))))

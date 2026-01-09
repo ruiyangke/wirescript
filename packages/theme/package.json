@@ -1,0 +1,61 @@
+{
+  "name": "@wirescript/theme",
+  "version": "0.0.1",
+  "description": "Theme definitions and CSS generators for WireScript wireframes",
+  "type": "module",
+  "license": "Apache-2.0",
+  "author": "Ruiyang Ke",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ruiyangke/wirescript.git",
+    "directory": "packages/theme"
+  },
+  "homepage": "https://wirescript.dev",
+  "bugs": {
+    "url": "https://github.com/ruiyangke/wirescript/issues"
+  },
+  "keywords": [
+    "wirescript",
+    "wireframe",
+    "theme",
+    "css",
+    "ui-design"
+  ],
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./themes/*": {
+      "types": "./dist/themes/*.d.ts",
+      "import": "./dist/themes/*.js"
+    },
+    "./generators": {
+      "types": "./dist/generators/index.d.ts",
+      "import": "./dist/generators/index.js"
+    }
+  },
+  "sideEffects": false,
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "test": "echo 'No tests yet'",
+    "typecheck": "tsc --noEmit",
+    "lint": "biome check src",
+    "prepublishOnly": "npm run build"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.0"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

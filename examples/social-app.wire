@@ -1,0 +1,911 @@
+; Social App - Social media feed showcasing:
+; - Stories with ring indicators
+; - Rich post cards with images and reactions
+; - Compose post modal
+; - Profile screen with tabs
+; - Explore/search screen
+; - Notifications with activity types
+; - Direct messages
+; - Bottom navigation with active states
+
+(wire
+  (meta
+    :title "Social Feed"
+    :context social
+    :audience "users"
+    :goal "connect and share with friends")
+
+  ; Reusable Components
+  (define story-avatar (name has-story is-add)
+    (box :col :center :gap 4
+      (box :relative
+        (avatar $name)
+        (badge "" :primary :absolute))
+      (text $name :low)))
+
+  (define post-card (author handle time content image-desc likes comments shares saved)
+    (card :col :gap 0
+      ; Post header
+      (box :row :between :padding 16
+        (box :row :gap 12
+          (avatar $author)
+          (box :col :gap 2
+            (box :row :gap 8
+              (text $author :medium)
+              (badge "Following" :ghost))
+            (text $handle :low)))
+        (dropdown
+          (button "Save Post" :ghost :full :icon "bookmark")
+          (button "Copy Link" :ghost :full :icon "link")
+          (button "Unfollow" :ghost :full :icon "user-minus")
+          (divider)
+          (button "Report" :danger :ghost :full :icon "flag")))
+      ; Post content
+      (box :col :gap 12 :padding 16
+        (text $content))
+      ; Post image (optional)
+      (image $image-desc :height "300px")
+      ; Reactions bar
+      (box :col :gap 12 :padding 16
+        (box :row :between
+          (box :row :gap 20
+            (box :row :gap 8
+              (icon "heart")
+              (text $likes :low))
+            (box :row :gap 8
+              (icon "message-circle")
+              (text $comments :low))
+            (box :row :gap 8
+              (icon "share-2")
+              (text $shares :low)))
+          (icon "bookmark"))
+        ; Liked by
+        (box :row :gap 8
+          (avatar "User 1")
+          (avatar "User 2")
+          (text "Liked by user1 and 41 others" :low)))))
+
+  (define simple-post (author handle time content likes comments)
+    (card :col :gap 0
+      (box :row :between :padding 16
+        (box :row :gap 12
+          (avatar $author)
+          (box :col :gap 2
+            (text $author :medium)
+            (text $handle :low)))
+        (icon "ellipsis"))
+      (box :col :gap 12 :padding 16
+        (text $content))
+      (box :row :gap 20 :padding 16
+        (box :row :gap 8
+          (icon "heart")
+          (text $likes :low))
+        (box :row :gap 8
+          (icon "message-circle")
+          (text $comments :low))
+        (icon "share-2")
+        (box :fill)
+        (icon "bookmark"))))
+
+  (define notification-item (avatar-name action target time icon-name)
+    (box :row :gap 12 :padding 16
+      (avatar $avatar-name)
+      (box :col :fill :gap 4
+        (box :row :gap 4
+          (text $avatar-name :medium)
+          (text $action :low)
+          (text $target :medium))
+        (text $time :low))
+      (icon $icon-name)))
+
+  (define message-preview (name message time unread)
+    (box :row :gap 12 :padding 16
+      (avatar $name)
+      (box :col :fill :gap 4
+        (box :row :between
+          (text $name :medium)
+          (text $time :low))
+        (text $message :low))
+      (badge $unread :primary)))
+
+  ; Main Feed Screen
+  (screen feed "Feed" :mobile
+    (box :col :full
+      ; Header
+      (header :row :between :padding 16
+        (text "SocialApp" :high)
+        (box :row :gap 16
+          (button :icon :ghost :icon "plus" :to "#compose")
+          (box :relative
+            (button "Alerts" :ghost :to "notifications")
+            (badge "3" :danger :absolute))
+          (button "DM" :ghost :to "messages")))
+
+      (scroll :col :full :gap 0
+        ; Stories Section
+        (box :col :gap 12 :padding 16
+          (text "Stories" :medium)
+          (scroll :row :gap 16
+            ; Add story
+            (box :col :center :gap 4
+              (box :relative
+                (avatar "You" )
+                (badge "+" :primary :absolute))
+              (text "Add Story" :low))
+            ; Friend stories
+            (box :col :center :gap 4
+              (box :relative
+                (avatar "Alice" )
+                (badge "" :success :absolute))
+              (text "Alice" :low))
+            (box :col :center :gap 4
+              (box :relative
+                (avatar "Bob" )
+                (badge "" :success :absolute))
+              (text "Bob" :low))
+            (box :col :center :gap 4
+              (box :relative
+                (avatar "Carol" )
+                (badge "" :success :absolute))
+              (text "Carol" :low))
+            (box :col :center :gap 4
+              (box :relative
+                (avatar "David" )
+                (badge "" :success :absolute))
+              (text "David" :low))
+            (box :col :center :gap 4
+              (avatar "Emma" )
+              (text "Emma" :low))))
+
+        (divider)
+
+        ; Posts Feed
+        (box :col :gap 16 :padding 16
+          ; Post with image
+          (post-card
+            :author "Alice Chen"
+            :handle "@alicechen"
+            :time "2h"
+            :content "Just shipped a new feature! The team worked so hard on this. So proud of everyone involved."
+            :image-desc "Team celebration photo"
+            :likes "142"
+            :comments "28"
+            :shares "12"
+            :saved false)
+
+          ; Text-only post
+          (simple-post
+            :author "Bob Smith"
+            :handle "@bobsmith"
+            :time "5h"
+            :content "Beautiful sunset at the beach today. Nature always reminds me to slow down and appreciate the moment. What's your favorite way to unwind?"
+            :likes "89"
+            :comments "15")
+
+          ; Another post with image
+          (post-card
+            :author "Carol Davis"
+            :handle "@caroldavis"
+            :time "8h"
+            :content "Started learning Rust this week. The borrow checker is... interesting. Any tips from experienced Rustaceans?"
+            :image-desc "Code editor screenshot"
+            :likes "67"
+            :comments "43"
+            :shares "8"
+            :saved false)
+
+          ; Thread/reply
+          (card :col :gap 0
+            (box :row :between :padding 16
+              (box :row :gap 12
+                (avatar "David Kim")
+                (box :col :gap 2
+                  (text "David Kim" :medium)
+                  (text "@davidkim" :low)))
+              (icon "ellipsis"))
+            (box :col :gap 8 :padding 16
+              (text "Hot take: Tailwind CSS is just inline styles with extra steps" :medium)
+              (text "Thread 1/5" :primary))
+            (box :row :gap 20 :padding 16
+              (box :row :gap 8
+                (icon "heart")
+                (text "1.2K" :low))
+              (box :row :gap 8
+                (icon "message-circle")
+                (text "342" :low))
+              (box :row :gap 8
+                (icon "repeat")
+                (text "89" :low))
+              (box :fill)
+              (icon "bookmark")))))
+
+      ; Bottom Navigation
+      (nav :row :around :padding 12 :sticky :bottom 0
+        (box :col :center :gap 4 :active
+          (icon "house")
+          (text "Home" :low))
+        (box :col :center :gap 4 :to "explore"
+          (icon "search")
+          (text "Explore" :low))
+        (box :col :center :gap 4 :to "#compose"
+          (icon "square-plus")
+          (text "Post" :low))
+        (box :col :center :gap 4 :to "notifications"
+          (icon "heart")
+          (text "Activity" :low))
+        (box :col :center :gap 4 :to "profile"
+          (icon "user")
+          (text "Profile" :low))))
+
+    ; Compose Post Modal
+    (modal :id "compose"
+      (box :col :full
+        ; Header
+        (box :row :between :padding 16
+          (button "Cancel" :ghost :to :close)
+          (text "New Post" :medium)
+          (button "Post" :primary))
+        (divider)
+        ; Compose area
+        (box :row :gap 12 :padding 16
+          (avatar "You")
+          (box :col :fill :gap 12
+            (input :type textarea :placeholder "What's on your mind?" :fill)
+            ; Media attachments
+            (box :row :gap 12
+              (icon "image")
+              (icon "video")
+              (icon "map-pin")
+              (icon "at-sign")))))))
+
+  ; Explore Screen
+  (screen explore "Explore" :mobile
+    (box :col :full
+      ; Search Header
+      (header :col :gap 12 :padding 16
+        (input :type text :placeholder "Search people, topics, posts...")
+        ; Trending tabs
+        (scroll :row :gap 8
+          (badge "For You" :primary)
+          (badge "Trending")
+          (badge "News")
+          (badge "Sports")
+          (badge "Entertainment")
+          (badge "Technology")))
+
+      (scroll :col :full
+        ; Trending Section
+        (box :col :gap 16 :padding 16
+          (text "Trending Now" :high)
+
+          (card :col :gap 8 :padding 16
+            (box :row :between
+              (text "Technology" :low)
+              (icon "ellipsis"))
+            (text "#AIArt" :high)
+            (text "12.5K posts" :low))
+
+          (card :col :gap 8 :padding 16
+            (box :row :between
+              (text "Sports" :low)
+              (icon "ellipsis"))
+            (text "World Cup Finals" :high)
+            (text "89.2K posts" :low))
+
+          (card :col :gap 8 :padding 16
+            (box :row :between
+              (text "Entertainment" :low)
+              (icon "ellipsis"))
+            (text "New Album Drop" :high)
+            (text "45.1K posts" :low)))
+
+        ; Suggested Users
+        (box :col :gap 16 :padding 16
+          (box :row :between
+            (text "Who to Follow" :high)
+            (text "See All" :primary))
+
+          (box :row :between :padding 12
+            (box :row :gap 12
+              (avatar "Tech News")
+              (box :col :gap 2
+                (text "Tech News" :medium)
+                (text "@technews" :low)))
+            (button "Follow" :primary))
+
+          (box :row :between :padding 12
+            (box :row :gap 12
+              (avatar "Design Inspo")
+              (box :col :gap 2
+                (text "Design Inspo" :medium)
+                (text "@designinspo" :low)))
+            (button "Follow" :primary))
+
+          (box :row :between :padding 12
+            (box :row :gap 12
+              (avatar "Dev Tips")
+              (box :col :gap 2
+                (text "Dev Tips" :medium)
+                (text "@devtips" :low)))
+            (button "Follow" :primary))))
+
+      ; Bottom Nav
+      (nav :row :around :padding 12 :sticky :bottom 0
+        (box :col :center :gap 4 :to "feed"
+          (icon "house")
+          (text "Home" :low))
+        (box :col :center :gap 4 :active
+          (icon "search")
+          (text "Explore" :low))
+        (box :col :center :gap 4
+          (icon "square-plus")
+          (text "Post" :low))
+        (box :col :center :gap 4 :to "notifications"
+          (icon "heart")
+          (text "Activity" :low))
+        (box :col :center :gap 4 :to "profile"
+          (icon "user")
+          (text "Profile" :low)))))
+
+  ; Notifications Screen
+  (screen notifications "Notifications" :mobile
+    (box :col :full
+      ; Header
+      (header :row :between :padding 16
+        (text "Activity" :high)
+        (icon "settings"))
+
+      ; Tabs
+      (box :row :gap 0
+        (box :col :center :fill :padding 12 :active
+          (text "All"))
+        (box :col :center :fill :padding 12
+          (text "Mentions"))
+        (box :col :center :fill :padding 12
+          (text "Likes")))
+
+      (scroll :col :full
+        ; Today
+        (box :col :gap 0
+          (box :padding 16
+            (text "Today" :medium))
+
+          (notification-item
+            :avatar-name "Alice Chen"
+            :action "liked your"
+            :target "post"
+            :time "2m ago"
+            :icon-name "heart")
+
+          (divider)
+
+          (notification-item
+            :avatar-name "Bob Smith"
+            :action "started following"
+            :target "you"
+            :time "15m ago"
+            :icon-name "user-plus")
+
+          (divider)
+
+          (notification-item
+            :avatar-name "Carol Davis"
+            :action "commented on your"
+            :target "photo"
+            :time "1h ago"
+            :icon-name "message-circle")
+
+          (divider)
+
+          (notification-item
+            :avatar-name "David Kim"
+            :action "mentioned you in a"
+            :target "post"
+            :time "3h ago"
+            :icon-name "at-sign"))
+
+        ; Yesterday
+        (box :col :gap 0
+          (box :padding 16
+            (text "Yesterday" :medium))
+
+          (notification-item
+            :avatar-name "Emma Wilson"
+            :action "shared your"
+            :target "post"
+            :time "1d ago"
+            :icon-name "share-2")
+
+          (divider)
+
+          (notification-item
+            :avatar-name "Tech News"
+            :action "liked your"
+            :target "comment"
+            :time "1d ago"
+            :icon-name "heart")
+
+          (divider)
+
+          ; Follow request
+          (box :row :gap 12 :padding 16
+            (avatar "New User")
+            (box :col :fill :gap 8
+              (box :row :gap 4
+                (text "New User" :medium)
+                (text "wants to follow you" :low))
+              (box :row :gap 8
+                (button "Accept" :primary)
+                (button "Decline" :ghost))))))
+
+      ; Bottom Nav
+      (nav :row :around :padding 12 :sticky :bottom 0
+        (box :col :center :gap 4 :to "feed"
+          (icon "house")
+          (text "Home" :low))
+        (box :col :center :gap 4 :to "explore"
+          (icon "search")
+          (text "Explore" :low))
+        (box :col :center :gap 4
+          (icon "square-plus")
+          (text "Post" :low))
+        (box :col :center :gap 4 :active
+          (icon "heart")
+          (text "Activity" :low))
+        (box :col :center :gap 4 :to "profile"
+          (icon "user")
+          (text "Profile" :low)))))
+
+  ; Messages Screen
+  (screen messages "Messages" :mobile
+    (box :col :full
+      ; Header
+      (header :row :between :padding 16
+        (text "Messages" :high)
+        (button "New" :ghost :to "#new-message"))
+
+      ; Search
+      (box :padding 16
+        (input :type text :placeholder "Search messages..."))
+
+      (scroll :col :full
+        ; Message list
+        (message-preview
+          :name "Alice Chen"
+          :message "That sounds great! Let me know when..."
+          :time "2m"
+          :unread "2")
+        (divider)
+        (message-preview
+          :name "Bob Smith"
+          :message "Thanks for sharing that article!"
+          :time "1h"
+          :unread "")
+        (divider)
+        (message-preview
+          :name "Team Chat"
+          :message "Carol: The meeting is at 3pm"
+          :time "3h"
+          :unread "5")
+        (divider)
+        (message-preview
+          :name "Carol Davis"
+          :message "Did you see the game last night?"
+          :time "1d"
+          :unread "")
+        (divider)
+        (message-preview
+          :name "David Kim"
+          :message "Hey, are you coming to the event?"
+          :time "2d"
+          :unread ""))
+
+      ; Bottom Nav
+      (nav :row :around :padding 12 :sticky :bottom 0
+        (box :col :center :gap 4 :to "feed"
+          (icon "house")
+          (text "Home" :low))
+        (box :col :center :gap 4 :to "explore"
+          (icon "search")
+          (text "Explore" :low))
+        (box :col :center :gap 4
+          (icon "square-plus")
+          (text "Post" :low))
+        (box :col :center :gap 4 :to "notifications"
+          (icon "heart")
+          (text "Activity" :low))
+        (box :col :center :gap 4 :to "profile"
+          (icon "user")
+          (text "Profile" :low))))
+
+    ; New Message Modal
+    (modal :id "new-message"
+      (box :col :full
+        (box :row :between :padding 16
+          (button "Cancel" :ghost :to :close)
+          (text "New Message" :medium)
+          (button "Next" :primary :disabled))
+        (divider)
+        (box :row :gap 12 :padding 16
+          (text "To:" :medium)
+          (input :type text :placeholder "Search people..." :fill))
+        (divider)
+        ; Suggestions
+        (box :col :gap 0
+          (box :padding 16
+            (text "Suggested" :low))
+          (box :row :gap 12 :padding 16
+            (avatar "Alice Chen")
+            (box :col :gap 2
+              (text "Alice Chen" :medium)
+              (text "@alicechen" :low)))
+          (box :row :gap 12 :padding 16
+            (avatar "Bob Smith")
+            (box :col :gap 2
+              (text "Bob Smith" :medium)
+              (text "@bobsmith" :low)))))))
+
+  ; Profile Screen
+  (screen profile "Profile" :mobile
+    (box :col :full
+      ; Header
+      (header :row :between :padding 16
+        (button "Back" :ghost :to "feed")
+        (text "Profile" :high)
+        (button "Settings" :ghost :to "settings"))
+
+      (scroll :col :full
+        ; Profile Header
+        (box :col :gap 16 :padding 16
+          ; Cover image placeholder
+          (box :row :between
+            (box :row :gap 16
+              (avatar "John Doe" )
+              (box :col :gap 4
+                (text "John Doe" :high)
+                (text "@johndoe" :low)
+                (badge "Pro" :primary)))
+            (button "Edit Profile" :ghost))
+
+          ; Bio
+          (text "Product Designer. Coffee enthusiast. Building cool things at @TechCompany." :low)
+
+          ; Stats
+          (box :row :gap 24
+            (box :col :center
+              (text "127" :medium)
+              (text "Posts" :low))
+            (box :col :center
+              (text "12.4K" :medium)
+              (text "Followers" :low))
+            (box :col :center
+              (text "847" :medium)
+              (text "Following" :low)))
+
+          ; Action buttons
+          (box :row :gap 12
+            (button "Follow" :primary :fill)
+            (button "Message" :ghost :fill)))
+
+        ; Tabs
+        (box :row :gap 0
+          (box :col :center :fill :padding 12 :active
+            (icon "grid-2x2"))
+          (box :col :center :fill :padding 12
+            (icon "bookmark"))
+          (box :col :center :fill :padding 12
+            (icon "heart")))
+
+        ; Posts Grid
+        (box :grid :cols 3 :gap 2 :padding 2
+          (image "Post 1" :height "120px")
+          (image "Post 2" :height "120px")
+          (image "Post 3" :height "120px")
+          (image "Post 4" :height "120px")
+          (image "Post 5" :height "120px")
+          (image "Post 6" :height "120px")
+          (image "Post 7" :height "120px")
+          (image "Post 8" :height "120px")
+          (image "Post 9" :height "120px")))
+
+      ; Bottom Nav
+      (nav :row :around :padding 12 :sticky :bottom 0
+        (box :col :center :gap 4 :to "feed"
+          (icon "house")
+          (text "Home" :low))
+        (box :col :center :gap 4 :to "explore"
+          (icon "search")
+          (text "Explore" :low))
+        (box :col :center :gap 4
+          (icon "square-plus")
+          (text "Post" :low))
+        (box :col :center :gap 4 :to "notifications"
+          (icon "heart")
+          (text "Activity" :low))
+        (box :col :center :gap 4 :active
+          (icon "user")
+          (text "Profile" :low)))))
+
+  ; Desktop Feed Screen
+  (screen feed-desktop "Feed" :desktop
+    (box :row :full
+      ; Left Sidebar
+      (nav :col :gap 4 :padding 16 :width "260px"
+        ; Logo
+        (box :row :gap 12 :padding 12
+          (icon "hash")
+          (text "SocialApp" :high))
+
+        (divider)
+
+        ; Navigation
+        (box :col :gap 2
+          (box :row :gap 12 :padding 12 :active
+            (icon "house")
+            (text "Home"))
+          (box :row :gap 12 :padding 12
+            (icon "search")
+            (text "Explore"))
+          (box :row :gap 12 :padding 12
+            (icon "bell")
+            (text "Notifications")
+            (badge "3" :danger))
+          (box :row :gap 12 :padding 12
+            (icon "mail")
+            (text "Messages")
+            (badge "2" :primary))
+          (box :row :gap 12 :padding 12
+            (icon "bookmark")
+            (text "Saved"))
+          (box :row :gap 12 :padding 12
+            (icon "user")
+            (text "Profile")))
+
+        (box :padding 16
+          (button "New Post" :primary :full :to "#compose-desktop"))
+
+        (box :col :fill)
+
+        (divider)
+
+        ; User
+        (box :row :gap 12 :padding 12
+          (avatar "John Doe")
+          (box :col :fill :gap 2
+            (text "John Doe" :medium)
+            (text "@johndoe" :low))
+          (icon "ellipsis")))
+
+      ; Main Feed
+      (box :col :fill :padding 24 :gap 24
+        ; Create post box
+        (card :row :gap 12 :padding 16
+          (avatar "You")
+          (input :type text :placeholder "What's on your mind?" :fill)
+          (button "Post" :primary))
+
+        ; Posts
+        (scroll :col :gap 16
+          (post-card
+            :author "Alice Chen"
+            :handle "@alicechen"
+            :time "2h"
+            :content "Just shipped a new feature! The team worked so hard on this."
+            :image-desc "Team celebration"
+            :likes "142"
+            :comments "28"
+            :shares "12"
+            :saved false)
+
+          (simple-post
+            :author "Bob Smith"
+            :handle "@bobsmith"
+            :time "5h"
+            :content "Beautiful sunset at the beach today. Nature always reminds me to slow down."
+            :likes "89"
+            :comments "15")))
+
+      ; Right Sidebar
+      (box :col :gap 20 :padding 16 :width "340px"
+        ; Search
+        (input :type text :placeholder "Search...")
+
+        ; Trending
+        (card :col :gap 16 :padding 16
+          (text "Trending" :medium)
+          (box :col :gap 12
+            (box :col :gap 4
+              (text "#AIArt" :medium)
+              (text "12.5K posts" :low))
+            (box :col :gap 4
+              (text "World Cup" :medium)
+              (text "89.2K posts" :low))
+            (box :col :gap 4
+              (text "#TechNews" :medium)
+              (text "45.1K posts" :low)))
+          (text "Show more" :primary))
+
+        ; Who to follow
+        (card :col :gap 16 :padding 16
+          (text "Who to follow" :medium)
+          (box :col :gap 12
+            (box :row :between
+              (box :row :gap 12
+                (avatar "Tech News")
+                (box :col :gap 2
+                  (text "Tech News" :medium)
+                  (text "@technews" :low)))
+              (button "Follow" :ghost))
+            (box :row :between
+              (box :row :gap 12
+                (avatar "Design Inspo")
+                (box :col :gap 2
+                  (text "Design Inspo" :medium)
+                  (text "@designinspo" :low)))
+              (button "Follow" :ghost)))
+          (text "Show more" :primary))))
+
+    ; Compose Modal (Desktop)
+    (modal :id "compose-desktop"
+      (box :col :gap 16 :padding 24 :width "600px"
+        (box :row :between
+          (text "Create Post" :high)
+          (button :icon :ghost :icon "x" :to :close))
+        (divider)
+        (box :row :gap 16
+          (avatar "You" )
+          (box :col :fill :gap 12
+            (input :type textarea :placeholder "What's happening?" :fill)
+            (box :row :between
+              (box :row :gap 12
+                (icon "image")
+                (icon "video")
+                (icon "smile")
+                (icon "map-pin")
+                (icon "at-sign"))
+              (button "Post" :primary)))))))
+
+  ; Settings Screen
+  (screen settings "Settings" :mobile
+    (box :col :full
+      ; Header
+      (header :row :between :sticky :top 0 :padding 16
+        (box :row :gap 12
+          (button "Back" :ghost :to "profile")
+          (text "Settings" :high))
+        (box :width "40px"))
+
+      (scroll :col :full
+        ; Account Section
+        (box :col :gap 0 :padding 16
+          (text "Account" :low :padding 8)
+          (box :row :between :padding 12
+            (box :row :gap 12
+              (icon "user")
+              (text "Profile" :medium))
+            (icon "chevron-right"))
+          (divider)
+          (box :row :between :padding 12
+            (box :row :gap 12
+              (icon "lock")
+              (text "Password & Security" :medium))
+            (icon "chevron-right"))
+          (divider)
+          (box :row :between :padding 12
+            (box :row :gap 12
+              (icon "mail")
+              (text "Email" :medium))
+            (text "john@example.com" :low))
+          (divider)
+          (box :row :between :padding 12
+            (box :row :gap 12
+              (icon "phone")
+              (text "Phone Number" :medium))
+            (icon "chevron-right")))
+
+        ; Privacy Section
+        (box :col :gap 0 :padding 16
+          (text "Privacy" :low :padding 8)
+          (box :row :between :padding 12
+            (box :row :gap 12
+              (icon "eye")
+              (text "Private Account" :medium))
+            (input :type checkbox))
+          (divider)
+          (box :row :between :padding 12
+            (box :row :gap 12
+              (icon "users")
+              (text "Who Can Message Me" :medium))
+            (text "Everyone" :low))
+          (divider)
+          (box :row :between :padding 12
+            (box :row :gap 12
+              (icon "at-sign")
+              (text "Who Can Mention Me" :medium))
+            (text "Following" :low))
+          (divider)
+          (box :row :between :padding 12
+            (box :row :gap 12
+              (icon "user-x")
+              (text "Blocked Accounts" :medium))
+            (icon "chevron-right")))
+
+        ; Notifications Section
+        (box :col :gap 0 :padding 16
+          (text "Notifications" :low :padding 8)
+          (box :row :between :padding 12
+            (box :row :gap 12
+              (icon "bell")
+              (text "Push Notifications" :medium))
+            (input :type checkbox :checked true))
+          (divider)
+          (box :row :between :padding 12
+            (box :row :gap 12
+              (icon "mail")
+              (text "Email Notifications" :medium))
+            (input :type checkbox :checked true))
+          (divider)
+          (box :row :between :padding 12
+            (box :row :gap 12
+              (icon "heart")
+              (text "Likes" :medium))
+            (input :type checkbox :checked true))
+          (divider)
+          (box :row :between :padding 12
+            (box :row :gap 12
+              (icon "message-circle")
+              (text "Comments" :medium))
+            (input :type checkbox :checked true))
+          (divider)
+          (box :row :between :padding 12
+            (box :row :gap 12
+              (icon "user-plus")
+              (text "New Followers" :medium))
+            (input :type checkbox :checked true)))
+
+        ; Appearance Section
+        (box :col :gap 0 :padding 16
+          (text "Appearance" :low :padding 8)
+          (box :row :between :padding 12
+            (box :row :gap 12
+              (icon "moon")
+              (text "Dark Mode" :medium))
+            (input :type checkbox))
+          (divider)
+          (box :row :between :padding 12
+            (box :row :gap 12
+              (icon "type")
+              (text "Text Size" :medium))
+            (text "Medium" :low)))
+
+        ; Support Section
+        (box :col :gap 0 :padding 16
+          (text "Support" :low :padding 8)
+          (box :row :between :padding 12
+            (box :row :gap 12
+              (icon "circle-question-mark")
+              (text "Help Center" :medium))
+            (icon "chevron-right"))
+          (divider)
+          (box :row :between :padding 12
+            (box :row :gap 12
+              (icon "flag")
+              (text "Report a Problem" :medium))
+            (icon "chevron-right"))
+          (divider)
+          (box :row :between :padding 12
+            (box :row :gap 12
+              (icon "file-text")
+              (text "Terms of Service" :medium))
+            (icon "chevron-right"))
+          (divider)
+          (box :row :between :padding 12
+            (box :row :gap 12
+              (icon "shield")
+              (text "Privacy Policy" :medium))
+            (icon "chevron-right")))
+
+        ; Danger Zone
+        (box :col :gap 12 :padding 24
+          (button "Log Out" :ghost :full :danger)
+          (button "Delete Account" :ghost :full :danger)))))))

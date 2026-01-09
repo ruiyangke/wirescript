@@ -1,0 +1,650 @@
+; Settings Page - User preferences and account management showcasing:
+; - Profile header with cover image
+; - Icon-based navigation
+; - Toggle switches for preferences
+; - Danger zone for destructive actions
+; - Edit profile modal
+; - Responsive mobile/desktop layouts
+
+(wire
+  (meta
+    :title "Settings"
+    :context app
+    :audience "users"
+    :goal "manage account preferences")
+
+  ; Reusable Components
+  (define setting-row (icon-name label description)
+    (box :row :gap 16 :padding 16
+      (box :col :center :padding 8
+        (icon $icon-name))
+      (box :col :fill :gap 4
+        (text $label :medium)
+        (text $description :low))
+      (icon "chevron-right")))
+
+  (define toggle-row (icon-name label description)
+    (box :row :gap 16 :padding 16
+      (box :col :center :padding 8
+        (icon $icon-name))
+      (box :col :fill :gap 4
+        (text $label :medium)
+        (text $description :low))
+      (input $label :type toggle)))
+
+  (define nav-item (icon-name label active)
+    (box :row :gap 12 :padding 12
+      (icon $icon-name)
+      (text $label)))
+
+  ; Mobile Settings Screen
+  (screen settings "Settings" :mobile
+    (box :col :full
+      ; Header
+      (header :row :between :padding 16
+        (box :row :gap 12
+          (button "Back" :ghost :to "home")
+          (text "Settings" :high))
+        (button "Alerts" :ghost :to "#notifications"))
+
+      (scroll :col :full :gap 16 :padding 16
+        ; Profile Card
+        (card :col :gap 0
+          (box :col :center :padding 32
+            (avatar "John Doe" )
+            (box :col :center :gap 4 :padding 12
+              (text "John Doe" :high)
+              (text "john.doe@example.com" :low)
+              (badge "Pro Member" :primary)))
+          (divider)
+          (box :row :around :padding 12
+            (box :col :center :gap 4
+              (text "127" :medium)
+              (text "Projects" :low))
+            (box :col :center :gap 4
+              (text "12.4K" :medium)
+              (text "Followers" :low))
+            (box :col :center :gap 4
+              (text "847" :medium)
+              (text "Following" :low)))
+          (box :padding 16
+            (button "Edit Profile" :primary :full :to "#edit-profile")))
+
+        ; Account Settings
+        (card :col :gap 0
+          (box :padding 16
+            (text "Account" :high))
+          (divider)
+          (setting-row
+            :icon-name "user"
+            :label "Personal Information"
+            :description "Name, email, phone number")
+          (divider)
+          (setting-row
+            :icon-name "lock"
+            :label "Password & Security"
+            :description "Change password, 2FA, sessions")
+          (divider)
+          (setting-row
+            :icon-name "credit-card"
+            :label "Payment Methods"
+            :description "Manage cards and billing")
+          (divider)
+          (setting-row
+            :icon-name "star"
+            :label "Subscription"
+            :description "Pro Plan - $9.99/month"))
+
+        ; Preferences
+        (card :col :gap 0
+          (box :padding 16
+            (text "Preferences" :high))
+          (divider)
+          (toggle-row
+            :icon-name "moon"
+            :label "Dark Mode"
+            :description "Use dark theme throughout the app")
+          (divider)
+          (toggle-row
+            :icon-name "bell"
+            :label "Push Notifications"
+            :description "Receive alerts on your device")
+          (divider)
+          (toggle-row
+            :icon-name "mail"
+            :label "Email Updates"
+            :description "Weekly digest and announcements")
+          (divider)
+          (setting-row
+            :icon-name "globe"
+            :label "Language"
+            :description "English (US)")
+          (divider)
+          (setting-row
+            :icon-name "map-pin"
+            :label "Region"
+            :description "United States"))
+
+        ; Privacy & Data
+        (card :col :gap 0
+          (box :padding 16
+            (text "Privacy & Data" :high))
+          (divider)
+          (toggle-row
+            :icon-name "eye"
+            :label "Profile Visibility"
+            :description "Make profile public")
+          (divider)
+          (setting-row
+            :icon-name "download"
+            :label "Download My Data"
+            :description "Get a copy of your data")
+          (divider)
+          (setting-row
+            :icon-name "shield"
+            :label "Privacy Settings"
+            :description "Control who can see your activity"))
+
+        ; Support
+        (card :col :gap 0
+          (box :padding 16
+            (text "Support" :high))
+          (divider)
+          (setting-row
+            :icon-name "help-circle"
+            :label "Help Center"
+            :description "FAQs, guides, and tutorials")
+          (divider)
+          (setting-row
+            :icon-name "message-circle"
+            :label "Contact Support"
+            :description "Chat with our team")
+          (divider)
+          (setting-row
+            :icon-name "file-text"
+            :label "Terms & Privacy"
+            :description "Legal information")
+          (divider)
+          (box :row :gap 16 :padding 16
+            (box :col :center :padding 8
+              (icon "info"))
+            (box :col :fill :gap 4
+              (text "About" :medium)
+              (text "Version 2.1.0 (Build 4521)" :low))))
+
+        ; Danger Zone
+        (card :col :gap 0
+          (box :row :gap 12 :padding 16
+            (icon "triangle-alert")
+            (text "Danger Zone" :danger))
+          (divider)
+          (box :col :gap 12 :padding 16
+            (button "Log Out" :ghost :full)
+            (button "Delete Account" :danger :full :to "#delete-account")))
+
+        ; Spacing at bottom
+        (box :col :padding 32)))
+
+    ; Edit Profile Modal
+    (modal :id "edit-profile"
+      (box :col :gap 20 :padding 24
+        (box :row :between
+          (text "Edit Profile" :high)
+          (button :icon :ghost :icon "x" :to :close))
+
+        ; Avatar upload
+        (box :col :center :gap 12
+          (avatar "John Doe" )
+          (button "Change Photo" :ghost))
+
+        (form :col :gap 16
+          (box :col :gap 6
+            (text "First Name" :medium)
+            (input :type text :placeholder "John"))
+          (box :col :gap 6
+            (text "Last Name" :medium)
+            (input :type text :placeholder "Doe"))
+          (box :col :gap 6
+            (text "Email" :medium)
+            (input :type email :placeholder "john.doe@example.com"))
+          (box :col :gap 6
+            (text "Phone" :medium)
+            (input :type text :placeholder "+1 (555) 123-4567"))
+          (box :col :gap 6
+            (text "Bio" :medium)
+            (input :type textarea :placeholder "Tell us about yourself...")))
+
+        (box :row :gap 12
+          (button "Cancel" :ghost :fill :to :close)
+          (button "Save Changes" :primary :fill))))
+
+    ; Delete Account Confirmation
+    (modal :id "delete-account"
+      (box :col :gap 20 :padding 24
+        (box :col :center :gap 12
+          (icon "triangle-alert")
+          (text "Delete Account?" :high)
+          (text "This action cannot be undone. All your data will be permanently removed." :low :center))
+        (box :col :gap 8
+          (text "Type DELETE to confirm:" :medium)
+          (input :type text :placeholder "DELETE"))
+        (box :row :gap 12
+          (button "Cancel" :ghost :fill :to :close)
+          (button "Delete Forever" :danger :fill))))
+
+    ; Notifications Drawer (inside settings screen)
+    (drawer :id "notifications" :right
+      (box :col :full :width "380px"
+        ; Header
+        (box :row :between :padding 20
+          (box :row :gap 8
+            (text "Notifications" :high)
+            (badge "5" :primary))
+          (button :icon :ghost :icon "x" :to :close))
+
+        ; Filter Tabs
+        (box :row :gap 0 :padding 16
+          (button "All" :ghost :active :fill)
+          (button "Unread" :ghost :fill)
+          (button "Important" :ghost :fill))
+
+        ; Notifications List
+        (scroll :col :fill
+          (box :row :gap 12 :padding 16
+            (icon "shield")
+            (box :col :fill :gap 4
+              (text "Security Alert" :medium)
+              (text "New login detected" :low)
+              (text "2 min ago" :low)))
+          (divider)
+          (box :row :gap 12 :padding 16
+            (icon "user-plus")
+            (box :col :fill :gap 4
+              (text "New Follower" :medium)
+              (text "Sarah started following you" :low)
+              (text "1 hour ago" :low)))
+          (divider)
+          (box :row :gap 12 :padding 16
+            (icon "bell")
+            (box :col :fill :gap 4
+              (text "Reminder" :medium)
+              (text "Subscription renews in 3 days" :low)
+              (text "Yesterday" :low))))
+
+        ; Footer
+        (box :row :gap 12 :padding 16
+          (button "Mark All Read" :ghost :fill)
+          (button "Settings" :ghost :fill)))))
+
+  ; Desktop Settings Screen
+  (screen settings-desktop "Settings" :desktop
+    (box :row :full
+      ; Sidebar Navigation
+      (nav :col :gap 4 :padding 16 :width "260px"
+        ; Logo
+        (box :row :gap 12 :padding 12
+          (icon "settings")
+          (text "Settings" :high))
+
+        (divider)
+
+        ; Nav Items
+        (box :col :gap 2
+          (box :row :gap 12 :padding 12 :active
+            (icon "user")
+            (text "Profile"))
+          (box :row :gap 12 :padding 12
+            (icon "lock")
+            (text "Security"))
+          (box :row :gap 12 :padding 12
+            (icon "credit-card")
+            (text "Billing"))
+          (box :row :gap 12 :padding 12
+            (icon "bell")
+            (text "Notifications"))
+          (box :row :gap 12 :padding 12
+            (icon "globe")
+            (text "Language & Region"))
+          (box :row :gap 12 :padding 12
+            (icon "shield")
+            (text "Privacy")))
+
+        (divider)
+
+        (box :col :gap 2
+          (box :row :gap 12 :padding 12
+            (icon "circle-question-mark")
+            (text "Help Center" :low))
+          (box :row :gap 12 :padding 12
+            (icon "file-text")
+            (text "Terms & Privacy" :low)))
+
+        (box :col :fill)
+
+        (divider)
+
+        ; User info
+        (box :row :gap 12 :padding 12
+          (avatar "John Doe")
+          (box :col :fill :gap 2
+            (text "John Doe" :medium)
+            (text "Pro Member" :low))
+          (icon "log-out")))
+
+      ; Main Content (scrollable)
+      (scroll :col :full :padding 32 :gap 32
+        ; Header
+        (box :col :gap 8
+          (text "Profile Settings" :high)
+          (text "Manage your profile information and preferences" :low))
+
+        (box :row :gap 32
+          ; Left Column - Profile
+          (box :col :gap 24 :width "400px"
+            ; Profile Card
+            (card :col :gap 20 :padding 24
+              (text "Profile Information" :medium)
+              (box :row :gap 20
+                (avatar "John Doe" )
+                (box :col :gap 8
+                  (button "Upload Photo" :primary)
+                  (text "JPG, PNG or GIF. Max 5MB." :low)))
+
+              (form :col :gap 16
+                (box :row :gap 16
+                  (box :col :gap 6 :fill
+                    (text "First Name" :medium)
+                    (input :type text :placeholder "John"))
+                  (box :col :gap 6 :fill
+                    (text "Last Name" :medium)
+                    (input :type text :placeholder "Doe")))
+                (box :col :gap 6
+                  (text "Email" :medium)
+                  (input :type email :placeholder "john.doe@example.com"))
+                (box :col :gap 6
+                  (text "Phone" :medium)
+                  (input :type text :placeholder "+1 (555) 123-4567"))
+                (box :col :gap 6
+                  (text "Bio" :medium)
+                  (input :type textarea :placeholder "Tell us about yourself..."))
+                (box :row :end
+                  (button "Save Changes" :primary))))
+
+            ; Connected Accounts
+            (card :col :gap 16 :padding 24
+              (text "Connected Accounts" :medium)
+              (box :row :between :padding 12
+                (box :row :gap 12
+                  (icon "mail")
+                  (box :col :gap 2
+                    (text "Google" :medium)
+                    (text "john.doe@gmail.com" :low)))
+                (badge "Connected" :success))
+              (divider)
+              (box :row :between :padding 12
+                (box :row :gap 12
+                  (icon "github")
+                  (box :col :gap 2
+                    (text "GitHub" :medium)
+                    (text "Not connected" :low)))
+                (button "Connect" :ghost))
+              (divider)
+              (box :row :between :padding 12
+                (box :row :gap 12
+                  (icon "twitter")
+                  (box :col :gap 2
+                    (text "Twitter" :medium)
+                    (text "Not connected" :low)))
+                (button "Connect" :ghost))))
+
+          ; Right Column - Preferences
+          (box :col :fill :gap 24
+            ; Notifications
+            (card :col :gap 16 :padding 24
+              (text "Notification Preferences" :medium)
+              (box :row :between :padding 8
+                (box :col :gap 2
+                  (text "Email Notifications" :medium)
+                  (text "Receive email updates about your account" :low))
+                (input "Email" :type toggle))
+              (divider)
+              (box :row :between :padding 8
+                (box :col :gap 2
+                  (text "Push Notifications" :medium)
+                  (text "Receive push notifications on your devices" :low))
+                (input "Push" :type toggle))
+              (divider)
+              (box :row :between :padding 8
+                (box :col :gap 2
+                  (text "Marketing Emails" :medium)
+                  (text "Receive news, announcements, and offers" :low))
+                (input "Marketing" :type toggle))
+              (divider)
+              (box :row :between :padding 8
+                (box :col :gap 2
+                  (text "Weekly Digest" :medium)
+                  (text "Summary of your activity every week" :low))
+                (input "Digest" :type toggle)))
+
+            ; Appearance
+            (card :col :gap 16 :padding 24
+              (text "Appearance" :medium)
+              (box :row :between :padding 8
+                (box :col :gap 2
+                  (text "Dark Mode" :medium)
+                  (text "Use dark theme throughout the app" :low))
+                (input "Dark" :type toggle))
+              (box :col :gap 8
+                (text "Accent Color" :medium)
+                (box :row :gap 12
+                  (badge "" :primary)
+                  (badge "" :success)
+                  (badge "" :warning)
+                  (badge "" :danger)
+                  (badge "" :info))))
+
+            ; Danger Zone
+            (card :col :gap 16 :padding 24 :danger
+              (box :row :gap 12
+                (icon "triangle-alert")
+                (text "Danger Zone" :danger))
+              (box :row :between :padding 8
+                (box :col :gap 2
+                  (text "Delete Account" :medium)
+                  (text "Permanently delete your account and all data" :low))
+                (button "Delete Account" :danger :to "#delete-confirm")))))))
+
+    ; Delete Confirmation Modal
+    (modal :id "delete-confirm"
+      (box :col :gap 24 :padding 24 :width "400px"
+        (box :col :center :gap 12
+          (icon "triangle-alert")
+          (text "Delete Account?" :high)
+          (text "This will permanently delete your account, all your projects, and remove you from all teams. This action cannot be undone." :low :center))
+        (card :col :gap 8 :padding 16
+          (text "Please type your email to confirm:" :medium)
+          (input :type email :placeholder "john.doe@example.com"))
+        (box :row :gap 12
+          (button "Cancel" :ghost :fill :to :close)
+          (button "Delete Account" :danger :fill)))))
+
+  ; Security Settings Screen
+  (screen security "Security" :desktop
+    (box :row :full
+      ; Same sidebar
+      (nav :col :gap 4 :padding 16 :width "260px"
+        (box :row :gap 12 :padding 12
+          (icon "settings")
+          (text "Settings" :high))
+        (divider)
+        (box :col :gap 2
+          (box :row :gap 12 :padding 12 :to "settings-desktop"
+            (icon "user")
+            (text "Profile"))
+          (box :row :gap 12 :padding 12 :active
+            (icon "lock")
+            (text "Security"))
+          (box :row :gap 12 :padding 12
+            (icon "credit-card")
+            (text "Billing"))))
+
+      ; Security Content (scrollable)
+      (scroll :col :full :padding 32 :gap 32
+        (box :col :gap 8
+          (text "Security Settings" :high)
+          (text "Keep your account secure with these settings" :low))
+
+        (box :col :gap 24
+          ; Password
+          (card :col :gap 16 :padding 24
+            (box :row :between
+              (box :col :gap 4
+                (text "Password" :medium)
+                (text "Last changed 3 months ago" :low))
+              (button "Change Password" :primary :to "#change-password")))
+
+          ; Two-Factor Auth
+          (card :col :gap 16 :padding 24
+            (box :row :between
+              (box :col :gap 4
+                (text "Two-Factor Authentication" :medium)
+                (text "Add an extra layer of security to your account" :low))
+              (badge "Enabled" :success))
+            (divider)
+            (box :row :gap 12 :padding 8
+              (icon "smartphone")
+              (box :col :fill :gap 2
+                (text "Authenticator App" :medium)
+                (text "Use an authenticator app to generate codes" :low))
+              (badge "Active" :success))
+            (box :row :gap 12 :padding 8
+              (icon "mail")
+              (box :col :fill :gap 2
+                (text "Email Backup" :medium)
+                (text "Receive backup codes via email" :low))
+              (button "Setup" :ghost)))
+
+          ; Active Sessions
+          (card :col :gap 16 :padding 24
+            (box :row :between
+              (text "Active Sessions" :medium)
+              (button "Sign Out All" :danger :ghost))
+            (box :row :gap 12 :padding 12
+              (icon "monitor")
+              (box :col :fill :gap 2
+                (text "MacBook Pro - Chrome" :medium)
+                (text "San Francisco, CA - Current session" :low))
+              (badge "Current" :primary))
+            (divider)
+            (box :row :gap 12 :padding 12
+              (icon "smartphone")
+              (box :col :fill :gap 2
+                (text "iPhone 14 - Safari" :medium)
+                (text "San Francisco, CA - 2 hours ago" :low))
+              (button "Revoke" :ghost))
+            (divider)
+            (box :row :gap 12 :padding 12
+              (icon "monitor")
+              (box :col :fill :gap 2
+                (text "Windows PC - Firefox" :medium)
+                (text "New York, NY - 3 days ago" :low))
+              (button "Revoke" :ghost))))))
+
+    ; Change Password Modal
+    (modal :id "change-password"
+      (box :col :gap 20 :padding 24 :width "400px"
+        (box :row :between
+          (text "Change Password" :high)
+          (button :icon :ghost :icon "x" :to :close))
+        (form :col :gap 16
+          (box :col :gap 6
+            (text "Current Password" :medium)
+            (input :type password :placeholder "Enter current password"))
+          (box :col :gap 6
+            (text "New Password" :medium)
+            (input :type password :placeholder "Enter new password"))
+          (box :col :gap 6
+            (text "Confirm New Password" :medium)
+            (input :type password :placeholder "Confirm new password"))
+          (box :col :gap 4 :padding 8
+            (box :row :gap 8
+              (icon "check")
+              (text "At least 8 characters" :low))
+            (box :row :gap 8
+              (icon "check")
+              (text "One uppercase letter" :low))
+            (box :row :gap 8
+              (icon "x")
+              (text "One number or symbol" :low))))
+        (box :row :gap 12
+          (button "Cancel" :ghost :fill :to :close)
+          (button "Update Password" :primary :fill)))))
+
+  ; Home Screen (simple landing)
+  (screen home "Home" :mobile
+    (box :col :full
+      ; Header
+      (header :row :between :padding 16
+        (text "MyApp" :high)
+        (button "Settings" :ghost :to "settings"))
+
+      ; Welcome Section
+      (box :col :center :gap 24 :padding 32
+        (avatar "John Doe")
+        (box :col :center :gap 4
+          (text "Welcome back, John!" :high)
+          (text "What would you like to do today?" :low)))
+
+      ; Quick Actions
+      (box :col :gap 16 :padding 16
+        (text "Quick Actions" :medium)
+        (box :grid :cols 2 :gap 12
+          (card :col :center :gap 12 :padding 20
+            (icon "user")
+            (text "Profile" :medium))
+          (card :col :center :gap 12 :padding 20
+            (icon "settings")
+            (text "Settings" :medium :to "settings"))
+          (card :col :center :gap 12 :padding 20
+            (icon "bell")
+            (text "Notifications" :medium))
+          (card :col :center :gap 12 :padding 20
+            (icon "circle-question-mark")
+            (text "Help" :medium))))
+
+      ; Recent Activity
+      (box :col :gap 12 :padding 16 :fill
+        (text "Recent Activity" :medium)
+        (card :col :gap 0 :full
+          (box :row :gap 12 :padding 12
+            (icon "circle-check")
+            (box :col :fill :gap 2
+              (text "Profile updated" :medium)
+              (text "2 hours ago" :low)))
+          (divider)
+          (box :row :gap 12 :padding 12
+            (icon "shield")
+            (box :col :fill :gap 2
+              (text "Password changed" :medium)
+              (text "Yesterday" :low)))
+          (divider)
+          (box :row :gap 12 :padding 12
+            (icon "mail")
+            (box :col :fill :gap 2
+              (text "Email verified" :medium)
+              (text "3 days ago" :low)))))
+
+      ; Bottom Nav
+      (nav :row :around :padding 12 :sticky :bottom 0
+        (box :col :center :gap 4 :active
+          (icon "house")
+          (text "Home" :low))
+        (box :col :center :gap 4
+          (icon "search")
+          (text "Search" :low))
+        (box :col :center :gap 4
+          (icon "bell")
+          (text "Alerts" :low))
+        (box :col :center :gap 4 :to "settings"
+          (icon "settings")
+          (text "Settings" :low))))))

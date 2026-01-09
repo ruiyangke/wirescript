@@ -1,0 +1,609 @@
+; Mobile Messaging App - Advanced example showcasing:
+; - Mobile viewport (:mobile flag)
+; - Bottom navigation with sticky positioning
+; - Multiple screens (inbox, chat, contacts, profile)
+; - Scroll containers
+; - Sticky headers and footers
+; - Touch-friendly UI patterns
+; - Status indicators and badges
+
+(wire
+  (meta
+    :title "Messaging App"
+    :context messaging
+    :audience "mobile-users"
+    :goal "send and receive messages")
+
+  ; Component Definitions
+  (define conversation-item (name message time unread avatar-status)
+    (box :row :gap 12 :padding 16
+      (box :relative
+        (avatar $name)
+        (badge "" :success :absolute))
+      (box :col :fill :gap 4
+        (box :row :between
+          (text $name :medium)
+          (text $time :low))
+        (box :row :between
+          (text $message :low)
+          (badge $unread :primary)))))
+
+  (define message-bubble-sent (content time)
+    (box :row :end :padding 8
+      (box :col :gap 4
+        (card :col :padding 12 :primary
+          (text $content))
+        (text $time :low :end))))
+
+  (define message-bubble-received (content time)
+    (box :row :start :padding 8
+      (box :col :gap 4
+        (card :col :padding 12
+          (text $content))
+        (text $time :low))))
+
+  (define contact-item (name status phone)
+    (box :row :gap 12 :padding 16
+      (avatar $name)
+      (box :col :fill :gap 2
+        (text $name :medium)
+        (text $status :low))
+      (button "Message" :ghost :to "chat")))
+
+  (define setting-toggle (label description)
+    (box :row :between :padding 16
+      (box :col :gap 2
+        (text $label :medium)
+        (text $description :low))
+      (input :type toggle)))
+
+  (define bottom-nav-item (icon label screen active)
+    (box :col :center :gap 4 :padding 8 :fill
+      (icon $icon)
+      (text $label :low)))
+
+  ; Screen 1: Inbox (Conversations List)
+  (screen inbox "Inbox" :mobile
+    (box :col :full
+      ; Header - Sticky
+      (header :col :sticky :top 0 :padding 16 :gap 8
+        (box :row :between
+          (text "Messages" :high)
+          (box :row :gap 12
+            (button "Search" :ghost :to "#search")
+            (button "New" :ghost :to "#new-chat")))
+        (input "Search conversations..." :type text))
+
+      ; Conversations List - Scrollable
+      (scroll :col :full
+        (conversation-item
+          :name "Alice Johnson"
+          :message "Hey! Are you free for lunch today?"
+          :time "2m"
+          :unread "2"
+          :avatar-status "online")
+        (divider)
+        (conversation-item
+          :name "Team Chat"
+          :message "Bob: The deployment is complete"
+          :time "15m"
+          :unread ""
+          :avatar-status "")
+        (divider)
+        (conversation-item
+          :name "Mom"
+          :message "Don't forget to call grandma!"
+          :time "1h"
+          :unread "1"
+          :avatar-status "offline")
+        (divider)
+        (conversation-item
+          :name "David Chen"
+          :message "Thanks for the help yesterday"
+          :time "3h"
+          :unread ""
+          :avatar-status "online")
+        (divider)
+        (conversation-item
+          :name "Work Group"
+          :message "Carol: Meeting at 3pm"
+          :time "5h"
+          :unread "5"
+          :avatar-status "")
+        (divider)
+        (conversation-item
+          :name "Sarah Miller"
+          :message "See you tomorrow!"
+          :time "1d"
+          :unread ""
+          :avatar-status "offline")
+        (divider)
+        (conversation-item
+          :name "Tech Support"
+          :message "Your ticket has been resolved"
+          :time "2d"
+          :unread ""
+          :avatar-status "")
+        (divider)
+        (conversation-item
+          :name "John Smith"
+          :message "Let me know when you're available"
+          :time "3d"
+          :unread ""
+          :avatar-status "online"))
+
+      ; Bottom Navigation - Sticky
+      (nav :row :around :sticky :bottom 0 :padding 8
+        (box :col :center :gap 4 :padding 8 :fill :active
+          (icon "message-circle")
+          (text "Chats" :low))
+        (box :col :center :gap 4 :padding 8 :fill :to "calls"
+          (icon "phone")
+          (text "Calls" :low))
+        (box :col :center :gap 4 :padding 8 :fill :to "contacts"
+          (icon "users")
+          (text "Contacts" :low))
+        (box :col :center :gap 4 :padding 8 :fill :to "profile"
+          (icon "user")
+          (text "Profile" :low))))
+
+    ; Modal: New Chat
+    (modal :id "new-chat"
+      (box :col :full
+        (header :row :between :padding 16
+          (button "Cancel" :ghost :to :close)
+          (text "New Message" :medium)
+          (box :width "60px"))
+        (input "Search contacts..." :type text :padding 16)
+        (box :col
+          (text "Suggested" :low :padding 16)
+          (contact-item :name "Alice Johnson" :status "Online" :phone "+1 555-0123")
+          (divider)
+          (contact-item :name "Bob Wilson" :status "Last seen 5m ago" :phone "+1 555-0124")
+          (divider)
+          (contact-item :name "Carol Davis" :status "Online" :phone "+1 555-0125"))))
+
+    ; Modal: Search
+    (modal :id "search"
+      (box :col :full
+        (header :row :gap 12 :padding 16
+          (button "Back" :ghost :to :close)
+          (input "Search messages..." :type text :full))
+        (box :col :padding 16 :gap 16
+          (text "Recent Searches" :low)
+          (box :col :gap 8
+            (text "lunch tomorrow")
+            (text "project deadline")
+            (text "meeting notes"))
+          (divider)
+          (text "Search in" :low)
+          (box :col :gap 12
+            (box :row :gap 12
+              (input :type checkbox :checked true)
+              (text "All chats"))
+            (box :row :gap 12
+              (input :type checkbox)
+              (text "Photos & Videos"))
+            (box :row :gap 12
+              (input :type checkbox)
+              (text "Links")))))))
+
+  ; Screen 2: Chat View
+  (screen chat "Chat" :mobile
+    (box :col :full
+      ; Chat Header - Sticky
+      (header :row :between :sticky :top 0 :padding 12
+        (box :row :gap 12
+          (button "Back" :ghost :to "inbox")
+          (avatar "Alice Johnson")
+          (box :col
+            (text "Alice Johnson" :medium)
+            (text "Online" :low :success)))
+        (box :row :gap 8
+          (button "Call" :ghost :to "#voice-call")
+          (button "Video" :ghost :to "#video-call")
+          (button "Info" :ghost :to "chat-info")))
+
+      ; Messages - Scrollable
+      (scroll :col :full :padding 8
+        ; Date separator
+        (box :row :center :padding 16
+          (text "Today" :low))
+
+        (message-bubble-received
+          :content "Hey! How are you doing?"
+          :time "10:30 AM")
+
+        (message-bubble-sent
+          :content "Hi Alice! I'm good, thanks for asking. How about you?"
+          :time "10:32 AM")
+
+        (message-bubble-received
+          :content "I'm great! Just finished that project we talked about"
+          :time "10:33 AM")
+
+        (message-bubble-received
+          :content "Are you free for lunch today? I was thinking of trying that new place downtown"
+          :time "10:33 AM")
+
+        (message-bubble-sent
+          :content "That sounds perfect! What time works for you?"
+          :time "10:35 AM")
+
+        (message-bubble-received
+          :content "How about 12:30? I can meet you at the office lobby"
+          :time "10:36 AM")
+
+        (message-bubble-sent
+          :content "12:30 works for me. See you then!"
+          :time "10:38 AM")
+
+        (message-bubble-received
+          :content "Perfect! Can't wait :)"
+          :time "10:38 AM")
+
+        ; Typing indicator
+        (box :row :start :padding 8
+          (card :row :gap 8 :padding 12
+            (skeleton)
+            (text "Alice is typing..." :low))))
+
+      ; Message Input - Sticky Footer
+      (footer :row :gap 8 :sticky :bottom 0 :padding 12
+        (button :icon :ghost :icon "plus" :to "#attachments")
+        (input "Type a message..." :type text :full)
+        (button "Send" :primary)))
+
+    ; Popover: Attachments
+    (popover :id "attachments"
+      (box :col :gap 0 :width "200px"
+        (button "Photo" :ghost :full :start)
+        (button "Video" :ghost :full :start)
+        (button "Document" :ghost :full :start)
+        (button "Location" :ghost :full :start)
+        (button "Contact" :ghost :full :start)))
+
+    ; Modal: Voice Call
+    (modal :id "voice-call"
+      (box :col :center :full :gap 32 :padding 48
+        (avatar "Alice Johnson")
+        (box :col :center :gap 8
+          (text "Alice Johnson" :high)
+          (text "Calling..." :low))
+        (box :row :gap 24
+          (box :col :center :gap 8
+            (button "Mute" :ghost)
+            (text "Mute" :low))
+          (box :col :center :gap 8
+            (button "Speaker" :ghost)
+            (text "Speaker" :low))
+          (box :col :center :gap 8
+            (button "End" :danger :to :close)
+            (text "End" :low)))))
+
+    ; Modal: Video Call (full screen)
+    (modal :id "video-call"
+      (box :col :full :center
+        ; Video Area
+        (box :fill :center
+          (image "Video call - participant camera feed" :fill))
+
+        ; Self Preview (picture-in-picture)
+        (box :absolute :bottom 100 :right 16
+          (card :padding 0
+            (image "Self camera preview" :width "120px" :height "90px")))
+
+        ; Call Info
+        (box :absolute :top 48 :center :col :gap 4
+          (text "Alice Johnson" :high)
+          (text "12:34" :low))
+
+        ; Controls
+        (box :absolute :bottom 32 :center :row :gap 24
+          (card :col :center :gap 4 :padding 16
+            (icon "mic")
+            (text "Mute" :low))
+          (card :col :center :gap 4 :padding 16
+            (icon "video")
+            (text "Camera" :low))
+          (card :col :center :gap 4 :padding 16
+            (icon "monitor")
+            (text "Share" :low))
+          (card :col :center :gap 4 :padding 16 :danger
+            (icon "phone-off")
+            (text "End" :low))))))
+
+  ; Screen 3: Chat Info
+  (screen chat-info "Chat Info" :mobile
+    (box :col :full
+      ; Header
+      (header :row :between :padding 16
+        (button "Back" :ghost :to "chat")
+        (text "Info" :medium)
+        (button "Edit" :ghost))
+
+      ; Profile Section
+      (box :col :center :gap 16 :padding 32
+        (avatar "Alice Johnson")
+        (text "Alice Johnson" :high)
+        (text "+1 555-0123" :low)
+        (box :row :gap 24
+          (box :col :center :gap 4
+            (button "Message" :ghost)
+            (text "Message" :low))
+          (box :col :center :gap 4
+            (button "Call" :ghost)
+            (text "Call" :low))
+          (box :col :center :gap 4
+            (button "Video" :ghost)
+            (text "Video" :low))))
+
+      (divider)
+
+      ; Media Section
+      (box :col :gap 16 :padding 16
+        (box :row :between
+          (text "Media, Links, and Docs" :medium)
+          (text "24" :low))
+        (box :row :gap 8
+          (repeat :count 4 :as "media"
+            (image "Shared media thumbnail" :width "80px" :height "80px"))))
+
+      (divider)
+
+      ; Settings
+      (box :col :gap 0
+        (setting-toggle :label "Notifications" :description "Get notified for new messages")
+        (divider)
+        (setting-toggle :label "Media Auto-Download" :description "Automatically download photos and videos"))
+
+      (divider)
+
+      ; Actions
+      (box :col :gap 0
+        (box :row :gap 12 :padding 16
+          (icon "star")
+          (text "Add to Favorites"))
+        (divider)
+        (box :row :gap 12 :padding 16 :danger
+          (icon "trash")
+          (text "Delete Chat" :danger))
+        (divider)
+        (box :row :gap 12 :padding 16 :danger
+          (icon "ban")
+          (text "Block Contact" :danger)))))
+
+  ; Screen 4: Contacts
+  (screen contacts "Contacts" :mobile
+    (box :col :full
+      ; Header
+      (header :col :sticky :top 0 :padding 16 :gap 8
+        (text "Contacts" :high)
+        (input "Search contacts..." :type text))
+
+      ; Contacts List
+      (scroll :col :full
+        ; Letter Section
+        (text "A" :low :padding 16)
+        (contact-item :name "Alice Johnson" :status "Online" :phone "+1 555-0123")
+        (divider)
+        (contact-item :name "Adam Smith" :status "Last seen yesterday" :phone "+1 555-0190")
+
+        (text "B" :low :padding 16)
+        (contact-item :name "Bob Wilson" :status "Last seen 5m ago" :phone "+1 555-0124")
+        (divider)
+        (contact-item :name "Beth Davis" :status "Online" :phone "+1 555-0191")
+
+        (text "C" :low :padding 16)
+        (contact-item :name "Carol Davis" :status "Online" :phone "+1 555-0125")
+        (divider)
+        (contact-item :name "Chris Lee" :status "Last seen 2h ago" :phone "+1 555-0192")
+
+        (text "D" :low :padding 16)
+        (contact-item :name "David Chen" :status "Online" :phone "+1 555-0126")
+        (divider)
+        (contact-item :name "Diana Ross" :status "Last seen 1d ago" :phone "+1 555-0193"))
+
+      ; Bottom Navigation
+      (nav :row :around :sticky :bottom 0 :padding 8
+        (box :col :center :gap 4 :padding 8 :fill :to "inbox"
+          (icon "message-circle")
+          (text "Chats" :low))
+        (box :col :center :gap 4 :padding 8 :fill :to "calls"
+          (icon "phone")
+          (text "Calls" :low))
+        (box :col :center :gap 4 :padding 8 :fill :active
+          (icon "users")
+          (text "Contacts" :low))
+        (box :col :center :gap 4 :padding 8 :fill :to "profile"
+          (icon "user")
+          (text "Profile" :low)))))
+
+  ; Screen 5: Profile
+  (screen profile "Profile" :mobile
+    (box :col :full
+      ; Header
+      (header :row :between :sticky :top 0 :padding 16
+        (text "Profile" :high)
+        (button "Edit" :ghost :to "#edit-profile"))
+
+      ; Profile Info
+      (box :col :center :gap 16 :padding 32
+        (avatar "Me")
+        (text "John Doe" :high)
+        (text "+1 555-0100" :low)
+        (text "Available" :success))
+
+      (divider)
+
+      ; Settings Sections
+      (box :col :gap 0
+        (box :row :gap 12 :padding 16
+          (icon "key")
+          (box :col :fill :gap 2
+            (text "Account" :medium)
+            (text "Privacy, security, change number" :low)))
+        (divider)
+        (box :row :gap 12 :padding 16
+          (icon "message-circle")
+          (box :col :fill :gap 2
+            (text "Chats" :medium)
+            (text "Theme, wallpapers, chat history" :low)))
+        (divider)
+        (box :row :gap 12 :padding 16
+          (icon "bell")
+          (box :col :fill :gap 2
+            (text "Notifications" :medium)
+            (text "Message, group, call tones" :low)))
+        (divider)
+        (box :row :gap 12 :padding 16
+          (icon "database")
+          (box :col :fill :gap 2
+            (text "Storage and Data" :medium)
+            (text "Network usage, auto-download" :low)))
+        (divider)
+        (box :row :gap 12 :padding 16
+          (icon "circle-question-mark")
+          (box :col :fill :gap 2
+            (text "Help" :medium)
+            (text "FAQ, contact us, privacy policy" :low)))
+        (divider)
+        (box :row :gap 12 :padding 16
+          (icon "users")
+          (box :col :fill :gap 2
+            (text "Invite Friends" :medium)
+            (text "Share the app with friends" :low))))
+
+      ; Bottom Navigation
+      (nav :row :around :sticky :bottom 0 :padding 8
+        (box :col :center :gap 4 :padding 8 :fill :to "inbox"
+          (icon "message-circle")
+          (text "Chats" :low))
+        (box :col :center :gap 4 :padding 8 :fill :to "calls"
+          (icon "phone")
+          (text "Calls" :low))
+        (box :col :center :gap 4 :padding 8 :fill :to "contacts"
+          (icon "users")
+          (text "Contacts" :low))
+        (box :col :center :gap 4 :padding 8 :fill :active
+          (icon "user")
+          (text "Profile" :low))))
+
+    ; Modal: Edit Profile
+    (modal :id "edit-profile"
+      (box :col :full
+        (header :row :between :padding 16
+          (button "Cancel" :ghost :to :close)
+          (text "Edit Profile" :medium)
+          (button "Save" :primary :to :submit))
+        (box :col :center :gap 16 :padding 32
+          (avatar "Me")
+          (button "Change Photo" :ghost))
+        (form :col :gap 16 :padding 16
+          (input "Name" :type text :placeholder "John Doe")
+          (input "About" :type text :placeholder "Available")
+          (input "Phone" :type text :placeholder "+1 555-0100" :disabled)))))
+
+  ; Screen 6: Calls
+  (screen calls "Calls" :mobile
+    (box :col :full
+      ; Header
+      (header :row :between :sticky :top 0 :padding 16
+        (text "Calls" :high)
+        (button "New Call" :ghost :to "#new-call"))
+
+      ; Call History
+      (scroll :col :full
+        (box :row :between :padding 16
+          (box :row :gap 12
+            (avatar "Alice Johnson")
+            (box :col :gap 2
+              (text "Alice Johnson" :medium)
+              (box :row :gap 8
+                (icon "phone-incoming")
+                (text "Yesterday, 3:45 PM" :low))))
+          (button "Call" :ghost))
+        (divider)
+        (box :row :between :padding 16
+          (box :row :gap 12
+            (avatar "Bob Wilson")
+            (box :col :gap 2
+              (text "Bob Wilson" :medium)
+              (box :row :gap 8
+                (icon "phone-outgoing")
+                (text "Yesterday, 1:20 PM" :low))))
+          (button "Call" :ghost))
+        (divider)
+        (box :row :between :padding 16
+          (box :row :gap 12
+            (avatar "Mom")
+            (box :col :gap 2
+              (text "Mom" :medium)
+              (box :row :gap 8
+                (icon "phone-missed")
+                (text "Mar 5, 10:15 AM" :low :danger))))
+          (button "Call" :ghost))
+        (divider)
+        (box :row :between :padding 16
+          (box :row :gap 12
+            (avatar "David Chen")
+            (box :col :gap 2
+              (text "David Chen" :medium)
+              (box :row :gap 8
+                (icon "video")
+                (text "Mar 4, 4:30 PM" :low))))
+          (button "Video" :ghost))
+        (divider)
+        (repeat :count 4 :as "call"
+          (box :col
+            (box :row :between :padding 16
+              (box :row :gap 12
+                (avatar "Contact")
+                (box :col :gap 2
+                  (text "Contact Name" :medium)
+                  (box :row :gap 8
+                    (icon "phone-outgoing")
+                    (text "Date and time" :low))))
+              (button "Call" :ghost))
+            (divider))))
+
+      ; Bottom Navigation
+      (nav :row :around :sticky :bottom 0 :padding 8
+        (box :col :center :gap 4 :padding 8 :fill :to "inbox"
+          (icon "message-circle")
+          (text "Chats" :low))
+        (box :col :center :gap 4 :padding 8 :fill :active
+          (icon "phone")
+          (text "Calls" :low))
+        (box :col :center :gap 4 :padding 8 :fill :to "contacts"
+          (icon "users")
+          (text "Contacts" :low))
+        (box :col :center :gap 4 :padding 8 :fill :to "profile"
+          (icon "user")
+          (text "Profile" :low))))
+
+    ; Modal: New Call
+    (modal :id "new-call"
+      (box :col :full
+        (header :row :between :padding 16
+          (button "Cancel" :ghost :to :close)
+          (text "New Call" :medium)
+          (box :width "60px"))
+        (input "Search contacts..." :type text :padding 16)
+        (box :col
+          (text "Favorites" :low :padding 16)
+          (box :row :between :padding 16
+            (box :row :gap 12
+              (avatar "Alice Johnson")
+              (text "Alice Johnson" :medium))
+            (box :row :gap 16
+              (button "Voice" :ghost)
+              (button "Video" :ghost)))
+          (divider)
+          (box :row :between :padding 16
+            (box :row :gap 12
+              (avatar "Mom")
+              (text "Mom" :medium))
+            (box :row :gap 16
+              (button "Voice" :ghost)
+              (button "Video" :ghost))))))))

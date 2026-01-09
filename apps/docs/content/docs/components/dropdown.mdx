@@ -1,0 +1,125 @@
+---
+title: dropdown
+description: Inline dropdown menu.
+---
+
+An inline dropdown menu. First child (if text) is the trigger label, remaining children are menu items.
+
+## Usage
+
+```wire preview:400
+(screen main "Main" :desktop
+  (box :col :padding 24 :gap 16
+    (dropdown "Options"
+      (button "Edit" :ghost)
+      (button "Duplicate" :ghost)
+      (divider)
+      (button "Delete" :danger :ghost))))
+```
+
+## Without Label
+
+When no label is provided, a default "more" icon trigger is shown:
+
+```wire preview:400
+(screen main "Main" :desktop
+  (box :row :between :padding 16
+    (text "Document.pdf")
+    (dropdown
+      (button "Open" :ghost)
+      (button "Download" :ghost)
+      (button "Share" :ghost)
+      (divider)
+      (button "Delete" :danger :ghost))))
+```
+
+## Properties
+
+<PropsTable element="dropdown" />
+
+## Examples
+
+### In a Card Row
+
+```wire preview:400
+(screen main "Main" :desktop
+  (card :row :between :padding 16
+    (box :row :gap 12
+      (avatar "JD")
+      (box :col :gap 2
+        (text "John Doe" :medium)
+        (text "john@example.com" :low)))
+    (dropdown
+      (button "Edit" :ghost :icon "edit")
+      (button "Message" :ghost :icon "mail")
+      (divider)
+      (button "Remove" :danger :ghost :icon "trash"))))
+```
+
+### Table Row Actions
+
+```wire preview:350
+(screen table "Table" :desktop
+  (box :col
+    (box :row :between :padding 12
+      (text "user@example.com")
+      (badge "Active" :success)
+      (dropdown
+        (button "View Details" :ghost)
+        (button "Edit" :ghost)
+        (button "Suspend" :warning :ghost)
+        (divider)
+        (button "Delete" :danger :ghost)))
+    (divider)))
+```
+
+### Task Actions
+
+```wire preview:400
+(screen tasks "Tasks" :desktop
+  (card :col :gap 12 :padding 16
+    (box :row :between
+      (text "Design new landing page" :medium)
+      (dropdown
+        (button "Edit" :ghost :icon "edit")
+        (button "Duplicate" :ghost :icon "copy")
+        (button "Move to..." :ghost :icon "arrow-right")
+        (divider)
+        (button "Archive" :ghost :icon "archive")
+        (button "Delete" :danger :ghost :icon "trash")))
+    (box :row :gap 8
+      (badge "High" :warning)
+      (badge "Design" :ghost))
+    (box :row :between
+      (box :row :gap 8
+        (icon "calendar")
+        (text "Dec 15" :low))
+      (avatar "Alice"))))
+```
+
+### Sort Options
+
+```wire preview:400
+(screen list "List" :desktop
+  (box :row :between :padding 16
+    (text "Items" :high)
+    (dropdown "Sort by"
+      (button "Name A-Z" :ghost)
+      (button "Name Z-A" :ghost)
+      (button "Date (Newest)" :ghost)
+      (button "Date (Oldest)" :ghost)
+      (button "Size" :ghost))))
+```
+
+### Add Menu
+
+```wire preview:400
+(screen main "Main" :desktop
+  (box :padding 16
+    (dropdown "Add New"
+      (button "New Document" :ghost :icon "file-plus")
+      (button "New Folder" :ghost :icon "folder-plus")
+      (button "Upload File" :ghost :icon "upload")
+      (divider)
+      (button "Import" :ghost :icon "download"))))
+```

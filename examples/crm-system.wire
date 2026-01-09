@@ -1,0 +1,762 @@
+; CRM System - Advanced example showcasing:
+; - Multi-screen navigation with `to` property
+; - Overlays: modal, drawer, dropdown
+; - Complex nested components
+; - State flags: :active, :disabled, :loading
+; - All emphasis levels and variants
+
+(wire
+  (meta
+    :title "CRM System"
+    :context crm
+    :audience "sales-team"
+    :goal "manage customer relationships")
+
+  ; Reusable Components
+
+  (define contact-row (name email company status)
+    (box :row :between :padding 12
+      (box :row :gap 12 :fill
+        (avatar $name)
+        (box :col :gap 2
+          (text $name :medium)
+          (text $email :low)))
+      (text $company)
+      (badge $status :primary)
+      (box :row :gap 8
+        (button "View" :ghost :to "contact-detail")
+        (button "Edit" :ghost :to "#edit-contact"))))
+
+  (define deal-card (title company value stage)
+    (card :col :gap 12 :padding 16
+      (box :row :between
+        (text $title :medium)
+        (dropdown "⋯"
+          (button "Edit" :ghost :full)
+          (button "Move" :ghost :full)
+          (divider)
+          (button "Delete" :danger :ghost :full)))
+      (text $company :low)
+      (box :row :between
+        (text $value :high)
+        (badge $stage))))
+
+  (define activity-item (user action time)
+    (box :row :gap 12 :padding 8
+      (avatar $user)
+      (box :col :fill :gap 2
+        (text $action :medium)
+        (text $time :low))))
+
+  (define stat-card (icon label value change trend)
+    (card :row :gap 16 :padding 20 :fill
+      (box :col :center :padding 12
+        (icon $icon))
+      (box :col :gap 4
+        (text $label :low)
+        (text $value :high)
+        (box :row :gap 4
+          (icon $trend)
+          (text $change :low)))))
+
+  ; Shared Layout with Sidebar Navigation
+  (layout crm-layout
+    (box :row :full
+      (nav :col :gap 4 :padding 16 :width "240px"
+        (box :row :gap 12 :padding 12
+          (icon "briefcase")
+          (text "SalesCRM" :high))
+        (divider)
+        (button "Contacts" :ghost :full :start :to "contacts")
+        (button "Companies" :ghost :full :start :to "companies")
+        (button "Deals" :ghost :full :start :to "deals")
+        (button "Activities" :ghost :full :start :to "activities")
+        (divider)
+        (button "Reports" :ghost :full :start :to "reports")
+        (button "Settings" :ghost :full :start :to "settings")
+        (box :col :fill)
+        (divider)
+        (box :row :gap 12 :padding 12
+          (avatar "John Doe")
+          (box :col
+            (text "John Doe" :medium)
+            (text "Sales Rep" :low))))
+      (slot)))
+
+  ; Screen 1: Contacts List
+  (screen contacts "Contacts" :desktop :layout crm-layout
+    ; Main Content
+    (box :col :full
+      ; Top Bar
+      (header :row :between :padding 16
+        (box :row :gap 16
+          (input "Search contacts..." :type text)
+          (button "Filters" :ghost :to "#filters-drawer"))
+        (box :row :gap 12
+          (button "Import" :ghost)
+          (button "Add Contact" :primary :to "#new-contact")))
+
+      ; Scrollable content area
+      (scroll :col :fill :gap 16 :padding 16
+        ; Stats Row (wraps on narrow viewports)
+        (box :row :wrap :gap 16
+          (stat-card :icon "users" :label "Total Contacts" :value "2,847" :change "+124 this month" :trend "up")
+          (stat-card :icon "building" :label "Companies" :value "892" :change "+32 this month" :trend "up")
+          (stat-card :icon "dollar-sign" :label "Total Value" :value "$4.2M" :change "+18% vs last month" :trend "up")
+          (stat-card :icon "check" :label "Won Deals" :value "47" :change "+8 this month" :trend "up"))
+
+        ; Contacts Table
+        (card :col :full
+          (box :row :between :padding 16
+            (text "All Contacts" :medium)
+            (box :row :gap 8
+              (badge "2,847 total")
+              (input "Sort by" :type select :options "Name,Company,Last Contact,Value")))
+          (divider)
+          ; Table Header
+          (box :row :between :padding 12
+            (text "Contact" :low)
+            (text "Company" :low)
+            (text "Status" :low)
+            (text "Actions" :low))
+          (divider)
+          ; Contact Rows
+          (contact-row :name "Sarah Johnson" :email "sarah@acme.com" :company "Acme Corp" :status "Active")
+          (divider)
+          (contact-row :name "Mike Chen" :email "mike@techstart.io" :company "TechStart" :status "Lead")
+          (divider)
+          (contact-row :name "Emily Davis" :email "emily@globalinc.com" :company "Global Inc" :status "Prospect")
+          (divider)
+          (contact-row :name "James Wilson" :email "james@innovate.co" :company "Innovate Co" :status "Active")
+          (divider)
+          (contact-row :name "Lisa Anderson" :email "lisa@enterprise.net" :company "Enterprise" :status "Churned")
+          ; Pagination
+          (box :row :center :gap 8 :padding 16
+            (button "Previous" :ghost :disabled)
+            (badge "1" :primary)
+            (button "2" :ghost)
+            (button "3" :ghost)
+            (button "Next" :ghost)))))
+
+    ; Modal: New Contact
+    (modal :id "new-contact"
+      (box :col :gap 24 :padding 24 :width "500px"
+        (box :row :between
+          (text "Add New Contact" :high)
+          (button :icon :ghost :icon "x" :to :close))
+        (form :col :gap 16
+          (box :row :gap 16
+            (input "First Name" :type text :placeholder "John")
+            (input "Last Name" :type text :placeholder "Doe"))
+          (input "Email" :type email :placeholder "john@example.com")
+          (input "Phone" :type text :placeholder "+1 (555) 000-0000")
+          (input "Company" :type select :options "Acme Corp,TechStart,Global Inc,Other")
+          (input "Status" :type select :options "Lead,Prospect,Active,Churned")
+          (input "Notes" :type textarea :placeholder "Add any notes about this contact..." :rows 3))
+        (box :row :end :gap 12
+          (button "Cancel" :ghost :to :close)
+          (button "Create Contact" :primary :to :submit))))
+
+    ; Drawer: Filters
+    (drawer :id "filters-drawer" :right
+      (box :col :gap 24 :padding 24 :width "350px"
+        (box :row :between
+          (text "Filter Contacts" :high)
+          (button :icon :ghost :icon "x" :to :close))
+        (box :col :gap 16
+          (text "Status" :medium)
+          (box :col :gap 8
+            (input "Active" :type checkbox)
+            (input "Lead" :type checkbox)
+            (input "Prospect" :type checkbox)
+            (input "Churned" :type checkbox)))
+        (divider)
+        (box :col :gap 16
+          (text "Company Size" :medium)
+          (box :col :gap 8
+            (input "1-10 employees" :type checkbox)
+            (input "11-50 employees" :type checkbox)
+            (input "51-200 employees" :type checkbox)
+            (input "200+ employees" :type checkbox)))
+        (divider)
+        (box :col :gap 16
+          (text "Deal Value" :medium)
+          (input "Min value" :type text :placeholder "$0")
+          (input "Max value" :type text :placeholder "$1,000,000"))
+        (box :col :fill)
+        (box :row :gap 12
+          (button "Reset" :ghost :full)
+          (button "Apply Filters" :primary :full :to :close))))
+
+    ; Modal: Edit Contact
+    (modal :id "edit-contact"
+      (box :col :gap 24 :padding 24 :width "500px"
+        (box :row :between
+          (text "Edit Contact" :high)
+          (button :icon :ghost :icon "x" :to :close))
+        (form :col :gap 16
+          (box :row :gap 16
+            (input "First Name" :type text :placeholder "Sarah")
+            (input "Last Name" :type text :placeholder "Johnson"))
+          (input "Email" :type email :placeholder "sarah@acme.com")
+          (input "Phone" :type text :placeholder "+1 (555) 123-4567")
+          (input "Company" :type select :options "Acme Corp,TechStart,Global Inc,Other")
+          (input "Status" :type select :options "Lead,Prospect,Active,Churned"))
+        (box :row :between
+          (button "Delete Contact" :danger :ghost)
+          (box :row :gap 12
+            (button "Cancel" :ghost :to :close)
+            (button "Save Changes" :primary :to :submit))))))
+
+  ; Screen 2: Contact Detail
+  (screen contact-detail "Contact Detail" :desktop :layout crm-layout
+    ; Contact Detail View (scrollable)
+    (scroll :col :full :padding 24 :gap 24
+        ; Back button and header
+        (box :row :gap 16
+          (button "Back" :ghost :to "contacts")
+          (text "Contact Details" :low))
+
+        ; Contact Header Card
+        (card :row :between :padding 24
+          (box :row :gap 24
+            (avatar "Sarah Johnson")
+            (box :col :gap 4
+              (text "Sarah Johnson" :high)
+              (text "VP of Sales at Acme Corp" :medium)
+              (box :row :gap 16
+                (box :row :gap 4
+                  (icon "mail")
+                  (text "sarah@acme.com" :low))
+                (box :row :gap 4
+                  (icon "phone")
+                  (text "+1 (555) 123-4567" :low)))))
+          (box :row :gap 12
+            (button "Send Email" :ghost)
+            (button "Schedule Call" :primary)
+            (dropdown "⋯"
+              (button "Edit Contact" :ghost :full :to "#edit-contact")
+              (button "Merge Contact" :ghost :full)
+              (button "Export" :ghost :full)
+              (divider)
+              (button "Delete" :danger :ghost :full))))
+
+        ; Two Column Layout
+        (box :row :gap 24
+          ; Left Column - Details
+          (box :col :fill :gap 24
+            ; About Card
+            (card :col :gap 16 :padding 24
+              (text "About" :medium)
+              (box :col :gap 12
+                (box :row :between
+                  (text "Company" :low)
+                  (text "Acme Corp"))
+                (box :row :between
+                  (text "Title" :low)
+                  (text "VP of Sales"))
+                (box :row :between
+                  (text "Industry" :low)
+                  (text "Technology"))
+                (box :row :between
+                  (text "Location" :low)
+                  (text "San Francisco, CA"))
+                (box :row :between
+                  (text "Lead Source" :low)
+                  (text "Referral"))
+                (box :row :between
+                  (text "Created" :low)
+                  (text "Jan 15, 2024"))))
+
+            ; Deals Card
+            (card :col :gap 16 :padding 24
+              (box :row :between
+                (text "Associated Deals" :medium)
+                (button "Add Deal" :ghost))
+              (box :col :gap 12
+                (box :row :between :padding 12
+                  (box :col :gap 2
+                    (text "Enterprise License" :medium)
+                    (text "$125,000" :low))
+                  (badge "Negotiation" :warning))
+                (divider)
+                (box :row :between :padding 12
+                  (box :col :gap 2
+                    (text "Support Contract" :medium)
+                    (text "$24,000/yr" :low))
+                  (badge "Won" :success)))))
+
+          ; Right Column - Activity
+          (box :col :gap 24 :width "400px"
+            ; Activity Card
+            (card :col :gap 16 :padding 24
+              (box :row :between
+                (text "Recent Activity" :medium)
+                (button "Log Activity" :ghost :to "#log-activity"))
+              (box :col :gap 8
+                (activity-item :user "John Doe" :action "Sent proposal email" :time "2 hours ago")
+                (divider)
+                (activity-item :user "Sarah Johnson" :action "Replied to email" :time "1 day ago")
+                (divider)
+                (activity-item :user "John Doe" :action "Had discovery call (45 min)" :time "3 days ago")
+                (divider)
+                (activity-item :user "John Doe" :action "Created contact" :time "Jan 15, 2024")))
+
+            ; Notes Card
+            (card :col :gap 16 :padding 24
+              (text "Notes" :medium)
+              (text "Sarah is very interested in our enterprise solution. Key decision maker. Budget approved for Q1. Follow up after board meeting next week." :low)
+              (button "Edit Notes" :ghost :full)))))
+
+    ; Modal: Log Activity
+    (modal :id "log-activity"
+      (box :col :gap 24 :padding 24 :width "450px"
+        (box :row :between
+          (text "Log Activity" :high)
+          (button :icon :ghost :icon "x" :to :close))
+        (form :col :gap 16
+          (input "Activity Type" :type select :options "Call,Email,Meeting,Note,Task")
+          (input "Subject" :type text :placeholder "Brief description...")
+          (input "Date" :type date)
+          (input "Duration (minutes)" :type text :placeholder "30")
+          (input "Notes" :type textarea :rows 4 :placeholder "Add details about this activity..."))
+        (box :row :end :gap 12
+          (button "Cancel" :ghost :to :close)
+          (button "Log Activity" :primary :to :submit)))))
+
+  ; Screen 3: Deals Pipeline
+  (screen deals "Deals" :desktop :layout crm-layout
+    ; Pipeline View
+    (box :col :full
+        ; Header
+        (header :row :between :padding 16
+          (box :col :gap 4
+            (text "Sales Pipeline" :high)
+            (text "Q1 2024 - $2.4M total value" :low))
+          (box :row :gap 12
+            (input "View" :type select :options "Pipeline,List,Board")
+            (button "Add Deal" :primary :to "#new-deal")))
+
+        ; Kanban Board
+        (scroll :row :gap 16 :padding 16 :fill
+          ; Column: Qualification
+          (box :col :gap 12 :width "280px"
+            (box :row :between :padding 8
+              (text "Qualification" :medium)
+              (badge "3"))
+            (deal-card :title "Website Redesign" :company "StartupXYZ" :value "$15,000" :stage "New")
+            (deal-card :title "Mobile App" :company "TechCo" :value "$45,000" :stage "Qualified")
+            (deal-card :title "API Integration" :company "DataFlow" :value "$28,000" :stage "New"))
+
+          ; Column: Proposal
+          (box :col :gap 12 :width "280px"
+            (box :row :between :padding 8
+              (text "Proposal" :medium)
+              (badge "2"))
+            (deal-card :title "Enterprise License" :company "Acme Corp" :value "$125,000" :stage "Proposal Sent")
+            (deal-card :title "Consulting" :company "BigCorp" :value "$80,000" :stage "Under Review"))
+
+          ; Column: Negotiation
+          (box :col :gap 12 :width "280px"
+            (box :row :between :padding 8
+              (text "Negotiation" :medium)
+              (badge "2"))
+            (deal-card :title "Annual Contract" :company "MegaCo" :value "$200,000" :stage "Negotiating")
+            (deal-card :title "Support Plan" :company "Global Inc" :value "$36,000" :stage "Final Review"))
+
+          ; Column: Closed Won
+          (box :col :gap 12 :width "280px"
+            (box :row :between :padding 8
+              (text "Closed Won" :medium)
+              (badge "4" :success))
+            (deal-card :title "Starter Package" :company "NewCo" :value "$9,000" :stage "Won")
+            (deal-card :title "Pro License" :company "GrowthCo" :value "$24,000" :stage "Won"))))
+
+    ; Modal: New Deal
+    (modal :id "new-deal"
+      (box :col :gap 24 :padding 24 :width "500px"
+        (box :row :between
+          (text "Create New Deal" :high)
+          (button :icon :ghost :icon "x" :to :close))
+        (form :col :gap 16
+          (input "Deal Name" :type text :placeholder "Enterprise License - Acme Corp")
+          (input "Company" :type select :options "Acme Corp,TechStart,Global Inc,Other")
+          (input "Contact" :type select :options "Sarah Johnson,Mike Chen,Emily Davis")
+          (input "Value" :type text :placeholder "$50,000")
+          (input "Stage" :type select :options "Qualification,Proposal,Negotiation,Closed Won,Closed Lost")
+          (input "Expected Close Date" :type date)
+          (input "Notes" :type textarea :rows 3 :placeholder "Deal details..."))
+        (box :row :end :gap 12
+          (button "Cancel" :ghost :to :close)
+          (button "Create Deal" :primary :to :submit)))))
+
+  ; Screen 4: Reports
+  (screen reports "Reports" :desktop :layout crm-layout
+    ; Reports Content (scrollable)
+    (scroll :col :full :padding 24 :gap 24
+        (box :row :between
+          (text "Sales Reports" :high)
+          (box :row :gap 12
+            (input "Period" :type select :options "This Week,This Month,This Quarter,This Year")
+            (button "Export PDF" :ghost)
+            (button "Schedule Report" :primary)))
+
+        ; Report Cards
+        (box :grid :cols 2 :gap 24
+          ; Revenue Report
+          (card :col :gap 16 :padding 24
+            (text "Revenue by Month" :medium)
+            (chart "Bar chart showing monthly revenue")
+            (box :row :between
+              (box :col :gap 2
+                (text "Total Revenue" :low)
+                (text "$847,230" :high))
+              (box :col :gap 2
+                (text "vs Last Period" :low)
+                (text "+23.5%" :success))))
+
+          ; Pipeline Report
+          (card :col :gap 16 :padding 24
+            (text "Pipeline by Stage" :medium)
+            (chart "Funnel chart showing pipeline stages")
+            (box :col :gap 8
+              (box :row :between
+                (text "Qualification" :low)
+                (text "$88,000"))
+              (box :row :between
+                (text "Proposal" :low)
+                (text "$205,000"))
+              (box :row :between
+                (text "Negotiation" :low)
+                (text "$236,000"))))
+
+          ; Win Rate Report
+          (card :col :gap 16 :padding 24
+            (text "Win Rate Trend" :medium)
+            (chart "Line chart showing win rate over time")
+            (box :row :gap 24
+              (box :col :gap 2
+                (text "Current Win Rate" :low)
+                (text "34.2%" :high))
+              (box :col :gap 2
+                (text "Avg Deal Size" :low)
+                (text "$42,350" :high))))
+
+          ; Team Performance
+          (card :col :gap 16 :padding 24
+            (text "Team Performance" :medium)
+            (box :col :gap 12
+              (box :row :between :padding 8
+                (box :row :gap 12
+                  (avatar "John Doe")
+                  (text "John Doe"))
+                (text "$234,500" :medium)
+                (progress))
+              (box :row :between :padding 8
+                (box :row :gap 12
+                  (avatar "Jane Smith")
+                  (text "Jane Smith"))
+                (text "$198,200" :medium)
+                (progress))
+              (box :row :between :padding 8
+                (box :row :gap 12
+                  (avatar "Bob Wilson")
+                  (text "Bob Wilson"))
+                (text "$156,800" :medium)
+                (progress)))))))
+
+  ; Screen 5: Companies
+  (screen companies "Companies" :desktop :layout crm-layout
+    ; Main Content (scrollable)
+    (scroll :col :fill :padding 24 :gap 24
+        ; Header
+        (box :row :between
+          (box :col :gap 4
+            (text "Companies" :high)
+            (text "Manage your company accounts" :low))
+          (box :row :gap 12
+            (input :type text :placeholder "Search companies...")
+            (button "Add Company" :primary :to "#add-company")))
+
+        ; Company Stats
+        (box :grid :cols 4 :gap 16
+          (card :col :gap 8 :padding 16
+            (text "Total Companies" :low)
+            (text "847" :high)
+            (text "+23 this month" :low))
+          (card :col :gap 8 :padding 16
+            (text "Active Accounts" :low)
+            (text "623" :high)
+            (text "73.6% of total" :low))
+          (card :col :gap 8 :padding 16
+            (text "Enterprise" :low)
+            (text "156" :high)
+            (text "$2.4M revenue" :low))
+          (card :col :gap 8 :padding 16
+            (text "New This Quarter" :low)
+            (text "89" :high)
+            (text "+12% vs last" :low)))
+
+        ; Company List
+        (card :col :full
+          (box :row :gap 16 :padding 12
+            (text "Company Name" :low :fill)
+            (text "Industry" :low :width "120px")
+            (text "Employees" :low :width "100px")
+            (text "Revenue" :low :width "100px")
+            (text "Status" :low :width "100px")
+            (text "Actions" :low :width "100px"))
+          (divider)
+
+          (box :row :gap 16 :padding 12
+            (box :row :gap 12 :fill
+              (avatar "Acme Corp")
+              (box :col :gap 2
+                (text "Acme Corp" :medium)
+                (text "acme.com" :low)))
+            (text "Technology" :width "120px")
+            (text "500-1000" :width "100px")
+            (text "$50M" :width "100px")
+            (badge "Enterprise" :primary :width "100px")
+            (button "View" :ghost :width "100px"))
+          (divider)
+
+          (box :row :gap 16 :padding 12
+            (box :row :gap 12 :fill
+              (avatar "TechStart")
+              (box :col :gap 2
+                (text "TechStart Inc" :medium)
+                (text "techstart.io" :low)))
+            (text "SaaS" :width "120px")
+            (text "50-100" :width "100px")
+            (text "$5M" :width "100px")
+            (badge "Growth" :width "100px")
+            (button "View" :ghost :width "100px"))
+          (divider)
+
+          (box :row :gap 16 :padding 12
+            (box :row :gap 12 :fill
+              (avatar "GlobalTrade")
+              (box :col :gap 2
+                (text "GlobalTrade LLC" :medium)
+                (text "globaltrade.com" :low)))
+            (text "Finance" :width "120px")
+            (text "1000+" :width "100px")
+            (text "$200M" :width "100px")
+            (badge "Enterprise" :primary :width "100px")
+            (button "View" :ghost :width "100px"))
+          (divider)
+
+          (box :row :gap 16 :padding 12
+            (box :row :gap 12 :fill
+              (avatar "StartupXYZ")
+              (box :col :gap 2
+                (text "StartupXYZ" :medium)
+                (text "startupxyz.co" :low)))
+            (text "E-commerce" :width "120px")
+            (text "10-50" :width "100px")
+            (text "$1M" :width "100px")
+            (badge "Startup" :width "100px")
+            (button "View" :ghost :width "100px"))
+
+          ; Pagination
+          (box :row :center :gap 8 :padding 16
+            (button "Previous" :ghost :disabled)
+            (badge "1" :primary)
+            (button "2" :ghost)
+            (button "3" :ghost)
+            (button "Next" :ghost))))
+
+    ; Add Company Modal
+    (modal :id "add-company"
+      (box :col :gap 24 :padding 24 :width "500px"
+        (box :row :between
+          (text "Add New Company" :high)
+          (button :icon :ghost :icon "x" :to :close))
+        (form :col :gap 16
+          (box :col :gap 4
+            (text "Company Name *" :medium)
+            (input :type text :placeholder "Enter company name"))
+          (box :col :gap 4
+            (text "Website" :medium)
+            (input :type text :placeholder "https://"))
+          (box :col :gap 4
+            (text "Industry" :medium)
+            (input :type select :options "Technology,Finance,Healthcare,Retail,Manufacturing,Other"))
+          (box :col :gap 4
+            (text "Company Size" :medium)
+            (input :type select :options "1-10,10-50,50-100,100-500,500-1000,1000+"))
+          (box :row :gap 12
+            (box :col :gap 4 :fill
+              (text "Annual Revenue" :medium)
+              (input :type text :placeholder "$"))
+            (box :col :gap 4 :fill
+              (text "Account Type" :medium)
+              (input :type select :options "Startup,Growth,Enterprise"))))
+        (box :row :end :gap 12
+          (button "Cancel" :ghost :to :close)
+          (button "Create Company" :primary)))))
+
+  ; Screen 6: Activities
+  (screen activities "Activities" :desktop :layout crm-layout
+    ; Main Content (scrollable)
+    (scroll :col :fill :padding 24 :gap 24
+        ; Header
+        (box :row :between
+          (box :col :gap 4
+            (text "Activities" :high)
+            (text "Track all customer interactions" :low))
+          (box :row :gap 12
+            (input :type select :options "All Types,Calls,Emails,Meetings,Notes")
+            (input :type select :options "All Time,Today,This Week,This Month")
+            (button "Log Activity" :primary :to "#log-activity")))
+
+        ; Activity Stats
+        (box :grid :cols 4 :gap 16
+          (card :row :gap 12 :padding 16
+            (icon "phone")
+            (box :col :gap 2
+              (text "Calls" :low)
+              (text "156" :high)
+              (text "Today: 12" :low)))
+          (card :row :gap 12 :padding 16
+            (icon "mail")
+            (box :col :gap 2
+              (text "Emails" :low)
+              (text "432" :high)
+              (text "Today: 28" :low)))
+          (card :row :gap 12 :padding 16
+            (icon "calendar")
+            (box :col :gap 2
+              (text "Meetings" :low)
+              (text "89" :high)
+              (text "Today: 4" :low)))
+          (card :row :gap 12 :padding 16
+            (icon "file-text")
+            (box :col :gap 2
+              (text "Notes" :low)
+              (text "267" :high)
+              (text "Today: 15" :low))))
+
+        ; Activity Timeline
+        (card :col :full :padding 24 :gap 16
+          (text "Recent Activity" :high)
+
+          (box :row :gap 16 :padding 12
+            (box :col :center
+              (icon "phone")
+              (text "10:32 AM" :low))
+            (box :col :fill :gap 4
+              (box :row :gap 8
+                (text "Call with John Smith" :medium)
+                (badge "15 min"))
+              (text "Discussed Q4 renewal - interested in enterprise plan" :low)
+              (box :row :gap 8
+                (avatar "Sarah")
+                (text "Sarah Johnson" :low))))
+          (divider)
+
+          (box :row :gap 16 :padding 12
+            (box :col :center
+              (icon "mail")
+              (text "9:45 AM" :low))
+            (box :col :fill :gap 4
+              (box :row :gap 8
+                (text "Email: Proposal Follow-up" :medium)
+                (badge "Sent"))
+              (text "Sent updated proposal with volume discount" :low)
+              (box :row :gap 8
+                (avatar "Mike")
+                (text "Mike Chen" :low))))
+          (divider)
+
+          (box :row :gap 16 :padding 12
+            (box :col :center
+              (icon "calendar")
+              (text "Yesterday" :low))
+            (box :col :fill :gap 4
+              (box :row :gap 8
+                (text "Meeting: Product Demo" :medium)
+                (badge "45 min"))
+              (text "Demonstrated new features to TechCorp team" :low)
+              (box :row :gap 8
+                (avatar "Lisa")
+                (text "Lisa Wang" :low))))
+          (divider)
+
+          (box :row :gap 16 :padding 12
+            (box :col :center
+              (icon "file-text")
+              (text "Yesterday" :low))
+            (box :col :fill :gap 4
+              (text "Note: Competitor Analysis" :medium)
+              (text "Client mentioned evaluating Competitor X - need to highlight our unique features" :low)
+              (box :row :gap 8
+                (avatar "Sarah")
+                (text "Sarah Johnson" :low))))
+
+          (button "Load More" :ghost :full))))
+
+  ; Screen 7: Settings
+  (screen settings "Settings" :desktop :layout crm-layout
+    ; Main Content (scrollable)
+    (scroll :col :fill :padding 24 :gap 24
+        (text "Settings" :high)
+
+        ; Settings Sections
+        (box :row :gap 24
+          ; Settings Nav
+          (box :col :gap 4 :width "200px"
+            (button "General" :ghost :full :start :active)
+            (button "Team" :ghost :full :start)
+            (button "Pipeline" :ghost :full :start)
+            (button "Integrations" :ghost :full :start)
+            (button "Notifications" :ghost :full :start)
+            (button "Billing" :ghost :full :start))
+
+          ; Settings Content
+          (box :col :fill :gap 24
+            (card :col :gap 20 :padding 24
+              (text "General Settings" :high)
+
+              (box :col :gap 4
+                (text "Company Name" :medium)
+                (input :type text :placeholder "Your Company Inc"))
+
+              (box :col :gap 4
+                (text "Default Currency" :medium)
+                (input :type select :options "USD ($),EUR (€),GBP (£),JPY (¥)"))
+
+              (box :col :gap 4
+                (text "Fiscal Year Start" :medium)
+                (input :type select :options "January,April,July,October"))
+
+              (box :col :gap 4
+                (text "Date Format" :medium)
+                (input :type select :options "MM/DD/YYYY,DD/MM/YYYY,YYYY-MM-DD"))
+
+              (box :col :gap 4
+                (text "Time Zone" :medium)
+                (input :type select :options "UTC,America/New_York,America/Los_Angeles,Europe/London,Asia/Tokyo")))
+
+            (card :col :gap 20 :padding 24
+              (text "Deal Settings" :high)
+
+              (box :col :gap 4
+                (text "Default Deal Probability" :medium)
+                (input :type select :options "10%,25%,50%,75%,90%"))
+
+              (box :col :gap 4
+                (text "Deal Rot Period" :medium)
+                (input :type select :options "14 days,30 days,60 days,90 days")
+                (text "Deals without activity will be flagged after this period" :low))
+
+              (box :row :between :padding 8
+                (box :col :gap 2
+                  (text "Auto-close Lost Deals" :medium)
+                  (text "Automatically close deals marked as lost after 30 days" :low))
+                (input :type checkbox)))
+
+            (box :row :end :gap 12
+              (button "Cancel" :ghost)
+              (button "Save Changes" :primary)))))))

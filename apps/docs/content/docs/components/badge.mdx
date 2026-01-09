@@ -1,0 +1,115 @@
+---
+title: badge
+description: Small label or tag.
+---
+
+A small label for status indicators, counts, or tags.
+
+## Usage
+
+```wire preview
+(badge "New")
+```
+
+## Variants
+
+```wire preview
+(box :row :gap 8
+  (badge "Default")
+  (badge "Primary" :primary)
+  (badge "Danger" :danger)
+  (badge "Success" :success)
+  (badge "Warning" :warning)
+  (badge "Info" :info))
+```
+
+## Properties
+
+<PropsTable element="badge" />
+
+## Examples
+
+### Status Badges
+
+```wire preview
+(box :row :gap 8
+  (badge "Active" :success)
+  (badge "Pending" :warning)
+  (badge "Closed" :danger))
+```
+
+### With Count
+
+```wire preview
+(box :row :gap 8
+  (text "Messages")
+  (badge "5" :primary))
+```
+
+### Tags
+
+```wire preview
+(box :row :gap 8 :wrap
+  (badge "React")
+  (badge "TypeScript")
+  (badge "Node.js")
+  (badge "GraphQL"))
+```
+
+### Table Status
+
+```wire preview:250
+(box :col :gap 0
+  (box :row :between :padding 12
+    (text "Order #1234")
+    (badge "Shipped" :success))
+  (box :row :between :padding 12
+    (text "Order #1235")
+    (badge "Processing" :warning))
+  (box :row :between :padding 12
+    (text "Order #1236")
+    (badge "Cancelled" :danger)))
+```
+
+### User Role
+
+```wire preview
+(box :row :gap 12 :padding 12
+  (avatar "John")
+  (box :col :gap 4 :fill
+    (box :row :gap 8
+      (text "John Doe")
+      (badge "Admin" :primary))
+    (text "john@example.com" :low)))
+```
+
+### Notification Badge
+
+```wire preview
+(box :row :gap 4
+  (icon "bell")
+  (badge "3" :danger))
+```
+
+### Feature Tags
+
+```wire preview:250
+(card :col :gap 12 :padding 16
+  (box :row :gap 8
+    (badge "New" :primary)
+    (badge "Popular" :success))
+  (text "Premium Feature" :high)
+  (text "Unlock advanced capabilities with our premium plan."))
+```
+
+### Pricing Tier
+
+```wire preview:300
+(card :col :gap 16 :padding 24
+  (box :row :between
+    (text "Pro Plan" :high)
+    (badge "Most Popular" :primary))
+  (text "$29/month" :high)
+  (text "Everything you need to get started" :low)
+  (button "Get Started" :primary :full))
+```

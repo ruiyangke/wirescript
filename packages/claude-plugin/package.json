@@ -1,0 +1,26 @@
+{
+  "name": "@wirescript/claude-plugin",
+  "version": "0.0.1",
+  "private": true,
+  "description": "Claude Code plugin for WireScript DSL authoring",
+  "license": "Apache-2.0",
+  "author": "Ruiyang Ke",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ruiyangke/wirescript.git",
+    "directory": "packages/claude-plugin"
+  },
+  "keywords": [
+    "claude-code-plugin",
+    "wireframe",
+    "wirescript",
+    "dsl",
+    "ui-design"
+  ],
+  "files": [
+    ".claude-plugin",
+    "skills",
+    "hooks",
+    "README.md"
+  ]
+}

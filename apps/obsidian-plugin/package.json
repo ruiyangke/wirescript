@@ -1,0 +1,28 @@
+{
+  "name": "@wirescript/obsidian-plugin",
+  "version": "0.0.1",
+  "private": true,
+  "description": "Obsidian plugin to render WireScript wireframes in markdown notes",
+  "type": "module",
+  "license": "Apache-2.0",
+  "author": "Ruiyang Ke",
+  "scripts": {
+    "dev": "node esbuild.config.mjs",
+    "build": "node esbuild.config.mjs production",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@wirescript/dsl": "workspace:*",
+    "@wirescript/renderer": "workspace:*",
+    "html2canvas-pro": "^1.6.3",
+    "preact": "^10.28.2"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "@types/react": "catalog:",
+    "@types/react-dom": "catalog:",
+    "esbuild": "^0.20.0",
+    "obsidian": "latest",
+    "typescript": "^5.0.0"
+  }
+}

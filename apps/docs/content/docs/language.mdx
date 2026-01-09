@@ -1,0 +1,314 @@
+---
+title: Language Reference
+description: Complete specification of the WireScript syntax.
+---
+
+Quick links: [Tokens](#token-types) | [Structure](#document-structure) | [Boolean Props](#boolean-properties) | [Key-Value Props](#key-value-properties) | [Components](#components) | [Layouts](#layouts) | [Overlays](#overlays) | [Repeat](#repeat) | [Input Types](#input-types)
+
+---
+
+WireScript uses S-expressions with keyword arguments:
+
+```wire
+(element-type content? properties* children*)
+```
+
+## Token Types
+
+| Token | Pattern | Example |
+|-------|---------|---------|
+| String | `"..."` | `"Hello World"` |
+| Number | `123`, `-45.6` | `16`, `0.5` |
+| Symbol | `word-like` | `dashboard`, `user-card` |
+| Keyword | `:word` | `:primary`, `:gap` |
+| Hash Ref | `#word` | `#my-modal`, `#confirm` |
+| Param Ref | `$word` | `$name`, `$value` |
+
+## Property Syntax
+
+Properties come in two forms:
+
+```wire
+(button "Submit" :primary :disabled :to checkout)
+;                 ↑        ↑         ↑
+;                 boolean  boolean   key-value
+
+; Boolean: :property alone (acts as true)
+; Key-value: :property value (explicit value)
+```
+
+## Document Structure
+
+```wire
+(wire
+  (meta :title "App")           ; Document metadata (optional)
+  (define name (p) (text $p))   ; Component definitions (0+)
+  (layout name (slot))          ; Layout definitions (0+)
+  (screen id "Name" :desktop    ; Screens (1+)
+    (text "Content")))
+```
+
+### Meta
+
+```wire
+(meta :title "My App")
+```
+
+### Screen
+
+```wire
+(screen screen-id "Display Name" :desktop :layout layout-name
+  (box :padding 24
+    (text "Content")))
+```
+
+| Part | Required | Description |
+|------|----------|-------------|
+| `screen-id` | Yes | Unique identifier (symbol) |
+| `"Display Name"` | No | Human-readable name |
+| `:desktop` / `:tablet` / `:mobile` | No | Viewport size |
+| `:layout layout-name` | No | Reference to a layout |
+
+### Viewport Sizes
+
+| Viewport | Width | Height |
+|----------|-------|--------|
+| `:mobile` | 375px | 667px |
+| `:tablet` | 768px | 1024px |
+| `:desktop` | 1280px | 800px |
+
+## Boolean Properties
+
+### Layout
+
+| Property | Effect |
+|----------|--------|
+| `:row` | Horizontal flex |
+| `:col` | Vertical flex (default, optional) |
+| `:grid` | Grid layout (use with `:cols`) |
+| `:wrap` | Allow wrapping |
+
+### Alignment
+
+| Property | Effect |
+|----------|--------|
+| `:start` | Align start |
+| `:center` | Center |
+| `:end` | Align end |
+| `:between` | Space between |
+| `:around` | Space around |
+| `:stretch` | Stretch items |
+
+### Emphasis
+
+| Property | Effect |
+|----------|--------|
+| `:high` | Large, bold |
+| `:medium` | Normal (default) |
+| `:low` | Small, muted |
+
+### Variant
+
+| Property | Effect |
+|----------|--------|
+| `:primary` | Primary action |
+| `:secondary` | Secondary action |
+| `:ghost` | Minimal/transparent |
+| `:danger` | Destructive |
+| `:success` | Success state |
+| `:warning` | Warning state |
+| `:info` | Info state |
+
+### State
+
+| Property | Effect |
+|----------|--------|
+| `:disabled` | Non-interactive |
+| `:loading` | Show spinner |
+| `:active` | Currently selected |
+| `:checked` | Checked (inputs) |
+| `:error` | Error state |
+| `:open` | Overlay visible |
+
+### Size
+
+| Property | Effect |
+|----------|--------|
+| `:full` | Full width/height |
+| `:fit` | Fit to content |
+| `:fill` | Flex grow |
+
+### Position
+
+| Property | Effect |
+|----------|--------|
+| `:sticky` | Sticky positioning |
+| `:fixed` | Fixed positioning |
+| `:left` | Drawer appears from left |
+| `:right` | Drawer appears from right |
+
+## Key-Value Properties
+
+### Layout
+
+| Property | Type | Example |
+|----------|------|---------|
+| `:gap` | number | `:gap 16` |
+| `:padding` | number | `:padding 24` |
+| `:cols` | number | `:cols 3` |
+| `:rows` | number | `:rows 4` |
+
+### Sizing
+
+| Property | Type | Example |
+|----------|------|---------|
+| `:width` | string | `:width "250px"` |
+| `:height` | string | `:height "200px"` |
+
+### Position Offsets
+
+Used with `:sticky` or `:fixed` positioning.
+
+| Property | Type | Example |
+|----------|------|---------|
+| `:top` | number | `:top 0` |
+| `:bottom` | number | `:bottom 16` |
+
+### Navigation
+
+| Property | Value | Example |
+|----------|-------|---------|
+| `:to` | symbol | `:to dashboard` (navigate to screen) |
+| `:to` | hash ref | `:to #modal-id` (open overlay) |
+| `:to` | `:close` | `:to :close` (close current overlay) |
+
+### Input
+
+| Property | Type | Example |
+|----------|------|---------|
+| `:type` | symbol | `:type email` |
+| `:placeholder` | string | `:placeholder "Enter..."` |
+| `:value` | string/number | `:value "hello"` |
+| `:options` | string | `:options "A,B,C"` |
+| `:min` | number | `:min 0` |
+| `:max` | number | `:max 100` |
+| `:rows` | number | `:rows 4` |
+
+### Data
+
+| Property | Type | Example |
+|----------|------|---------|
+| `:value` | string/number | `:value "$1,234"` |
+| `:label` | string | `:label "Revenue"` |
+| `:change` | string | `:change "+12%"` |
+| `:trend` | symbol | `:trend up` or `:trend down` |
+| `:type` | symbol | `:type bar` (chart: bar, line, pie, area) |
+| `:max` | number | `:max 100` (progress) |
+
+### Empty State
+
+| Property | Type | Example |
+|----------|------|---------|
+| `:message` | string | `:message "No items"` |
+| `:icon` | string | `:icon "inbox"` |
+
+### Identity
+
+| Property | Type | Example |
+|----------|------|---------|
+| `:id` | string | `:id "my-modal"` |
+
+### Tooltip
+
+| Property | Type | Example |
+|----------|------|---------|
+| `:tip` | string | `:tip "Click to copy"` |
+
+## Components
+
+Define reusable components with parameters:
+
+```wire
+(define component-name (param1 param2)
+  (box :row
+    (text $param1)      ; Reference with $
+    (text $param2)))
+
+; Usage - always named arguments
+(component-name :param1 "Hello" :param2 "World")
+```
+
+**Rules:**
+- Parameters referenced with `$param` in body
+- Calls must use named arguments (`:param value`)
+- Component names cannot shadow built-in elements
+
+## Layouts
+
+Define reusable page structures:
+
+```wire
+(layout layout-name
+  (box :row :full
+    (nav
+      (button "Home" :ghost :to home)
+      (button "Settings" :ghost :to settings))
+    (slot)))  ; Placeholder for screen content
+
+(screen home "Home" :desktop :layout layout-name
+  (text "Page content"))  ; Replaces (slot)
+```
+
+**Auto-active:** Elements with `:to` matching current screen get `:active` styling automatically.
+
+## Overlays
+
+Overlays are defined inside screens:
+
+```wire
+(screen main "Main" :desktop
+  (box (button "Open" :to #my-modal))
+
+  (modal :id "my-modal"
+    (text "Modal Content")
+    (button "Close" :to :close)))
+```
+
+| Overlay | Position |
+|---------|----------|
+| `modal` | Centered |
+| `drawer` | `:left` or `:right` side |
+| `popover` | Centered (smaller) |
+
+## Repeat
+
+Generate repeated content:
+
+```wire
+(repeat :count 5
+  (skeleton))
+
+(repeat :count 3 :as "i"
+  (text "Item ${i}"))  ; String interpolation
+```
+
+## Input Types
+
+| Type | Renders As |
+|------|------------|
+| `text` | Text input (default) |
+| `email` | Email input |
+| `password` | Password input |
+| `search` | Search input |
+| `tel` | Phone input |
+| `textarea` | Multi-line (use `:rows`) |
+| `select` | Dropdown (use `:options`) |
+| `radio` | Radio group (use `:options`) |
+| `checkbox` | Checkbox |
+| `toggle` | Toggle switch |
+| `number` | Number input |
+| `slider` | Range slider |
+| `date` | Date picker |
+| `time` | Time picker |
+| `color` | Color picker |
+| `file` | File upload |

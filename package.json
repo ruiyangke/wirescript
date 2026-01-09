@@ -1,0 +1,42 @@
+{
+  "name": "wirescript",
+  "version": "0.0.1",
+  "private": true,
+  "description": "Monorepo for WireScript - a Lisp-like DSL for wireframes",
+  "license": "Apache-2.0",
+  "author": "Ruiyang Ke",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ruiyangke/wirescript.git"
+  },
+  "type": "module",
+  "scripts": {
+    "dev": "pnpm --filter @wirescript/viewer dev",
+    "build": "pnpm -r build",
+    "test": "pnpm -r test",
+    "lint": "biome check .",
+    "lint:fix": "biome check --write .",
+    "format": "biome format --write .",
+    "typecheck": "pnpm -r typecheck",
+    "version:patch": "pnpm -r exec -- npm version patch --no-git-tag-version",
+    "version:minor": "pnpm -r exec -- npm version minor --no-git-tag-version",
+    "version:major": "pnpm -r exec -- npm version major --no-git-tag-version",
+    "publish:public": "pnpm -r publish --access public --no-git-checks",
+    "publish:dry": "pnpm -r publish --access public --dry-run"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^2.3.11",
+    "tsx": "^4.21.0",
+    "typescript": "^5.7.0"
+  },
+  "engines": {
+    "node": ">=20",
+    "pnpm": ">=10"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "electron",
+      "esbuild"
+    ]
+  }
+}

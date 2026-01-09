@@ -1,0 +1,568 @@
+; Landing Page - SaaS marketing page showcasing:
+; - Hero with social proof
+; - Feature sections with multiple layouts
+; - How it works section
+; - Testimonials carousel
+; - Pricing table with 3 tiers
+; - FAQ accordion
+; - CTA sections
+; - Footer with multiple columns
+; - Mobile responsive layout
+
+(wire
+  (meta
+    :title "SaaS Landing Page"
+    :context marketing
+    :audience "developers"
+    :goal "drive signups and conversions")
+
+  ; Reusable Components
+  (define feature-card (icon-name title description)
+    (card :col :gap 16 :padding 24
+      (box :col :center :padding 16
+        (icon $icon-name))
+      (text $title :medium :center)
+      (text $description :low :center)))
+
+  (define testimonial-card (quote author role company avatar-name)
+    (card :col :gap 16 :padding 24
+      (box :row :gap 4
+        (icon "star")
+        (icon "star")
+        (icon "star")
+        (icon "star")
+        (icon "star"))
+      (text $quote :medium)
+      (box :row :gap 12
+        (avatar $avatar-name)
+        (box :col :gap 2
+          (text $author :medium)
+          (text $role :low)))))
+
+  (define pricing-card (name price period features cta-text popular)
+    (card :col :gap 20 :padding 24
+      (box :col :gap 4
+        (text $name :medium)
+        (box :row :gap 4
+          (text $price :high)
+          (text $period :low)))
+      (divider)
+      (box :col :gap 12
+        (box :row :gap 8
+          (icon "check")
+          (text "Feature one" :low))
+        (box :row :gap 8
+          (icon "check")
+          (text "Feature two" :low))
+        (box :row :gap 8
+          (icon "check")
+          (text "Feature three" :low)))
+      (button $cta-text :primary :full)))
+
+  (define faq-item (question answer)
+    (card :col :gap 8 :padding 16
+      (box :row :between
+        (text $question :medium)
+        (icon "chevron-down"))
+      (text $answer :low)))
+
+  (define footer-column (title)
+    (box :col :gap 12
+      (text $title :medium)))
+
+  ; Desktop Landing Page
+  (screen landing "Landing Page" :desktop
+    (box :col :full
+      ; Navigation
+      (header :row :between :padding 24
+        (box :row :gap 12
+          (icon "zap")
+          (text "DevPlatform" :high))
+        (nav :row :gap 32
+          (text "Features")
+          (text "How it Works")
+          (text "Pricing")
+          (text "Testimonials")
+          (text "FAQ"))
+        (box :row :gap 16
+          (button "Sign In" :ghost)
+          (button "Start Free" :primary)))
+
+      (scroll :col :full
+        ; Hero Section
+        (section "hero" :col :center :gap 32 :padding 80
+          ; Badge
+          (badge "New: AI-powered code reviews" :primary)
+
+          ; Headline
+          (box :col :center :gap 16
+            (text "Ship Production-Ready Code" :high)
+            (text "10x Faster" :high)
+            (text "The modern developer platform that automates your workflow, catches bugs before production, and scales with your team." :low :center))
+
+          ; CTA Buttons
+          (box :row :gap 16
+            (button "Start Free Trial" :primary)
+            (button "Watch Demo" :ghost)
+            (button "View Docs" :ghost))
+
+          ; Social Proof
+          (box :col :center :gap 16 :padding 32
+            (text "Trusted by 10,000+ developers at" :low)
+            (box :row :gap 32
+              (text "Google" :medium)
+              (text "Meta" :medium)
+              (text "Amazon" :medium)
+              (text "Microsoft" :medium)
+              (text "Netflix" :medium))))
+
+        (divider)
+
+        ; Features Section
+        (section "features" :col :gap 48 :padding 80
+          (box :col :center :gap 16
+            (badge "Features" :ghost)
+            (text "Everything you need to ship faster" :high)
+            (text "Built for modern development teams who care about velocity and quality" :low))
+
+          ; Feature Grid
+          (box :grid :cols 3 :gap 24
+            (feature-card
+              :icon-name "zap"
+              :title "Lightning Fast Builds"
+              :description "Smart caching and parallel execution reduce build times by 90%")
+            (feature-card
+              :icon-name "shield"
+              :title "Security First"
+              :description "SOC2 Type II certified with automatic vulnerability scanning")
+            (feature-card
+              :icon-name "git-branch"
+              :title "Git Integration"
+              :description "Native integration with GitHub, GitLab, and Bitbucket")
+            (feature-card
+              :icon-name "users"
+              :title "Team Collaboration"
+              :description "Real-time collaboration with role-based permissions")
+            (feature-card
+              :icon-name "bar-chart"
+              :title "Analytics Dashboard"
+              :description "Deep insights into your development velocity and bottlenecks")
+            (feature-card
+              :icon-name "globe"
+              :title "Global Edge Network"
+              :description "Deploy to 200+ edge locations for sub-50ms latency")))
+
+        (divider)
+
+        ; How it Works Section
+        (section "how-it-works" :col :gap 48 :padding 80
+          (box :col :center :gap 16
+            (badge "How it Works" :ghost)
+            (text "Get started in 3 simple steps" :high)
+            (text "From zero to production in under 5 minutes" :low))
+
+          (box :row :gap 32 :padding 32
+            ; Step 1
+            (box :col :center :gap 16 :fill
+              (badge "1" :primary)
+              (text "Connect Your Repo" :medium)
+              (text "Link your GitHub, GitLab, or Bitbucket repository with one click" :low :center)
+              (card :col :gap 8 :padding 16
+                (box :row :gap 8
+                  (icon "github")
+                  (text "my-app" :medium))
+                (text "Connected" :success)))
+
+            ; Step 2
+            (box :col :center :gap 16 :fill
+              (badge "2" :primary)
+              (text "Configure Pipeline" :medium)
+              (text "Our AI automatically detects your stack and configures the optimal pipeline" :low :center)
+              (card :col :gap 8 :padding 16
+                (box :row :gap 8
+                  (icon "settings")
+                  (text "Auto-configured" :medium))
+                (progress)))
+
+            ; Step 3
+            (box :col :center :gap 16 :fill
+              (badge "3" :primary)
+              (text "Ship to Production" :medium)
+              (text "Push code and watch it automatically build, test, and deploy" :low :center)
+              (card :col :gap 8 :padding 16
+                (box :row :gap 8
+                  (icon "circle-check")
+                  (text "Deployed" :success))
+                (text "Production ready in 47s" :low)))))
+
+        (divider)
+
+        ; Testimonials Section
+        (section "testimonials" :col :gap 48 :padding 80
+          (box :col :center :gap 16
+            (badge "Testimonials" :ghost)
+            (text "Loved by developers worldwide" :high)
+            (text "See what our customers are saying" :low))
+
+          (box :row :gap 24
+            (testimonial-card
+              :quote "DevPlatform cut our deployment time from hours to minutes. It's been a game changer for our team."
+              :author "Sarah Chen"
+              :role "CTO at StartupCo"
+              :company "StartupCo"
+              :avatar-name "Sarah")
+            (testimonial-card
+              :quote "The best CI/CD platform we've ever used. The AI-powered features are incredibly helpful."
+              :author "Mike Johnson"
+              :role "Lead Engineer at TechCorp"
+              :company "TechCorp"
+              :avatar-name "Mike")
+            (testimonial-card
+              :quote "Finally, a platform that understands modern development. Our velocity increased 3x."
+              :author "Emily Davis"
+              :role "Engineering Manager at ScaleUp"
+              :company "ScaleUp"
+              :avatar-name "Emily"))
+
+          ; Stats
+          (box :row :around :padding 32
+            (box :col :center :gap 4
+              (text "10,000+" :high)
+              (text "Active Developers" :low))
+            (box :col :center :gap 4
+              (text "500M+" :high)
+              (text "Builds Executed" :low))
+            (box :col :center :gap 4
+              (text "99.99%" :high)
+              (text "Uptime SLA" :low))
+            (box :col :center :gap 4
+              (text "47s" :high)
+              (text "Avg Deploy Time" :low))))
+
+        (divider)
+
+        ; Pricing Section
+        (section "pricing" :col :gap 48 :padding 80
+          (box :col :center :gap 16
+            (badge "Pricing" :ghost)
+            (text "Simple, transparent pricing" :high)
+            (text "Start free, scale as you grow" :low)
+            ; Toggle
+            (box :row :gap 8
+              (text "Monthly" :low)
+              (input :type toggle)
+              (text "Yearly" :low)
+              (badge "Save 20%" :success)))
+
+          (box :row :gap 24 :center
+            ; Free Plan
+            (card :col :gap 20 :padding 32 :width "320px"
+              (box :col :gap 4
+                (text "Starter" :medium)
+                (box :row :gap 4
+                  (text "$0" :high)
+                  (text "/month" :low)))
+              (text "Perfect for side projects and learning" :low)
+              (divider)
+              (box :col :gap 12
+                (box :row :gap 8
+                  (icon "check")
+                  (text "1 project"))
+                (box :row :gap 8
+                  (icon "check")
+                  (text "100 builds/month"))
+                (box :row :gap 8
+                  (icon "check")
+                  (text "Community support"))
+                (box :row :gap 8
+                  (icon "x")
+                  (text "Team collaboration" :low))
+                (box :row :gap 8
+                  (icon "x")
+                  (text "Custom domains" :low)))
+              (button "Get Started" :ghost :full))
+
+            ; Pro Plan
+            (card :col :gap 20 :padding 32 :width "320px" :primary
+              (box :row :between
+                (text "Pro" :medium)
+                (badge "Most Popular" :primary))
+              (box :row :gap 4
+                (text "$49" :high)
+                (text "/month" :low))
+              (text "For professional developers and small teams" :low)
+              (divider)
+              (box :col :gap 12
+                (box :row :gap 8
+                  (icon "check")
+                  (text "Unlimited projects"))
+                (box :row :gap 8
+                  (icon "check")
+                  (text "Unlimited builds"))
+                (box :row :gap 8
+                  (icon "check")
+                  (text "5 team members"))
+                (box :row :gap 8
+                  (icon "check")
+                  (text "Priority support"))
+                (box :row :gap 8
+                  (icon "check")
+                  (text "Custom domains")))
+              (button "Start Free Trial" :primary :full))
+
+            ; Enterprise Plan
+            (card :col :gap 20 :padding 32 :width "320px"
+              (box :col :gap 4
+                (text "Enterprise" :medium)
+                (box :row :gap 4
+                  (text "Custom" :high)))
+              (text "For large organizations with advanced needs" :low)
+              (divider)
+              (box :col :gap 12
+                (box :row :gap 8
+                  (icon "check")
+                  (text "Everything in Pro"))
+                (box :row :gap 8
+                  (icon "check")
+                  (text "Unlimited team members"))
+                (box :row :gap 8
+                  (icon "check")
+                  (text "SSO/SAML"))
+                (box :row :gap 8
+                  (icon "check")
+                  (text "Dedicated support"))
+                (box :row :gap 8
+                  (icon "check")
+                  (text "SLA guarantee")))
+              (button "Contact Sales" :ghost :full))))
+
+        (divider)
+
+        ; FAQ Section
+        (section "faq" :col :gap 48 :padding 80
+          (box :col :center :gap 16
+            (badge "FAQ" :ghost)
+            (text "Frequently asked questions" :high)
+            (text "Everything you need to know about DevPlatform" :low))
+
+          (box :col :gap 16 :width "800px"
+            (faq-item
+              :question "How does the free trial work?"
+              :answer "You get 14 days of full access to all Pro features. No credit card required. At the end of the trial, you can choose to subscribe or continue with our free tier.")
+            (faq-item
+              :question "Can I switch plans later?"
+              :answer "Yes! You can upgrade, downgrade, or cancel your plan at any time. Changes take effect immediately, and we'll prorate any charges.")
+            (faq-item
+              :question "What payment methods do you accept?"
+              :answer "We accept all major credit cards, PayPal, and wire transfers for Enterprise customers. All payments are processed securely through Stripe.")
+            (faq-item
+              :question "Is there a setup fee?"
+              :answer "No, there are no setup fees or hidden costs. You only pay for your subscription plan.")
+            (faq-item
+              :question "Do you offer refunds?"
+              :answer "Yes, we offer a 30-day money-back guarantee. If you're not satisfied, contact support for a full refund.")))
+
+        ; Final CTA Section
+        (section "cta" :col :center :gap 24 :padding 80
+          (text "Ready to ship faster?" :high)
+          (text "Join 10,000+ developers who trust DevPlatform for their CI/CD needs" :low)
+          (box :row :gap 16
+            (button "Start Free Trial" :primary)
+            (button "Schedule Demo" :ghost))
+          (text "No credit card required" :low))
+
+        ; Footer
+        (footer :col :gap 48 :padding 48
+          (box :row :between
+            ; Company Info
+            (box :col :gap 16 :width "300px"
+              (box :row :gap 12
+                (icon "zap")
+                (text "DevPlatform" :high))
+              (text "The modern developer platform for teams who ship fast." :low)
+              (box :row :gap 16
+                (icon "twitter")
+                (icon "github")
+                (icon "linkedin")))
+
+            ; Links
+            (box :col :gap 12
+              (text "Product" :medium)
+              (text "Features" :low)
+              (text "Pricing" :low)
+              (text "Integrations" :low)
+              (text "Changelog" :low))
+
+            (box :col :gap 12
+              (text "Resources" :medium)
+              (text "Documentation" :low)
+              (text "API Reference" :low)
+              (text "Tutorials" :low)
+              (text "Blog" :low))
+
+            (box :col :gap 12
+              (text "Company" :medium)
+              (text "About" :low)
+              (text "Careers" :low)
+              (text "Contact" :low)
+              (text "Press" :low))
+
+            (box :col :gap 12
+              (text "Legal" :medium)
+              (text "Privacy Policy" :low)
+              (text "Terms of Service" :low)
+              (text "Security" :low)
+              (text "GDPR" :low)))
+
+          (divider)
+
+          (box :row :between
+            (text "2024 DevPlatform, Inc. All rights reserved." :low)
+            (box :row :gap 16
+              (text "Privacy" :low)
+              (text "Terms" :low)
+              (text "Cookies" :low)))))))
+
+  ; Mobile Landing Page
+  (screen mobile-landing "Landing" :mobile
+    (box :col :full
+      ; Mobile Header
+      (header :row :between :padding 16
+        (box :row :gap 8
+          (icon "zap")
+          (text "DevPlatform" :high))
+        (button "Menu" :ghost :to "#mobile-menu"))
+
+      (scroll :col :full
+        ; Mobile Hero
+        (section "hero" :col :center :gap 24 :padding 32
+          (badge "New: AI Code Reviews" :primary)
+          (text "Ship Code 10x Faster" :high :center)
+          (text "The modern developer platform that scales with your team" :low :center)
+          (box :col :gap 12 :full
+            (button "Start Free Trial" :primary :full)
+            (button "Watch Demo" :ghost :full)))
+
+        ; Trust Logos
+        (box :col :center :gap 12 :padding 24
+          (text "Trusted by developers at" :low)
+          (scroll :row :gap 24
+            (text "Google" :medium)
+            (text "Meta" :medium)
+            (text "Amazon" :medium)))
+
+        (divider)
+
+        ; Mobile Features
+        (section "features" :col :gap 24 :padding 24
+          (text "Features" :high :center)
+          (box :col :gap 16
+            (card :row :gap 16 :padding 16
+              (icon "zap")
+              (box :col :gap 4
+                (text "Lightning Fast" :medium)
+                (text "90% faster builds" :low)))
+            (card :row :gap 16 :padding 16
+              (icon "shield")
+              (box :col :gap 4
+                (text "Secure" :medium)
+                (text "SOC2 certified" :low)))
+            (card :row :gap 16 :padding 16
+              (icon "users")
+              (box :col :gap 4
+                (text "Team Ready" :medium)
+                (text "Built for collaboration" :low)))
+            (card :row :gap 16 :padding 16
+              (icon "globe")
+              (box :col :gap 4
+                (text "Global CDN" :medium)
+                (text "200+ edge locations" :low)))))
+
+        (divider)
+
+        ; Mobile Testimonial
+        (section "testimonial" :col :gap 16 :padding 24
+          (text "What developers say" :high :center)
+          (card :col :gap 12 :padding 20
+            (box :row :gap 4
+              (icon "star")
+              (icon "star")
+              (icon "star")
+              (icon "star")
+              (icon "star"))
+            (text "DevPlatform cut our deployment time from hours to minutes. Game changer!" :medium)
+            (box :row :gap 12
+              (avatar "Sarah")
+              (box :col :gap 2
+                (text "Sarah Chen" :medium)
+                (text "CTO, StartupCo" :low)))))
+
+        (divider)
+
+        ; Mobile Pricing
+        (section "pricing" :col :gap 24 :padding 24
+          (text "Simple Pricing" :high :center)
+          (card :col :gap 16 :padding 20
+            (box :row :between
+              (text "Pro Plan" :medium)
+              (badge "Popular" :primary))
+            (text "$49/month" :high)
+            (box :col :gap 8
+              (box :row :gap 8
+                (icon "check")
+                (text "Unlimited projects" :low))
+              (box :row :gap 8
+                (icon "check")
+                (text "5 team members" :low))
+              (box :row :gap 8
+                (icon "check")
+                (text "Priority support" :low)))
+            (button "Start Free Trial" :primary :full))
+          (text "Also available: Free and Enterprise plans" :low :center))
+
+        ; Mobile CTA
+        (section "cta" :col :center :gap 16 :padding 32
+          (text "Ready to ship?" :high)
+          (button "Get Started Free" :primary :full)
+          (text "No credit card required" :low))
+
+        ; Mobile Footer
+        (footer :col :gap 24 :padding 24
+          (box :col :center :gap 8
+            (box :row :gap 8
+              (icon "zap")
+              (text "DevPlatform" :medium))
+            (text "Ship faster, together" :low))
+          (box :row :center :gap 24
+            (icon "twitter")
+            (icon "github")
+            (icon "linkedin"))
+          (divider)
+          (box :row :center :gap 16
+            (text "Privacy" :low)
+            (text "Terms" :low)
+            (text "Contact" :low))
+          (text "2024 DevPlatform, Inc." :low :center))))
+
+    ; Mobile Menu
+    (drawer :id "mobile-menu" :right
+      (box :col :gap 0 :full :padding 24
+        (box :row :between :padding 16
+          (text "Menu" :high)
+          (button :icon :ghost :icon "x" :to :close))
+        (divider)
+        (box :col :gap 0
+          (box :padding 16
+            (text "Features"))
+          (box :padding 16
+            (text "How it Works"))
+          (box :padding 16
+            (text "Pricing"))
+          (box :padding 16
+            (text "Testimonials"))
+          (box :padding 16
+            (text "FAQ")))
+        (divider)
+        (box :col :gap 12 :padding 16
+          (button "Sign In" :ghost :full)
+          (button "Start Free" :primary :full))))))

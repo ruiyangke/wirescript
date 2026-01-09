@@ -1,0 +1,364 @@
+---
+title: Overview
+description: Lisp-like syntax for wireframes. Embeds in Markdown. Perfect for AI.
+---
+
+import { Cards, Card } from 'fumadocs-ui/components/card';
+import { Callout } from 'fumadocs-ui/components/callout';
+import { Code2, FileText, Bot, Zap, Layers, GitBranch, Chrome, BookOpen, Terminal } from 'lucide-react';
+
+<div className="not-prose mb-8 rounded-xl border bg-gradient-to-br from-fd-primary/5 via-transparent to-fd-accent/5 p-6">
+  <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+    <div>
+      <div className="text-sm font-medium text-fd-muted-foreground">Lisp-like syntax for wireframes</div>
+      <h2 className="mt-1 text-2xl font-bold">Pure text. Markdown native. AI-first.</h2>
+    </div>
+    <a href="/docs/getting-started" className="inline-flex items-center gap-2 rounded-lg bg-fd-primary px-4 py-2 text-sm font-medium text-fd-primary-foreground transition-colors hover:bg-fd-primary/90">
+      Get Started →
+    </a>
+  </div>
+</div>
+
+## See it in Action
+
+```wire preview:450
+(box :gap 16 :padding 24
+  (text "Create Account" :high)
+  (input "Full Name")
+  (input "Email" :type email)
+  (input "Password" :type password)
+  (button "Sign Up" :primary :full)
+  (text "Already have an account? Sign in" :low :center))
+```
+
+<Callout title="Try it yourself" type="info">
+Edit the code above and watch the preview update. That's all there is to it — no build step, no complex tooling.
+</Callout>
+
+## Why WireScript?
+
+<Cards>
+  <Card icon={<Code2 />} title="Simple Syntax">
+    Clean, readable S-expressions with minimal punctuation. Learn the basics in minutes.
+  </Card>
+  <Card icon={<FileText />} title="Markdown Native">
+    Embed wireframes directly in your PRDs, specs, and READMEs. Documentation and design live together.
+  </Card>
+  <Card icon={<Bot />} title="AI-Friendly">
+    Designed for LLMs to generate reliably. Ask Claude to draw your wireframes — it just works.
+  </Card>
+  <Card icon={<Zap />} title="Pure Text">
+    No HTML, CSS, or JavaScript. Diffs are clean. Code reviews are easy. Merges don't conflict.
+  </Card>
+  <Card icon={<Layers />} title="30+ Components">
+    Containers, inputs, data displays, navigation, overlays — everything you need for any UI.
+  </Card>
+  <Card icon={<GitBranch />} title="Version Controlled">
+    Track UI changes alongside your code. Every wireframe revision is a commit.
+  </Card>
+</Cards>
+
+## Syntax at a Glance
+
+```wire
+(element-type "content" :properties... children...)
+```
+
+| Part | What it does | Example |
+|------|--------------|---------|
+| `element-type` | What kind of element | `box`, `text`, `button`, `card` |
+| `"content"` | Optional text content | `"Hello World"` |
+| `:property` | Boolean (flag) | `:primary`, `:center` |
+| `:property value` | Key-value pair | `:gap 16`, `:to dashboard` |
+| `children` | Nested elements | `(box (text "hi"))` |
+
+## Quick Start
+
+<Steps>
+<Step>
+
+### Write your wireframe
+
+Create a `.wire` file or embed in Markdown:
+
+```wire
+(wire
+  (screen home "Home" :desktop
+    (box :center :gap 24 :padding 48
+      (text "Hello, WireScript!" :high)
+      (button "Get Started" :primary))))
+```
+
+</Step>
+<Step>
+
+### Preview instantly
+
+Use the [Playground](https://playground.wirescript.org), [Chrome Extension](/docs/tools/chrome-extension), or [Obsidian Plugin](/docs/tools/obsidian-plugin) to preview your wireframes. Changes reflect immediately.
+
+</Step>
+<Step>
+
+### Iterate with AI
+
+Ask any LLM to modify, extend, or generate new wireframes. The syntax is trivial to learn.
+
+</Step>
+</Steps>
+
+## Who is it for?
+
+<Tabs items={["Product Managers", "Developers", "AI Agents"]}>
+<Tab value="Product Managers">
+
+**Write specs with embedded wireframes**
+
+Drop WireScript into your PRDs and requirements docs. Stakeholders see the UI alongside the description. No context switching to Figma.
+
+```wire preview:370
+(card :gap 12 :padding 16
+  (text "Feature: User Onboarding" :high)
+  (text "As a new user, I want to create an account so I can access the dashboard." :low)
+  (divider)
+  (text "Wireframe:" :medium)
+  (card :gap 8 :padding 12
+    (input "Email")
+    (button "Continue" :primary)))
+```
+
+</Tab>
+<Tab value="Developers">
+
+**Wireframes as code**
+
+Version control your UI specs. Review wireframe changes in PRs. No binary files, no merge conflicts.
+
+```wire preview:120
+(box :row :gap 8
+  (badge "PR #142" :info)
+  (text "→")
+  (badge "Merged" :success))
+```
+
+</Tab>
+<Tab value="AI Agents">
+
+**Generate UIs from descriptions**
+
+The S-expression syntax is trivially easy for LLMs. Describe what you want, get a working wireframe.
+
+```wire preview:220
+(box :center :gap 16 :padding 24
+  (icon "sparkles" :size 48)
+  (text "AI-Generated UI" :high)
+  (text "Prompt → Wireframe → Iterate" :low))
+```
+
+</Tab>
+</Tabs>
+
+## Preview Anywhere
+
+Embed WireScript directly in your markdown files using fenced code blocks:
+
+````markdown
+```wire
+(box :gap 16
+  (text "Hello" :high)
+  (button "Click me" :primary))
+```
+````
+
+Then preview your wireframes with our tools:
+
+<Cards>
+  <Card icon={<Chrome />} title="Chrome Extension" href="https://chromewebstore.google.com/detail/wirescript/pmekhhogjcdhbbnkmlolfidgnlhdicei">
+    Install from Chrome Web Store to render wireframes on GitHub. View READMEs, issues, and PRs with interactive previews.
+  </Card>
+  <Card icon={<BookOpen />} title="Obsidian Plugin" href="/docs/tools/obsidian-plugin">
+    Render wireframes inline in your Obsidian notes. Coming soon to the community plugins — build from source today.
+  </Card>
+  <Card icon={<Terminal />} title="CLI" href="/docs/tools/cli">
+    Validate, render, and build wireframes from the command line. Export to HTML or PNG, generate static sites.
+  </Card>
+</Cards>
+
+## Core Concepts
+
+### Screens & Navigation
+
+Every document contains screens. Use `:to` to navigate between them or open overlays:
+
+```wire preview:300
+(wire
+  (screen main "Main" :desktop
+    (box :center :gap 12 :padding 24
+      (text "Navigation Demo" :high)
+      (button "Go to Settings" :primary :to settings)
+      (button "Open Modal" :to #confirm))
+
+    (modal :id "confirm"
+      (box :gap 16 :padding 24
+        (text "Confirm Action" :high)
+        (box :row :gap 8
+          (button "Cancel" :ghost :to :close)
+          (button "Confirm" :primary)))))
+
+  (screen settings "Settings" :desktop
+    (box :center :gap 12 :padding 24
+      (text "Settings" :high)
+      (button "Back to Main" :ghost :to main))))
+```
+
+### Reusable Components
+
+Define components to avoid repetition:
+
+```wire preview:250
+(wire
+  (define stat-card (label value)
+    (card :padding 16 :gap 4
+      (text $label :low)
+      (text $value :high)))
+
+  (screen main "Stats" :desktop
+    (box :row :gap 16 :padding 24
+      (stat-card :label "Users" :value "1,234")
+      (stat-card :label "Revenue" :value "$5,678")
+      (stat-card :label "Orders" :value "890"))))
+```
+
+### Shared Layouts
+
+Share common page structure across screens:
+
+```wire preview:350
+(wire
+  (layout app-layout
+    (box :row :full
+      (nav :gap 4 :padding 16 :width "180px"
+        (text "MyApp" :high)
+        (divider)
+        (button "Home" :ghost :full :start :to home)
+        (button "Settings" :ghost :full :start :to settings))
+      (slot)))
+
+  (screen home "Home" :desktop :layout app-layout
+    (box :gap 16 :padding 24
+      (text "Home Page" :high)
+      (text "Welcome to the app" :low)))
+
+  (screen settings "Settings" :desktop :layout app-layout
+    (box :gap 16 :padding 24
+      (text "Settings" :high)
+      (text "Configure your preferences" :low))))
+```
+
+## Elements at a Glance
+
+| Category | Elements |
+|----------|----------|
+| **Containers** | `box` `card` `section` `header` `footer` `nav` `form` `list` `scroll` `group` |
+| **Content** | `text` `icon` `image` `avatar` `badge` `divider` |
+| **Interactive** | `button` `dropdown` |
+| **Inputs** | `input` `datepicker` |
+| **Data** | `metric` `chart` `progress` `skeleton` |
+| **Navigation** | `tabs` `tab` `breadcrumb` `crumb` |
+| **Overlays** | `modal` `drawer` `popover` |
+| **Utility** | `tooltip` `toast` `empty` `slot` |
+
+
+## FAQ
+
+<Accordions>
+<Accordion title="How is this different from Figma or Sketch?">
+
+Figma and Sketch are visual editors — you drag boxes and click to style. WireScript is a **text-based DSL** — you write code that describes structure.
+
+| | Figma/Sketch | WireScript |
+|---|---|---|
+| **Editing** | Visual drag-and-drop | Text editor |
+| **Version control** | Binary files, merge conflicts | Clean diffs, easy merges |
+| **AI generation** | Plugin-dependent | Native — LLMs write it directly |
+| **Documentation** | Separate from specs | Embeds in Markdown |
+| **Use case** | High-fidelity design | Rapid wireframing |
+
+WireScript isn't a replacement — it's for the spec phase before visual design begins.
+
+</Accordion>
+<Accordion title="How is this different from AI wireframe tools?">
+
+Tools like [UX Pilot](https://uxpilot.ai/), [Visily](https://www.visily.ai/), and [Miro AI](https://miro.com/ai/wireframe/) use natural language prompts to generate visual wireframes. WireScript takes a different approach:
+
+- **Structured DSL vs. natural language** — WireScript's S-expression syntax is unambiguous and deterministic
+- **Text output vs. visual output** — WireScript produces readable code you can edit, version, and embed
+- **Human + AI workflow** — Write it yourself or let AI generate it; the syntax works either way
+
+Prompt-based tools are great for quick exploration. WireScript is better when you need wireframes that live in your codebase alongside documentation.
+
+</Accordion>
+<Accordion title="Can AI generate valid WireScript?">
+
+Yes. The S-expression syntax is simple and unambiguous — exactly what LLMs excel at. Claude, GPT, Gemini, and other models generate valid WireScript reliably because:
+
+- **Consistent structure** — Every element follows `(type content? :properties... children...)`
+- **No ambiguity** — Keywords like `:primary`, `:col`, `:gap 16` have fixed meanings
+- **Self-contained** — No external dependencies or imports to manage
+
+Ask any LLM to "draw a login form in WireScript" and it will produce working code.
+
+</Accordion>
+<Accordion title="What interactivity is supported?">
+
+WireScript supports navigation and overlays for building complete user flows:
+
+```wire
+; Navigate to another screen
+(button "Dashboard" :to dashboard)
+
+; Open a modal or drawer
+(button "Settings" :to #settings-modal)
+
+; Close the current overlay
+(button "Cancel" :to :close)
+```
+
+Screens can share layouts with auto-active navigation — sidebar links automatically highlight when you're on that screen.
+
+</Accordion>
+<Accordion title="Can I customize the styling?">
+
+WireScript intentionally renders with a neutral, consistent style. Wireframes should communicate **structure**, not aesthetics.
+
+What you can control:
+- Layout (`:row`, `:col`, `:grid`, `:gap`, `:padding`)
+- Sizing (`:width`, `:height`, `:full`, `:fit`)
+- Emphasis (`:high`, `:medium`, `:low`)
+- Variants (`:primary`, `:ghost`, `:danger`)
+- Viewport (`:mobile`, `:tablet`, `:desktop`)
+
+For pixel-perfect designs, export to PNG and use as references for your design system.
+
+</Accordion>
+<Accordion title="How do I embed WireScript in Markdown?">
+
+Use fenced code blocks with the `wire` language identifier:
+
+````markdown
+```wire
+(box :gap 16
+  (text "Hello" :high)
+  (button "Click me" :primary))
+```
+````
+
+In documentation systems that support it (like this site), add `preview` to render a live preview:
+
+````markdown
+```wire preview
+(button "Live Preview" :primary)
+```
+````
+
+</Accordion>
+</Accordions>

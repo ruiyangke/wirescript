@@ -1,0 +1,89 @@
+---
+title: toast
+description: Notification toast.
+---
+
+A notification message that appears temporarily to provide feedback.
+
+## Usage
+
+```wire preview
+(toast "Message saved")
+```
+
+## Variants
+
+```wire preview:300
+(toast "Changes saved successfully" :success)
+(toast "Something went wrong" :danger)
+(toast "Please check your input" :warning)
+(toast "New update available" :info)
+```
+
+## Properties
+
+<PropsTable element="toast" />
+
+## Examples
+
+### Success Toast
+
+```wire preview
+(toast "Your profile has been updated" :success)
+```
+
+### Error Toast
+
+```wire preview
+(toast "Failed to save changes. Please try again." :danger)
+```
+
+### Warning Toast
+
+```wire preview
+(toast "Your session will expire in 5 minutes" :warning)
+```
+
+### Info Toast
+
+```wire preview
+(toast "A new version is available" :info)
+```
+
+### Toast with Duration
+
+```wire preview
+(toast "Auto-dismissing in 5 seconds" :info :duration 5000)
+```
+
+### Multiple Toasts
+
+```wire preview:250
+(box :col :gap 8
+  (toast "File uploaded successfully" :success)
+  (toast "Processing your request..." :info)
+  (toast "Connection unstable" :warning))
+```
+
+### Toast in Context
+
+```wire preview:350
+(screen main "Main" :desktop
+  (box :col :full
+    ; Main content
+    (box :col :padding 24 :fill
+      (text "Dashboard" :high)
+      (text "Welcome back!"))
+
+    ; Toast notification (typically positioned at bottom)
+    (box :row :center :padding 16
+      (toast "Settings saved successfully" :success))))
+```
+
+### Action Toast
+
+```wire preview
+(box :row :gap 16 :padding 12
+  (text "Item deleted")
+  (button "Undo" :ghost))
+```

@@ -1,0 +1,79 @@
+---
+title: image
+description: Image placeholder.
+---
+
+Displays an image placeholder with optional sizing. The content string is used as alt text.
+
+## Usage
+
+```wire preview
+(image "Product photo")
+```
+
+## With Dimensions
+
+```wire preview:400
+(box :col :gap 12
+  (image "Product" :width "200px" :height "150px")
+  (image "Banner" :width "100%" :height "100px")
+  (image "Avatar" :width "48px" :height "48px"))
+```
+
+## Properties
+
+<PropsTable element="image" />
+
+## Examples
+
+### Product Card
+
+```wire preview:400
+(card :col :padding 0
+  (image "Product" :height "200px")
+  (box :col :gap 8 :padding 16
+    (text "Product Name" :high)
+    (text "$99.00")
+    (button "Add to Cart" :primary :full)))
+```
+
+### Hero Image
+
+```wire preview:300
+(box :col :center :gap 24
+  (image "Hero Banner" :width "100%" :height "150px")
+  (text "Welcome to Our Site" :high)
+  (button "Get Started" :primary))
+```
+
+### Image Gallery
+
+```wire preview:300
+(box :grid :cols 3 :gap 8
+  (image "Photo 1" :height "100px")
+  (image "Photo 2" :height "100px")
+  (image "Photo 3" :height "100px")
+  (image "Photo 4" :height "100px")
+  (image "Photo 5" :height "100px")
+  (image "Photo 6" :height "100px"))
+```
+
+### User Profile
+
+```wire preview:250
+(box :col :center :gap 16
+  (image "Profile Photo" :width "120px" :height "120px")
+  (text "John Doe" :high)
+  (text "Software Engineer" :low))
+```
+
+### Article Thumbnail
+
+```wire preview
+(card :row :gap 16 :padding 0
+  (image "Thumbnail" :width "120px" :height "120px")
+  (box :col :gap 8 :padding 16 :fill
+    (text "Article Title" :high)
+    (text "Short description of the article..." :low)
+    (text "Read more" :to article)))
+```

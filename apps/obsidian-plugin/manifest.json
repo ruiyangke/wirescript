@@ -1,0 +1,11 @@
+{
+  "id": "wirescript",
+  "name": "WireScript",
+  "version": "0.0.1",
+  "minAppVersion": "1.0.0",
+  "description": "Render WireScript wireframes directly in your markdown notes",
+  "author": "Ruiyang Ke",
+  "authorUrl": "https://github.com/ruiyangke/wirescript",
+  "fundingUrl": "https://github.com/sponsors/ruiyangke",
+  "isDesktopOnly": false
+}

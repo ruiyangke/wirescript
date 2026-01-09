@@ -1,0 +1,303 @@
+---
+title: CLI
+description: Validate, render, and build wireframes from the command line.
+---
+
+import { Callout } from 'fumadocs-ui/components/callout';
+import { Tab, Tabs } from 'fumadocs-ui/components/tabs';
+
+The WireScript CLI provides tools for validating, rendering, and building wireframes from the command line.
+
+## Installation
+
+<Tabs items={["pnpm", "npm", "yarn"]}>
+<Tab value="pnpm">
+```bash
+pnpm add -g @wirescript/cli
+```
+</Tab>
+<Tab value="npm">
+```bash
+npm install -g @wirescript/cli
+```
+</Tab>
+<Tab value="yarn">
+```bash
+yarn global add @wirescript/cli
+```
+</Tab>
+</Tabs>
+
+Or run directly with npx:
+
+```bash
+npx @wirescript/cli verify app.wire
+```
+
+## Commands
+
+### verify
+
+Validate a WireScript file for syntax errors and warnings.
+
+```bash
+wirescript verify <file>
+```
+
+**Options:**
+
+| Option | Description |
+|--------|-------------|
+| `--json` | Output results as JSON |
+| `-q, --quiet` | Only output errors |
+| `-w, --warnings` | Treat warnings as errors |
+| `--no-color` | Disable colored output |
+
+**Examples:**
+
+```bash
+# Validate a file
+wirescript verify app.wire
+
+# Validate with JSON output (for CI)
+wirescript verify app.wire --json
+
+# Fail on warnings (strict mode)
+wirescript verify app.wire --warnings
+
+# Read from stdin
+cat app.wire | wirescript verify -
+```
+
+**Exit codes:**
+
+| Code | Meaning |
+|------|---------|
+| `0` | Validation passed |
+| `1` | Validation errors found |
+| `2` | File not found or read error |
+
+### list
+
+List all screens in a WireScript file.
+
+```bash
+wirescript list <file>
+```
+
+**Options:**
+
+| Option | Description |
+|--------|-------------|
+| `--json` | Output as JSON |
+| `--no-color` | Disable colored output |
+
+**Examples:**
+
+```bash
+# List screens
+wirescript list app.wire
+
+# JSON output
+wirescript list app.wire --json
+```
+
+### render
+
+Render a WireScript file to HTML or PNG.
+
+```bash
+wirescript render <file> [options]
+```
+
+**Options:**
+
+| Option | Description |
+|--------|-------------|
+| `-f, --format <type>` | Output format: `html`, `png` (default: `html`) |
+| `-o, --output <path>` | Output file path (required for PNG) |
+| `-s, --screen <id>` | Screen to render (default: first) |
+| `-t, --theme <name>` | Theme: `brutalism`, `minimal` |
+| `--width <px>` | Override viewport width |
+| `--height <px>` | Override viewport height |
+| `--standalone` | Wrap in full HTML document |
+| `--title <text>` | Document title (standalone only) |
+| `--no-fonts` | Disable Google Fonts |
+
+**Examples:**
+
+```bash
+# Render to HTML (stdout)
+wirescript render app.wire > output.html
+
+# Render to HTML file
+wirescript render app.wire -o output.html
+
+# Render specific screen
+wirescript render app.wire -s settings -o settings.html
+
+# Render to PNG
+wirescript render app.wire -f png -o screenshot.png
+
+# Render with custom size
+wirescript render app.wire --width 375 --height 812 -o mobile.html
+
+# Standalone HTML with title
+wirescript render app.wire --standalone --title "My App" -o index.html
+```
+
+<Callout title="PNG requires Playwright" type="warn">
+PNG export requires Playwright. Install it with:
+```bash
+pnpm add -D playwright && npx playwright install chromium
+```
+</Callout>
+
+### build
+
+Build a static documentation site from a WireScript file with sidebar navigation.
+
+```bash
+wirescript build <file> [options]
+```
+
+**Options:**
+
+| Option | Description |
+|--------|-------------|
+| `-o, --output <dir>` | Output directory (default: `./dist`) |
+| `-t, --theme <name>` | Theme: `brutalism`, `minimal` |
+| `--title <text>` | Site title |
+| `--base <path>` | Base URL path (default: `/`) |
+| `--no-sidebar` | Disable sidebar navigation |
+| `--no-fonts` | Disable Google Fonts |
+| `-i, --interactive` | Enable full interactivity (React hydration) |
+
+**Examples:**
+
+```bash
+# Build to ./dist
+wirescript build app.wire
+
+# Build to custom directory
+wirescript build app.wire -o ./public
+
+# Build with title and base path
+wirescript build app.wire --title "My App Wireframes" --base /wireframes/
+
+# Build without sidebar
+wirescript build app.wire --no-sidebar
+```
+
+The build command generates:
+- `index.html` - Main page with screen navigation
+- Individual HTML files for each screen
+- Sidebar with links to all screens
+
+### format
+
+Format a WireScript file for consistent style.
+
+```bash
+wirescript format <file> [options]
+```
+
+**Options:**
+
+| Option | Description |
+|--------|-------------|
+| `-c, --check` | Check if file is formatted (exit 1 if not) |
+| `--no-write` | Output to stdout instead of modifying file |
+
+**Examples:**
+
+```bash
+# Format a file in place
+wirescript format app.wire
+
+# Check formatting (for CI)
+wirescript format app.wire --check
+
+# Preview formatted output
+wirescript format app.wire --no-write
+```
+
+## CI Integration
+
+### GitHub Actions
+
+```yaml
+name: Validate WireScript
+
+on: [push, pull_request]
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v2
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install CLI
+        run: pnpm add -g @wirescript/cli
+
+      - name: Validate wireframes
+        run: |
+          for file in **/*.wire; do
+            wirescript verify "$file" --warnings
+          done
+
+      - name: Check formatting
+        run: |
+          for file in **/*.wire; do
+            wirescript format "$file" --check
+          done
+```
+
+### Pre-commit Hook
+
+Add to `.husky/pre-commit`:
+
+```bash
+#!/bin/sh
+. "$(dirname "$0")/_/husky.sh"
+
+# Validate and format .wire files
+for file in $(git diff --cached --name-only --diff-filter=ACM | grep '\.wire$'); do
+  wirescript verify "$file" --warnings || exit 1
+  wirescript format "$file"
+  git add "$file"
+done
+```
+
+## Scripting
+
+All commands support `--json` output for scripting:
+
+```bash
+# Parse with jq
+wirescript verify app.wire --json | jq '.screens[].id'
+
+# Check success
+if wirescript verify app.wire --json | jq -e '.success' > /dev/null; then
+  echo "Valid!"
+fi
+```
+
+## Stdin Support
+
+The `verify` and `render` commands accept `-` to read from stdin:
+
+```bash
+# Pipe from echo
+echo '(box (text "Hello"))' | wirescript verify -
+
+# Pipe from file
+cat app.wire | wirescript render - --standalone > output.html
+
+# Generate with AI and validate
+claude "write a login form in wirescript" | wirescript verify -
+```

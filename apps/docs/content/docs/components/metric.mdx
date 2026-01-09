@@ -1,0 +1,98 @@
+---
+title: metric
+description: Key metric with optional trend indicator.
+---
+
+Displays a key metric with label, value, and optional change/trend indicators.
+
+## Usage
+
+```wire preview
+(metric :label "Users" :value "1,234")
+```
+
+## With Trend
+
+```wire preview:250
+(metric
+  :label "Revenue"
+  :value "$45,678"
+  :change "+12.5%"
+  :trend up)
+
+(metric
+  :label "Issues"
+  :value "89"
+  :change "-5%"
+  :trend down)
+```
+
+## Properties
+
+<PropsTable element="metric" />
+
+Note: The content string can be used as an alternative to `:label`. For example, `(metric "Revenue" :value "$1,234")` is equivalent to `(metric :label "Revenue" :value "$1,234")`.
+
+Note: Variant flags apply color to the value text. For example, `:success` makes the value green, `:danger` makes it red.
+
+## Examples
+
+### With Variant Colors
+
+```wire preview
+(box :row :gap 24
+  (metric :label "Growth" :value "+24%" :success)
+  (metric :label "Errors" :value "12" :danger)
+  (metric :label "Warning" :value "3" :warning))
+```
+
+### Dashboard Metrics
+
+```wire preview:250
+(box :row :gap 16
+  (metric :label "Total Users" :value "12,345" :change "+12%" :trend up)
+  (metric :label "Revenue" :value "$45,678" :change "+8%" :trend up)
+  (metric :label "Orders" :value "890" :change "-3%" :trend down)
+  (metric :label "Conversion" :value "2.4%" :change "+0.5%" :trend up))
+```
+
+### Metric Cards
+
+```wire preview:250
+(box :grid :cols 3 :gap 16
+  (card :padding 20
+    (metric :label "Active Users" :value "1,234"))
+  (card :padding 20
+    (metric :label "Sessions" :value "5,678"))
+  (card :padding 20
+    (metric :label "Bounce Rate" :value "32%")))
+```
+
+### Detailed Stats
+
+```wire preview:300
+(card :col :gap 16 :padding 24
+  (box :row :between
+    (text "Analytics Overview" :high)
+    (input "Period" :type select :options "Today,Week,Month"))
+  (divider)
+  (box :row :gap 24
+    (metric :label "Page Views" :value "45,678" :change "+15%" :trend up)
+    (metric :label "Unique Visitors" :value "12,345" :change "+8%" :trend up)
+    (metric :label "Avg. Duration" :value "4m 32s" :change "-2%" :trend down)))
+```
+
+### Simple Stats
+
+```wire preview
+(box :row :gap 32
+  (box :col :gap 4
+    (text "1,234" :high)
+    (text "Users" :low))
+  (box :col :gap 4
+    (text "$5,678" :high)
+    (text "Revenue" :low))
+  (box :col :gap 4
+    (text "89%" :high)
+    (text "Satisfaction" :low)))
+```

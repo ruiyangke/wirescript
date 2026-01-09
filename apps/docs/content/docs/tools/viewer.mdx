@@ -1,0 +1,162 @@
+---
+title: Viewer App
+description: The WireScript Viewer for editing and previewing wireframes.
+---
+
+The WireScript Viewer is a web application for editing and previewing `.wire` files.
+
+## Running the Viewer
+
+### Web Version
+
+```bash
+# Start development server
+pnpm dev:web
+
+# Build for production
+pnpm build:web
+```
+
+Open http://localhost:5173 in your browser.
+
+### Electron Version
+
+```bash
+# Start Electron app
+pnpm dev
+
+# Build Electron app
+pnpm build
+```
+
+## Interface Overview
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│  Toolbar (screen selector, viewport, zoom, export)          │
+├───────┬─────────────────────────────────────────────────────┤
+│       │  Tab Bar (open files)                               │
+│  S    ├──────────────────────────┬──────────────────────────┤
+│  i    │                          │                          │
+│  d    │     Code Editor          │      Preview             │
+│  e    │     (collapsible)        │                          │
+│  b    │                          │                          │
+│  a    │                          │                          │
+│  r    │                          │                          │
+│       │                          │                          │
+└───────┴──────────────────────────┴──────────────────────────┘
+```
+
+### Toolbar
+
+- **Screen selector** — Switch between screens (when multiple exist)
+- **Viewport** — Change preview size (Mobile, Tablet, Desktop)
+- **Zoom** — Adjust preview zoom level
+- **Export PNG** — Save wireframe as image
+
+### Sidebar
+
+- **Explorer** — Browse project files
+- **Screens** — Navigate screens in current file
+
+### Editor
+
+- Syntax highlighting for WireScript
+- Error highlighting
+- Click the handle to show/hide
+- Drag the handle to resize
+
+### Preview
+
+- Live preview of your wireframe
+- Clickable navigation (buttons with `:to`)
+- Overlay interactions (modals, drawers)
+
+## Keyboard Shortcuts
+
+| Shortcut | Action |
+|----------|--------|
+| `Ctrl/Cmd + S` | Save file (Electron only) |
+| `Ctrl/Cmd + W` | Close tab |
+| `Ctrl/Cmd + B` | Toggle sidebar |
+
+## Working with Files
+
+### Opening Files
+
+1. Click the folder icon to open a project folder
+2. Click individual `.wire` files in the sidebar
+
+### Creating Files
+
+1. Right-click in the sidebar
+2. Select "New File"
+3. Enter a filename (`.wire` extension added automatically)
+
+### Saving
+
+- **Web version**: Files auto-save to browser localStorage
+- **Electron version**: Use `Ctrl/Cmd + S` to save to disk
+- Unsaved changes shown with a dot (•) in the tab
+
+## Viewport Modes
+
+The viewer automatically syncs viewport with the screen's definition:
+
+| Screen Definition | Viewport Size |
+|------------------|---------------|
+| `:mobile` | 375 × 667 |
+| `:tablet` | 768 × 1024 |
+| `:desktop` | 1280 × 800 |
+
+When switching screens, the viewport updates to match. You can manually override by selecting a different preset.
+
+The dropdown shows a bullet (●) next to the preset that matches the current screen's definition.
+
+## Exporting
+
+Click "Export PNG" to download the current preview as an image:
+
+- Exports at 2x resolution for crisp images
+- Background matches the wireframe theme
+- Filename includes the screen name
+
+## Project Structure
+
+When you open a folder, the viewer displays `.wire` files in a tree structure:
+
+```
+my-project/
+├── screens/
+│   ├── home.wire
+│   ├── dashboard.wire
+│   └── settings.wire
+└── components/
+    └── shared.wire
+```
+
+Only `.wire` files appear in the file browser.
+
+## Tips
+
+### Multiple Tabs
+
+- Open multiple files in tabs
+- Click tabs to switch
+- Close with the × button or `Ctrl/Cmd + W`
+
+### Quick Navigation
+
+- Use the Screens panel to jump between screens
+- Click navigation buttons in the preview to test flows
+
+### Live Editing
+
+- Changes appear instantly in the preview
+- Errors show in red below the editor
+- Fix errors to see the preview update
+
+### Comparing Screens
+
+- Override viewport to see how different screens look at the same size
+- Useful for ensuring consistent layouts

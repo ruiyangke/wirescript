@@ -1,0 +1,4 @@
+{
+  "title": "Tools",
+  "pages": ["chrome-extension", "obsidian-plugin", "cli", "viewer"]
+}

@@ -1,0 +1,268 @@
+---
+title: Getting Started
+description: Create your first WireScript wireframe in 5 minutes.
+---
+
+import { Callout } from 'fumadocs-ui/components/callout';
+import { Cards, Card } from 'fumadocs-ui/components/card';
+
+This guide takes you from zero to a complete wireframe in 5 minutes. Every code block below is interactive — edit directly or try examples in the playground.
+
+<Callout type="info" title="Try the Playground">
+Open the [WireScript Playground](https://playground.wirescript.org) in a new tab to experiment as you learn. Paste any example, tweak it, and see changes instantly.
+</Callout>
+
+## Your First Element
+
+Let's start with a single button:
+
+```wire preview
+(button "Click me")
+```
+
+That's it. Parentheses, element type, content string. Elements that display text follow this pattern.
+
+Add a flag to change its style:
+
+```wire preview
+(button "Sign Up" :primary)
+```
+
+Flags are keywords that modify behavior. `:primary` makes the button stand out.
+
+## Grouping Elements
+
+Use `box` to group elements together. By default, elements stack vertically:
+
+```wire preview:180
+(box
+  (text "Welcome")
+  (button "Continue"))
+```
+
+Add `:gap` to control spacing:
+
+```wire preview:180
+(box :gap 16
+  (text "Welcome")
+  (text "Please sign in to continue")
+  (button "Sign In" :primary))
+```
+
+Use `:high` and `:low` to control text emphasis:
+
+```wire preview:180
+(box :gap 16
+  (text "Welcome" :high)
+  (text "Please sign in to continue" :low)
+  (button "Sign In" :primary))
+```
+
+Try `:row` for horizontal layout:
+
+```wire preview
+(box :row :gap 8
+  (button "Cancel" :ghost)
+  (button "Save" :primary))
+```
+
+You can use `:col` to be explicit about vertical layout, but it's optional since that's the default.
+
+## Adding Inputs
+
+Use `input` for form fields. The `:type` property controls the input style:
+
+```wire preview:280
+(box :gap 12
+  (input "Email" :type email)
+  (input "Password" :type password)
+  (input "Remember me" :type checkbox)
+  (button "Submit" :primary))
+```
+
+## Building a Card
+
+Now combine everything into a card:
+
+```wire preview:350
+(card :gap 16 :padding 20
+  (text "Sign Up" :high)
+  (input "Email" :type email)
+  (input "Password" :type password)
+  (button "Create Account" :primary :full))
+```
+
+Notice the pattern:
+- `card` is a styled container with border and shadow
+- `:padding 20` adds space inside
+- `:full` makes the button span full width
+
+## Adding a Screen
+
+Wrap your UI in a `screen` inside a `wire` document:
+
+```wire preview:420
+(wire
+  (screen signup "Sign Up" :desktop
+    (box :center :full :padding 32
+      (card :gap 16 :padding 24 :width "360px"
+        (text "Create Account" :high)
+        (text "Start your free trial" :low)
+        (input "Email" :type email)
+        (input "Password" :type password)
+        (button "Sign Up" :primary :full)
+        (text "Already have an account?" :low :center)))))
+```
+
+The screen has:
+- **ID** (`signup`) — for navigation
+- **Name** (`"Sign Up"`) — display title
+- **Viewport** (`:desktop`) — size hint
+
+## Adding a Modal
+
+Use `modal` to create overlays. Reference them with `#id`:
+
+```wire preview:420
+(wire
+  (screen login "Login" :desktop
+    (box :center :full :padding 32
+      (card :gap 16 :padding 24 :width "360px"
+        (text "Welcome Back" :high)
+        (input "Email" :type email)
+        (input "Password" :type password)
+        (button "Sign In" :primary :full)
+        (text "Forgot password?" :to #forgot)))
+
+    (modal :id "forgot"
+      (box :gap 16 :padding 24 :width "360px"
+        (text "Reset Password" :high)
+        (text "Enter your email to receive a reset link." :low)
+        (input "Email" :type email)
+        (box :row :gap 8
+          (button "Cancel" :ghost :to :close)
+          (button "Send Link" :primary))))))
+```
+
+The pattern:
+- `modal` lives inside the screen, after the main content
+- `:id "forgot"` gives the modal a name
+- `:to #forgot` opens it (note the `#` prefix)
+- `:to :close` closes the current overlay
+
+<Callout type="info" title="Try it">
+Click "Forgot password?" to open the modal, then "Cancel" to close it.
+</Callout>
+
+## Multiple Screens & Navigation
+
+Create a flow between screens using `:to`:
+
+```wire preview:420
+(wire
+  (screen login "Login" :desktop
+    (box :center :full :padding 32
+      (card :gap 16 :padding 24 :width "360px"
+        (text "Welcome Back" :high)
+        (input "Email" :type email)
+        (input "Password" :type password)
+        (button "Sign In" :primary :full)
+        (text "Need an account? Sign up" :to signup))))
+
+  (screen signup "Sign Up" :desktop
+    (box :center :full :padding 32
+      (card :gap 16 :padding 24 :width "360px"
+        (text "Create Account" :high)
+        (input "Email" :type email)
+        (input "Password" :type password)
+        (button "Sign Up" :primary :full)
+        (text "Already have an account? Sign in" :to login)))))
+```
+
+<Callout type="info" title="Try it">
+Click the "Sign up" text in the preview to navigate between screens.
+</Callout>
+
+## Complete Example
+
+Let's combine everything into a polished auth flow with multiple screens and a modal:
+
+```wire preview:500
+(wire
+  (screen login "Login" :desktop
+    (box :center :full :padding 32
+      (card :gap 20 :padding 32 :width "400px"
+        (text "Welcome Back" :high)
+        (text "Sign in to your account" :low)
+        (box :gap 12
+          (input "Email" :type email)
+          (input "Password" :type password))
+        (box :row :gap 8
+          (input "Remember me" :type checkbox)
+          (text "Forgot password?" :to #forgot))
+        (button "Sign In" :primary :full)
+        (box :row :center :gap 8
+          (text "New here?" :low)
+          (text "Create account" :to signup))))
+
+    (modal :id "forgot"
+      (box :gap 16 :padding 24 :width "400px"
+        (text "Reset Password" :high)
+        (text "We'll send you a reset link." :low)
+        (input "Email" :type email)
+        (box :row :gap 8
+          (button "Cancel" :ghost :to :close)
+          (button "Send Link" :primary)))))
+
+  (screen signup "Sign Up" :desktop
+    (box :center :full :padding 32
+      (card :gap 20 :padding 32 :width "400px"
+        (text "Create Account" :high)
+        (text "Start your free trial today" :low)
+        (box :gap 12
+          (input "Full Name" :type text)
+          (input "Email" :type email)
+          (input "Password" :type password))
+        (button "Create Account" :primary :full)
+        (box :row :center :gap 8
+          (text "Already have an account?" :low)
+          (text "Sign in" :to login))))))
+```
+
+<Callout type="info" title="Try it">
+Navigate between screens and open the forgot password modal to see everything working together.
+</Callout>
+
+## Syntax Summary
+
+Every element follows this pattern:
+
+```
+(element-type "content" :flags :property value children)
+```
+
+| Part | Description | Example |
+|------|-------------|---------|
+| `element-type` | What to render | `button`, `text`, `box`, `card` |
+| `"content"` | Text content (optional) | `"Click me"`, `"Welcome"` |
+| `:flags` | Boolean modifiers | `:primary`, `:col`, `:center` |
+| `:property value` | Key-value pairs | `:gap 16`, `:to login` |
+| `children` | Nested elements | `(box (text "hi"))` |
+
+## Common Flags
+
+| Category | Flags | Description |
+|----------|-------|-------------|
+| Layout | `:row`, `:col` | Flex direction |
+| Sizing | `:full` | Fill available space |
+| Alignment | `:center`, `:start`, `:end` | Content positioning |
+| Variants | `:primary`, `:ghost`, `:danger` | Visual style |
+| Emphasis | `:high`, `:medium`, `:low` | Text prominence |
+
+## What's Next?
+
+<Cards>
+  <Card title="Playground" href="https://playground.wirescript.org" description="Build and share wireframes in the browser" />
+  <Card title="Components" href="/docs/components" description="Explore all 30+ components with examples" />
+  <Card title="Chrome Extension" href="/docs/tools/chrome-extension" description="Render wireframes on GitHub" />
+</Cards>

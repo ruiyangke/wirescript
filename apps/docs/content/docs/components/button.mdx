@@ -1,0 +1,107 @@
+---
+title: button
+description: Interactive button with variants.
+---
+
+Interactive button with multiple visual variants and states.
+
+## Usage
+
+```wire preview
+(button "Click me")
+```
+
+## Variants
+
+```wire preview
+(box :row :gap 8
+  (button "Primary" :primary)
+  (button "Secondary" :secondary)
+  (button "Ghost" :ghost)
+  (button "Danger" :danger))
+```
+
+## States
+
+```wire preview
+(box :row :gap 8
+  (button "Disabled" :primary :disabled)
+  (button "Loading" :primary :loading)
+  (button "Active" :ghost :active))
+```
+
+## Sizing
+
+```wire preview
+(button "Full Width" :primary :full)
+```
+
+## Navigation
+
+```wire
+; Navigate to screen
+(button "Go to Dashboard" :primary :to dashboard)
+
+; Open overlay
+(button "Open Modal" :ghost :to "#my-modal")
+
+; Close overlay
+(button "Close" :ghost :to :close)
+```
+
+## Properties
+
+<PropsTable element="button" />
+
+## Examples
+
+### Button Group
+
+```wire preview
+(box :row :gap 8
+  (button "Cancel" :ghost)
+  (button "Save" :primary))
+```
+
+### All Variants
+
+```wire preview:280
+(box :col :gap 12
+  (button "Primary Action" :primary)
+  (button "Secondary Action" :secondary)
+  (button "Ghost Button" :ghost)
+  (button "Danger Action" :danger))
+```
+
+### With Icons
+
+```wire
+(box :row :gap 8
+  (button "Edit" :ghost)
+  (button "Delete" :danger)
+  (button "Share" :secondary))
+```
+
+### Navigation Buttons
+
+```wire preview:250
+(nav :col :gap 4 :padding 16
+  (button "Dashboard" :ghost :full :start :to dashboard)
+  (button "Settings" :ghost :full :start :to settings)
+  (button "Logout" :ghost :full :start :danger))
+```
+
+### Form Actions
+
+```wire preview
+(box :row :end :gap 12
+  (button "Cancel" :ghost)
+  (button "Save Draft" :secondary)
+  (button "Publish" :primary))
+```
+
+### Loading State
+
+```wire preview
+(button "Submitting..." :primary :loading :disabled)
+```

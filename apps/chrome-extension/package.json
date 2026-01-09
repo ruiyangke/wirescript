@@ -1,0 +1,28 @@
+{
+  "name": "@wirescript/chrome-extension",
+  "version": "0.0.1",
+  "private": true,
+  "description": "Chrome extension to render WireScript wireframes in GitHub markdown",
+  "type": "module",
+  "license": "Apache-2.0",
+  "author": "Ruiyang Ke",
+  "scripts": {
+    "dev": "node esbuild.config.mjs",
+    "build": "node esbuild.config.mjs production",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@wirescript/dsl": "workspace:*",
+    "@wirescript/renderer": "workspace:*",
+    "html2canvas-pro": "^1.6.3",
+    "preact": "^10.28.2"
+  },
+  "devDependencies": {
+    "@types/chrome": "^0.0.287",
+    "@types/node": "^20.0.0",
+    "@types/react": "catalog:",
+    "@types/react-dom": "catalog:",
+    "esbuild": "^0.20.0",
+    "typescript": "^5.0.0"
+  }
+}

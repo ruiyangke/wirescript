@@ -1,0 +1,72 @@
+---
+title: footer
+description: Page footer with top border.
+---
+
+A semantic footer element with a top border, typically used for page footers.
+
+## Usage
+
+```wire preview
+(footer :center :padding 24
+  (text "© 2024 Company" :low))
+```
+
+## Basic Examples
+
+```wire preview:250
+; Simple footer
+(footer :center :padding 16
+  (text "© Company Inc." :low))
+
+; Footer with links
+(footer :row :between :padding 24
+  (text "© 2024 Company")
+  (box :row :gap 16
+    (text "Privacy")
+    (text "Terms")
+    (text "Contact")))
+```
+
+## Properties
+
+<PropsTable element="footer" />
+
+## Examples
+
+### Full Footer
+
+```wire preview:300
+(footer :col :gap 24 :padding 32
+  (box :row :between
+    (box :col :gap 8
+      (text "Company" :high)
+      (text "About" :low)
+      (text "Careers" :low)
+      (text "Blog" :low))
+    (box :col :gap 8
+      (text "Product" :high)
+      (text "Features" :low)
+      (text "Pricing" :low)
+      (text "Docs" :low))
+    (box :col :gap 8
+      (text "Legal" :high)
+      (text "Privacy" :low)
+      (text "Terms" :low)))
+  (divider)
+  (box :row :between
+    (text "© 2024 Company Inc." :low)
+    (box :row :gap 12
+      (icon "twitter")
+      (icon "github")
+      (icon "linkedin"))))
+```
+
+### Minimal Footer
+
+```wire preview
+(footer :row :center :gap 16 :padding 16
+  (text "Made with")
+  (icon "heart")
+  (text "by Team"))
+```

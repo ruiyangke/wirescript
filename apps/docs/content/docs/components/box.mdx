@@ -1,0 +1,140 @@
+---
+title: box
+description: Generic flex container for layout.
+---
+
+The primary layout element in WireScript. Use `box` for any flex-based layout.
+
+## Usage
+
+```wire preview
+(box :col :gap 16
+  (text "Child 1")
+  (text "Child 2"))
+```
+
+## Direction
+
+```wire preview:250
+; Vertical column (default)
+(box :col
+  (text "Top")
+  (text "Bottom"))
+
+; Horizontal row
+(box :row
+  (text "Left")
+  (text "Right"))
+```
+
+## Grid Layout
+
+```wire preview:250
+(box :grid :cols 3 :gap 16
+  (card (text "1"))
+  (card (text "2"))
+  (card (text "3"))
+  (card (text "4"))
+  (card (text "5"))
+  (card (text "6")))
+```
+
+## Alignment
+
+```wire preview:300
+; Center both axes
+(box :col :center :full
+  (text "Centered"))
+
+; Align to start
+(box :row :start
+  (button "Left aligned"))
+
+; Align to end
+(box :row :end
+  (button "Right aligned"))
+
+; Space between
+(box :row :between
+  (text "Left")
+  (text "Right"))
+
+; Space around
+(box :row :around
+  (text "A")
+  (text "B")
+  (text "C"))
+```
+
+## Spacing
+
+```wire preview:300
+; Gap between children
+(box :col :gap 24
+  (text "First")
+  (text "Second"))
+
+; Padding inside
+(box :padding 16
+  (text "Padded"))
+
+; Both
+(box :col :gap 16 :padding 24
+  (text "First")
+  (text "Second"))
+```
+
+## Sizing
+
+```wire preview:250
+; Full width and height
+(box :full
+  (text "Full size"))
+
+; Fixed width
+(box :width "300px"
+  (text "300px wide"))
+
+; Fixed height
+(box :height "200px"
+  (text "200px tall"))
+```
+
+## Properties
+
+<PropsTable element="box" />
+
+## Examples
+
+### Card Layout
+
+```wire preview
+(box :row :gap 16
+  (card :fill :padding 16
+    (text "Card 1"))
+  (card :fill :padding 16
+    (text "Card 2"))
+  (card :fill :padding 16
+    (text "Card 3")))
+```
+
+### Centered Form
+
+```wire preview:300
+(box :col :center :full :gap 24
+  (text "Sign In" :high)
+  (box :col :gap 16 :width "300px"
+    (input "Email" :type email)
+    (input "Password" :type password)
+    (button "Submit" :primary :full)))
+```
+
+### Dashboard Grid
+
+```wire preview:300
+(box :grid :cols 2 :gap 16 :padding 24
+  (metric :label "Users" :value "1,234")
+  (metric :label "Revenue" :value "$5,678")
+  (chart :type line :height 200)
+  (chart :type bar :height 200))
+```

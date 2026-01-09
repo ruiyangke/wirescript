@@ -1,0 +1,94 @@
+---
+title: tooltip
+description: Hover tooltip.
+---
+
+A small text hint that appears on hover. Wraps a child element to show tooltip on hover.
+
+## Usage
+
+```wire preview
+(tooltip "Click to copy"
+  (button "Copy" :ghost))
+```
+
+## Properties
+
+<PropsTable element="tooltip" />
+
+## Examples
+
+### Positioned Tooltips
+
+```wire preview
+(box :row :gap 16
+  (tooltip "Top tooltip" :top
+    (button "Top"))
+  (tooltip "Bottom tooltip" :bottom
+    (button "Bottom"))
+  (tooltip "Left tooltip" :left
+    (button "Left"))
+  (tooltip "Right tooltip" :right
+    (button "Right")))
+```
+
+### Disabled Button Tooltip
+
+```wire preview
+(tooltip "You need to select an item first"
+  (button "Delete" :danger :disabled))
+```
+
+### Avatar Tooltip
+
+```wire preview
+(box :row :gap -8
+  (tooltip "Alice Johnson"
+    (avatar "AJ"))
+  (tooltip "Bob Smith"
+    (avatar "BS"))
+  (tooltip "Carol Williams"
+    (avatar "CW")))
+```
+
+### Icon with Tooltip
+
+```wire preview
+(box :row :gap 8
+  (tooltip "Edit item"
+    (icon "edit"))
+  (tooltip "Copy to clipboard"
+    (icon "copy"))
+  (tooltip "Delete item"
+    (icon "trash")))
+```
+
+### Form Field Help
+
+```wire preview
+(box :col :gap 8
+  (box :row :gap 8
+    (text "Password")
+    (tooltip "Must be at least 8 characters with one number"
+      (icon "info")))
+  (input :type "password" :placeholder "Enter password"))
+```
+
+### Toolbar with Tooltips
+
+```wire preview
+(box :row :gap 4 :padding 8
+  (tooltip "Bold (Ctrl+B)"
+    (icon "bold"))
+  (tooltip "Italic (Ctrl+I)"
+    (icon "italic"))
+  (tooltip "Underline (Ctrl+U)"
+    (icon "underline"))
+  (divider)
+  (tooltip "Align left"
+    (icon "align-left"))
+  (tooltip "Align center"
+    (icon "align-center"))
+  (tooltip "Align right"
+    (icon "align-right")))
+```

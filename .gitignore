@@ -1,0 +1,51 @@
+# Dependencies
+node_modules/
+
+# Build outputs
+dist/
+dist-electron/
+dist-web/
+*.tsbuildinfo
+
+# Logs
+*.log
+npm-debug.log*
+pnpm-debug.log*
+
+# Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Nix/direnv
+.direnv/
+result
+
+# Test coverage
+coverage/
+
+# Cache
+.cache/
+.turbo/
+.eslintcache
+.prettiercache
+
+# Electron
+release/
+*.asar
+
+# Temporary
+tmp/
+temp/
+apps/docs/.wire-examples/

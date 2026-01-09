@@ -1,0 +1,165 @@
+---
+title: modal
+description: Centered modal dialog.
+---
+
+A centered modal dialog overlay. Defined inside screens and triggered by `:to "#id"`.
+
+## Usage
+
+```wire preview:400
+(screen main "Main" :desktop
+  (box :col :center :full
+    (button "Open Modal" :primary :to "#my-modal"))
+
+  (modal :id "my-modal"
+    (box :col :gap 16 :padding 24
+      (text "Modal Content" :high)
+      (text "This is a modal dialog.")
+      (button "Close" :ghost :to :close))))
+```
+
+## Opening a Modal
+
+```wire
+(button "Open Modal" :to "#my-modal")
+```
+
+## Closing a Modal
+
+```wire
+(button "Close" :to :close)
+```
+
+## Flags
+
+| Flag | Effect |
+|------|--------|
+| `:open` | Modal is initially open |
+| `:top` | Position toward top |
+| `:bottom` | Position toward bottom |
+| `:left` | Position toward left |
+| `:right` | Position toward right |
+| `:row` | Horizontal layout |
+| `:col` | Vertical layout |
+| `:grid` | Grid layout |
+| `:center` | Center alignment |
+| `:start` | Start alignment |
+| `:end` | End alignment |
+| `:between` | Space between |
+| `:full` | Full size |
+| `:fill` | Fill available space |
+
+## Properties
+
+| Property | Type | Example |
+|----------|------|---------|
+| `:id` | string | `:id "confirm"` |
+| `:title` | string | `:title "Dialog Title"` |
+| `:gap` | number | `:gap 16` |
+| `:padding` | number | `:padding 24` |
+| `:width` | any | `:width "400px"` |
+| `:height` | any | `:height "300px"` |
+
+Note: Default max width is 600px or 90% of container.
+
+## Examples
+
+### Initially Open Modal
+
+```wire preview:400
+(screen main "Main" :desktop
+  (modal :id "welcome" :open
+    (box :col :gap 16 :padding 24
+      (text "Welcome!" :high)
+      (text "This modal opens automatically.")
+      (button "Got it" :primary :to :close))))
+```
+
+### Confirmation Modal
+
+```wire preview:400
+(screen main "Main" :desktop
+  (box :col :padding 24
+    (button "Delete Item" :danger :to "#confirm"))
+
+  (modal :id "confirm"
+    (box :col :gap 20 :padding 24
+      (text "Delete Item?" :high)
+      (text "This action cannot be undone." :low)
+      (box :row :gap 12 :end
+        (button "Cancel" :ghost :to :close)
+        (button "Delete" :danger)))))
+```
+
+### Form Modal
+
+```wire preview:500
+(screen main "Main" :desktop
+  (button "Add User" :primary :to "#add-user")
+
+  (modal :id "add-user"
+    (box :col :gap 20 :padding 24
+      (text "Add New User" :high)
+      (form :col :gap 16
+        (input "Name")
+        (input "Email" :type email)
+        (input "Role" :type select :options "Admin,Editor,Viewer"))
+      (box :row :gap 12 :end
+        (button "Cancel" :ghost :to :close)
+        (button "Add User" :primary)))))
+```
+
+### Info Modal
+
+```wire preview:400
+(screen main "Main" :desktop
+  (icon "info" :to "#info")
+
+  (modal :id "info"
+    (box :col :gap 16 :padding 24
+      (box :row :between
+        (text "About" :high)
+        (icon "x" :to :close))
+      (text "This application helps you create wireframes using a simple text-based syntax.")
+      (button "Got it" :primary :full :to :close))))
+```
+
+### Image Preview Modal
+
+```wire preview:500
+(screen gallery "Gallery" :desktop
+  (box :grid :cols 3 :gap 8
+    (image "Photo 1" :to "#preview")
+    (image "Photo 2" :to "#preview")
+    (image "Photo 3" :to "#preview"))
+
+  (modal :id "preview"
+    (box :col :gap 16 :padding 16
+      (box :row :end
+        (icon "x" :to :close))
+      (image "Preview" :width "600px" :height "400px"))))
+```
+
+### Multi-step Modal
+
+```wire preview:500
+(screen main "Main" :desktop
+  (button "Start Wizard" :primary :to "#wizard")
+
+  (modal :id "wizard"
+    (box :col :gap 20 :padding 24
+      (progress :value 50)
+      (text "Step 2 of 4" :low)
+      (text "Choose Your Plan" :high)
+      (box :col :gap 12
+        (card :row :between :padding 16
+          (text "Basic")
+          (text "$9/mo"))
+        (card :row :between :padding 16
+          (text "Pro")
+          (text "$29/mo")))
+      (box :row :between
+        (button "Back" :ghost)
+        (button "Next" :primary)))))
+```

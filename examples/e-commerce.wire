@@ -1,0 +1,606 @@
+; E-Commerce Store - Shopping experience showcasing:
+; - Product grid with filters
+; - Shopping cart drawer
+; - Product quick view
+; - Category navigation
+; - Search functionality
+; - Responsive product cards
+
+(wire
+  (meta
+    :title "E-Commerce Store"
+    :context shopping
+    :audience "online-shoppers"
+    :goal "browse and purchase products")
+
+  ; Reusable Components
+  (define product-card (name price original-price rating reviews discount)
+    (card :col :gap 0
+      ; Image with discount badge
+      (box :relative
+        (image $name :height "200px")
+        (badge $discount :danger :absolute))
+      ; Product info
+      (box :col :gap 12 :padding 16
+        (text $name :medium)
+        (box :row :gap 8
+          (box :row :gap 4
+            (icon "star")
+            (text $rating :low))
+          (text $reviews :low))
+        (box :row :gap 12
+          (text $price :high)
+          (text $original-price :low))
+        (button "Add to Cart" :primary :full))))
+
+  (define category-card (name icon-name count)
+    (card :col :center :gap 12 :padding 20
+      (icon $icon-name)
+      (text $name :medium)
+      (text $count :low)))
+
+  (define cart-item (name price qty image-desc)
+    (box :row :gap 16 :padding 16
+      (image $image-desc :width "80px" :height "80px")
+      (box :col :fill :gap 8
+        (text $name :medium)
+        (text $price :high)
+        (box :row :gap 12
+          (button :icon :ghost :icon "minus")
+          (text $qty)
+          (button :icon :ghost :icon "plus")))
+      (button :icon :ghost :icon "x")))
+
+  (define filter-section (title)
+    (box :col :gap 12
+      (text $title :medium)))
+
+  ; Main Shop Screen
+  (screen shop "Shop" :desktop
+    (box :col :full
+      ; Top Header Bar
+      (header :row :between :padding 16
+        ; Logo
+        (box :row :gap 12
+          (icon "shopping-bag")
+          (text "ShopNow" :high))
+
+        ; Search
+        (box :row :fill :padding 16
+          (input :type text :placeholder "Search for products..." :fill))
+
+        ; Actions
+        (box :row :gap 16
+          (button "Wishlist" :ghost :to "#wishlist")
+          (box :relative
+            (button "Cart" :ghost :to "#cart")
+            (badge "3" :danger :absolute))
+          (avatar "User")))
+
+      ; Category Navigation
+      (nav :row :center :gap 32 :padding 12
+        (text "All Products" :active)
+        (text "Electronics")
+        (text "Clothing")
+        (text "Home & Garden")
+        (text "Sports")
+        (text "Books")
+        (text "Sale" :danger))
+
+      ; Main Content
+      (box :row :full
+        ; Filters Sidebar
+        (box :col :gap 0 :width "280px"
+          (box :row :between :padding 24
+            (text "Filters" :high)
+            (button "Clear All" :ghost))
+
+          ; Scrollable filter sections
+          (scroll :col :fill :gap 24 :padding 24
+            ; Price Range
+            (box :col :gap 12
+              (text "Price Range" :medium)
+              (box :row :gap 12
+                (input :type text :placeholder "Min")
+                (text "-" :low)
+                (input :type text :placeholder "Max"))
+              (box :col :gap 8
+                (box :row :gap 8
+                  (input :type checkbox)
+                  (text "Under $25"))
+                (box :row :gap 8
+                  (input :type checkbox :checked true)
+                  (text "$25 - $50"))
+                (box :row :gap 8
+                  (input :type checkbox :checked true)
+                  (text "$50 - $100"))
+                (box :row :gap 8
+                  (input :type checkbox)
+                  (text "Over $100"))))
+
+            (divider)
+
+            ; Rating
+            (box :col :gap 12
+              (text "Rating" :medium)
+              (box :col :gap 8
+                (box :row :gap 8
+                  (input :type checkbox)
+                  (text "4 stars & up"))
+                (box :row :gap 8
+                  (input :type checkbox)
+                  (text "3 stars & up"))
+                (box :row :gap 8
+                  (input :type checkbox)
+                  (text "2 stars & up"))))
+
+            (divider)
+
+            ; Brand
+            (box :col :gap 12
+              (text "Brand" :medium)
+              (box :col :gap 8
+                (box :row :gap 8
+                  (input :type checkbox :checked true)
+                  (text "TechPro"))
+                (box :row :gap 8
+                  (input :type checkbox)
+                  (text "SoundMax"))
+                (box :row :gap 8
+                  (input :type checkbox)
+                  (text "HomeStyle"))
+                (box :row :gap 8
+                  (input :type checkbox)
+                  (text "FitGear"))))
+
+            (divider)
+
+            ; Availability
+            (box :col :gap 12
+              (text "Availability" :medium)
+              (box :col :gap 8
+                (box :row :gap 8
+                  (input :type checkbox :checked true)
+                  (text "In Stock"))
+                (box :row :gap 8
+                  (input :type checkbox)
+                  (text "Pre-Order")))))
+
+          (box :padding 24
+            (button "Apply Filters" :primary :full)))
+
+        ; Product Grid (scrollable)
+        (scroll :col :fill :padding 24 :gap 24
+          ; Results Header
+          (box :row :between
+            (box :col :gap 4
+              (text "Electronics" :high)
+              (text "Showing 24 of 156 products" :low))
+            (box :row :gap 12
+              (input "Sort by" :type select :options "Featured,Price: Low to High,Price: High to Low,Newest,Best Rated")
+              (button "Grid" :ghost :active)
+              (button "List" :ghost)))
+
+          ; Products
+          (box :grid :cols 3 :gap 24
+            (product-card
+              :name "Wireless Headphones Pro"
+              :price "$79.99"
+              :original-price "$99.99"
+              :rating "4.8"
+              :reviews "(2,451)"
+              :discount "-20%")
+            (product-card
+              :name "Smart Watch Series 5"
+              :price "$249.00"
+              :original-price "$299.00"
+              :rating "4.6"
+              :reviews "(1,823)"
+              :discount "-17%")
+            (product-card
+              :name "Portable Bluetooth Speaker"
+              :price "$45.99"
+              :original-price "$59.99"
+              :rating "4.5"
+              :reviews "(987)"
+              :discount "-23%")
+            (product-card
+              :name "USB-C Charging Hub"
+              :price "$34.99"
+              :original-price "$44.99"
+              :rating "4.7"
+              :reviews "(654)"
+              :discount "-22%")
+            (product-card
+              :name "Mechanical Keyboard RGB"
+              :price "$89.99"
+              :original-price "$119.99"
+              :rating "4.9"
+              :reviews "(3,210)"
+              :discount "-25%")
+            (product-card
+              :name "Wireless Mouse Ergonomic"
+              :price "$29.99"
+              :original-price "$39.99"
+              :rating "4.4"
+              :reviews "(1,567)"
+              :discount "-25%"))
+
+          ; Pagination
+          (box :row :center :gap 8 :padding 24
+            (button "Previous" :ghost :disabled)
+            (badge "1" :primary)
+            (button "2" :ghost)
+            (button "3" :ghost)
+            (button "4" :ghost)
+            (button "..." :ghost :disabled)
+            (button "13" :ghost)
+            (button "Next" :ghost)))))
+
+    ; Cart Drawer
+    (drawer :id "cart" :right
+      (box :col :full :width "420px"
+        ; Header
+        (box :row :between :padding 24
+          (box :row :gap 12
+            (text "Shopping Cart" :high)
+            (badge "3 items"))
+          (button :icon :ghost :icon "x" :to :close))
+
+        ; Cart Items
+        (scroll :col :fill
+          (cart-item
+            :name "Wireless Headphones Pro"
+            :price "$79.99"
+            :qty "1"
+            :image-desc "Headphones thumbnail")
+          (divider)
+          (cart-item
+            :name "Smart Watch Series 5"
+            :price "$249.00"
+            :qty "1"
+            :image-desc "Watch thumbnail")
+          (divider)
+          (cart-item
+            :name "USB-C Charging Hub"
+            :price "$34.99"
+            :qty "2"
+            :image-desc "Hub thumbnail"))
+
+        ; Promo Code
+        (box :col :gap 12 :padding 24
+          (text "Promo Code" :medium)
+          (box :row :gap 8
+            (input :type text :placeholder "Enter code" :fill)
+            (button "Apply" :ghost)))
+
+        ; Summary
+        (box :col :gap 12 :padding 24
+          (box :row :between
+            (text "Subtotal" :low)
+            (text "$398.97" :medium))
+          (box :row :between
+            (text "Shipping" :low)
+            (text "Free" :success))
+          (box :row :between
+            (text "Tax" :low)
+            (text "$31.92" :medium))
+          (divider)
+          (box :row :between
+            (text "Total" :medium)
+            (text "$430.89" :high)))
+
+        ; Actions
+        (box :col :gap 12 :padding 24
+          (button "Checkout" :primary :full)
+          (button "Continue Shopping" :ghost :full :to :close))))
+
+    ; Product Quick View Modal
+    (modal :id "quick-view"
+      (box :row :gap 32 :padding 32 :width "800px"
+        ; Product Image
+        (image "Product large image" :width "350px" :height "350px")
+
+        ; Product Details
+        (box :col :fill :gap 20
+          (box :row :between
+            (text "Wireless Headphones Pro" :high)
+            (button :icon :ghost :icon "x" :to :close))
+
+          (box :row :gap 12
+            (box :row :gap 4
+              (icon "star")
+              (icon "star")
+              (icon "star")
+              (icon "star")
+              (icon "star"))
+            (text "(2,451 reviews)" :low))
+
+          (box :row :gap 16
+            (text "$79.99" :high)
+            (text "$99.99" :low)
+            (badge "-20%" :danger))
+
+          (text "Premium wireless headphones with active noise cancellation, 30-hour battery life, and crystal-clear sound quality." :low)
+
+          (divider)
+
+          ; Options
+          (box :col :gap 12
+            (text "Color" :medium)
+            (box :row :gap 8
+              (badge "Black" :primary)
+              (badge "White")
+              (badge "Navy")))
+
+          (box :col :gap 12
+            (text "Quantity" :medium)
+            (box :row :gap 12
+              (button :icon :ghost :icon "minus")
+              (text "1")
+              (button :icon :ghost :icon "plus")))
+
+          (box :row :gap 12
+            (button "Add to Cart" :primary :fill)
+            (button "Wishlist" :ghost)))))
+
+    ; Wishlist Drawer (inside shop screen)
+    (drawer :id "wishlist" :right
+      (box :col :full :width "420px"
+        ; Header
+        (box :row :between :padding 24
+          (box :row :gap 12
+            (text "Wishlist" :high)
+            (badge "4 items"))
+          (button :icon :ghost :icon "x" :to :close))
+
+        ; Wishlist Items
+        (scroll :col :fill
+          (box :row :gap 16 :padding 16
+            (image "Headphones" :width "80px" :height "80px")
+            (box :col :fill :gap 8
+              (text "Wireless Headphones Pro" :medium)
+              (text "$79.99" :high)
+              (box :row :gap 8
+                (button "Add to Cart" :primary)
+                (button "Remove" :ghost))))
+          (divider)
+          (box :row :gap 16 :padding 16
+            (image "Watch" :width "80px" :height "80px")
+            (box :col :fill :gap 8
+              (text "Smart Watch Series 5" :medium)
+              (text "$249.00" :high)
+              (box :row :gap 8
+                (button "Add to Cart" :primary)
+                (button "Remove" :ghost))))
+          (divider)
+          (box :row :gap 16 :padding 16
+            (image "Keyboard" :width "80px" :height "80px")
+            (box :col :fill :gap 8
+              (text "Mechanical Keyboard RGB" :medium)
+              (text "$89.99" :high)
+              (box :row :gap 8
+                (button "Add to Cart" :primary)
+                (button "Remove" :ghost)))))
+
+        ; Footer
+        (box :col :gap 12 :padding 24
+          (button "Add All to Cart" :primary :full)
+          (button "Clear Wishlist" :ghost :full)))))
+
+  ; Product Detail Screen
+  (screen product "Product Detail" :desktop
+    (box :col :full
+      ; Header (same as shop)
+      (header :row :between :padding 16
+        (box :row :gap 12
+          (icon "shopping-bag")
+          (text "ShopNow" :high))
+        (input :type text :placeholder "Search..." :fill)
+        (box :row :gap 16
+          (button "Cart" :ghost :to "#cart")
+          (avatar "User")))
+
+      ; Breadcrumb
+      (box :row :gap 8 :padding 16
+        (text "Home" :low :to shop)
+        (text "/" :low)
+        (text "Electronics" :low)
+        (text "/" :low)
+        (text "Wireless Headphones Pro" :medium))
+
+      ; Product Detail
+      (box :row :gap 48 :padding 32
+        ; Images
+        (box :col :gap 16
+          (image "Main product image" :width "500px" :height "500px")
+          (box :row :gap 12
+            (image "Thumb 1" :width "80px" :height "80px")
+            (image "Thumb 2" :width "80px" :height "80px")
+            (image "Thumb 3" :width "80px" :height "80px")
+            (image "Thumb 4" :width "80px" :height "80px")))
+
+        ; Details
+        (box :col :fill :gap 24
+          (text "Wireless Headphones Pro" :high)
+
+          (box :row :gap 16
+            (box :row :gap 4
+              (icon "star")
+              (text "4.8" :medium))
+            (text "2,451 reviews" :low)
+            (text "|" :low)
+            (text "1,234 sold" :low))
+
+          (box :row :gap 16
+            (text "$79.99" :high)
+            (text "$99.99" :low)
+            (badge "Save $20" :success))
+
+          (text "Premium wireless headphones featuring active noise cancellation, 30-hour battery life, and premium drivers for crystal-clear audio. Perfect for music, calls, and gaming." :low)
+
+          (divider)
+
+          ; Color Selection
+          (box :col :gap 12
+            (text "Color: Black" :medium)
+            (box :row :gap 12
+              (card :padding 12 :active
+                (text "Black"))
+              (card :padding 12
+                (text "White"))
+              (card :padding 12
+                (text "Navy"))))
+
+          ; Quantity
+          (box :row :gap 16
+            (text "Quantity:" :medium)
+            (box :row :gap 8
+              (button :icon :ghost :icon "minus")
+              (card :padding 12
+                (text "1"))
+              (button :icon :ghost :icon "plus"))
+            (text "In Stock" :success))
+
+          ; Add to cart
+          (box :row :gap 16
+            (button "Add to Cart" :primary :fill)
+            (button "Buy Now" :secondary)
+            (button "Wishlist" :ghost))
+
+          ; Features
+          (box :col :gap 12 :padding 16
+            (box :row :gap 12
+              (icon "truck")
+              (text "Free shipping on orders over $50"))
+            (box :row :gap 12
+              (icon "refresh-cw")
+              (text "30-day money-back guarantee"))
+            (box :row :gap 12
+              (icon "shield")
+              (text "2-year warranty included")))))))
+
+  ; Mobile Shop Screen
+  (screen mobile-shop "Shop" :mobile
+    (box :col :full
+      ; Mobile Header
+      (header :row :between :padding 16
+        (button "Menu" :ghost :to "#mobile-menu")
+        (text "ShopNow" :high)
+        (box :row :gap 16
+          (button "Search" :ghost :to "#search")
+          (box :relative
+            (button "Cart" :ghost :to "#cart")
+            (badge "3" :danger :absolute))))
+
+      ; Categories Scroll
+      (scroll :row :gap 12 :padding 16
+        (badge "All" :primary)
+        (badge "Electronics")
+        (badge "Clothing")
+        (badge "Home")
+        (badge "Sports")
+        (badge "Sale"))
+
+      ; Products Grid (2 columns on mobile)
+      (scroll :col :full :padding 16 :gap 16
+        (box :grid :cols 2 :gap 16
+          (card :col :gap 0
+            (image "Headphones" :height "140px")
+            (box :col :gap 8 :padding 12
+              (text "Wireless Headphones" :medium)
+              (box :row :gap 8
+                (text "$79.99" :high)
+                (text "$99" :low))
+              (button "Add" :primary :full)))
+          (card :col :gap 0
+            (image "Watch" :height "140px")
+            (box :col :gap 8 :padding 12
+              (text "Smart Watch" :medium)
+              (box :row :gap 8
+                (text "$249" :high)
+                (text "$299" :low))
+              (button "Add" :primary :full)))
+          (card :col :gap 0
+            (image "Speaker" :height "140px")
+            (box :col :gap 8 :padding 12
+              (text "Bluetooth Speaker" :medium)
+              (box :row :gap 8
+                (text "$45.99" :high)
+                (text "$59" :low))
+              (button "Add" :primary :full)))
+          (card :col :gap 0
+            (image "Hub" :height "140px")
+            (box :col :gap 8 :padding 12
+              (text "USB-C Hub" :medium)
+              (box :row :gap 8
+                (text "$34.99" :high)
+                (text "$44" :low))
+              (button "Add" :primary :full)))))
+
+      ; Bottom Nav
+      (nav :row :around :padding 12 :sticky :bottom 0
+        (box :col :center :gap 4 :active
+          (icon "house")
+          (text "Shop" :low))
+        (box :col :center :gap 4
+          (icon "grid-2x2")
+          (text "Categories" :low))
+        (box :col :center :gap 4
+          (icon "heart")
+          (text "Wishlist" :low))
+        (box :col :center :gap 4
+          (icon "user")
+          (text "Account" :low))))
+
+    ; Mobile Menu Drawer
+    (drawer :id "mobile-menu" :left
+      (box :col :full :width "300px" :padding 24 :gap 16
+        (text "Categories" :high)
+        (divider)
+        (text "All Products")
+        (text "Electronics")
+        (text "Clothing")
+        (text "Home & Garden")
+        (text "Sports & Outdoors")
+        (text "Books & Media")
+        (divider)
+        (text "Sale" :danger)
+        (box :col :fill)
+        (divider)
+        (text "Help & Support" :low)
+        (text "Track Order" :low)))
+
+    ; Search Modal (inside mobile-shop screen)
+    (modal :id "search"
+      (box :col :gap 20 :padding 24 :width "600px"
+        (box :row :gap 12
+          (icon "search")
+          (input :type text :placeholder "Search for products..." :fill)
+          (button :icon :ghost :icon "x" :to :close))
+
+        ; Recent Searches
+        (box :col :gap 12
+          (text "Recent Searches" :medium)
+          (box :row :gap 8
+            (badge "headphones")
+            (badge "smart watch")
+            (badge "USB hub")
+            (badge "keyboard")))
+
+        ; Popular Categories
+        (box :col :gap 12
+          (text "Popular Categories" :medium)
+          (box :grid :cols 2 :gap 12
+            (card :col :center :gap 8 :padding 16
+              (icon "headphones")
+              (text "Audio" :low))
+            (card :col :center :gap 8 :padding 16
+              (icon "watch")
+              (text "Wearables" :low))
+            (card :col :center :gap 8 :padding 16
+              (icon "smartphone")
+              (text "Phones" :low))
+            (card :col :center :gap 8 :padding 16
+              (icon "monitor")
+              (text "Computers" :low))))))))

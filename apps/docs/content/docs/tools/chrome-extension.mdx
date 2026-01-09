@@ -1,0 +1,108 @@
+---
+title: Chrome Extension
+description: Render WireScript wireframes directly in GitHub markdown.
+---
+
+The WireScript Chrome Extension renders `wire` code blocks as interactive wireframes on GitHub.
+
+## Features
+
+- Renders wireframes inline in GitHub READMEs, issues, and PRs
+- Click to activate interactive mode
+- Toggle between code and preview
+- Fullscreen view for detailed inspection
+- Automatic deactivation when scrolled out of view (saves memory)
+
+## Installation
+
+### From Chrome Web Store (Recommended)
+
+Install directly from the [Chrome Web Store](https://chromewebstore.google.com/detail/wirescript/pmekhhogjcdhbbnkmlolfidgnlhdicei).
+
+### From Source
+
+```bash
+cd apps/chrome-extension
+pnpm install
+pnpm build
+```
+
+Then load the `dist` folder as an unpacked extension:
+
+1. Open Chrome and go to `chrome://extensions`
+2. Enable "Developer mode" (toggle in top right)
+3. Click "Load unpacked" and select the `dist` folder
+
+## Usage
+
+Once installed, the extension automatically detects `wire` code blocks on GitHub:
+
+````markdown
+```wire
+(wire
+  (screen home "Home" :mobile
+    (box :center :gap 16 :padding 24
+      (text "Hello World" :high)
+      (button "Get Started" :primary))))
+```
+````
+
+The code block will show a placeholder preview. Click to activate the interactive wireframe.
+
+### Controls
+
+| Action | Description |
+|--------|-------------|
+| Click placeholder | Activate interactive wireframe |
+| Toggle button (`</>`) | Switch between code and preview |
+| Fullscreen button | Open in fullscreen modal |
+| Esc | Close fullscreen |
+
+### Placeholder States
+
+The extension uses smart loading to minimize resource usage:
+
+1. **Skeleton** - Initial state, shows title and viewport
+2. **PNG Preview** - Cached static preview (click to interact)
+3. **Interactive** - Full wireframe with navigation
+
+When you scroll away from an active wireframe, it automatically returns to the preview state after 2 seconds.
+
+## Supported Pages
+
+The extension works on:
+
+- Repository README files
+- Markdown files (`.md`, `.wire`)
+- Issues and pull requests
+- Wiki pages
+- Gist files
+
+## Troubleshooting
+
+### Extension doesn't load
+
+- Make sure you're on a `github.com` page
+- Check that the extension is enabled in `chrome://extensions`
+- Try refreshing the page
+
+### Code blocks not detected
+
+- The code block must use the `wire` or `wirescript` language identifier
+- Check for syntax errors in your WireScript code
+
+### Preview looks wrong
+
+- Try clicking to activate the full interactive mode
+- Check the browser console for errors
+
+## Privacy
+
+The extension:
+
+- Only runs on `github.com` pages
+- Does not collect or transmit any data
+- All rendering happens locally in your browser
+- Requests zero special Chrome permissions
+
+See our full [Privacy Policy](/docs/privacy) for details.

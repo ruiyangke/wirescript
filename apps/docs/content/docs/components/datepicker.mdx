@@ -1,0 +1,86 @@
+---
+title: datepicker
+description: Standalone date picker with calendar.
+---
+
+A standalone date picker component with full calendar UI. For a simple date input field, use `(input "Date" :type date)` instead.
+
+## Usage
+
+```wire preview:400
+(datepicker)
+```
+
+## With Label
+
+The content string is used as the field label:
+
+```wire preview:400
+(datepicker "Start Date")
+```
+
+## With Placeholder
+
+```wire preview:400
+(datepicker :placeholder "Select a date")
+```
+
+## Properties
+
+<PropsTable element="datepicker" />
+
+Note: The content string is used as the field label (e.g., `(datepicker "Due Date")`).
+
+## When to Use
+
+Use `datepicker` when you want to show a full calendar picker inline or need more visual prominence for date selection.
+
+For simple form fields, use `input` with `:type date`:
+
+```wire
+; Simple date field in a form
+(input "Start Date" :type date)
+
+; Standalone calendar picker
+(datepicker :placeholder "Pick a date")
+```
+
+## Examples
+
+### Booking Form
+
+```wire preview:450
+(card :col :gap 16 :padding 24
+  (text "Book a Room" :high)
+  (box :row :gap 16
+    (box :col :gap 8 :fill
+      (text "Check-in" :low)
+      (datepicker :placeholder "Select date"))
+    (box :col :gap 8 :fill
+      (text "Check-out" :low)
+      (datepicker :placeholder "Select date")))
+  (button "Search Availability" :primary :full))
+```
+
+### Event Scheduler
+
+```wire preview:500
+(box :col :gap 16
+  (text "Schedule Event" :high)
+  (datepicker :placeholder "Choose event date")
+  (input "Event Name")
+  (input "Description" :type textarea :rows 3)
+  (button "Create Event" :primary))
+```
+
+### Date Range Selection
+
+```wire preview:400
+(box :row :gap 16 :padding 16
+  (box :col :gap 8
+    (text "From" :low)
+    (datepicker))
+  (box :col :gap 8
+    (text "To" :low)
+    (datepicker)))
+```

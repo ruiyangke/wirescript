@@ -1,0 +1,115 @@
+---
+title: repeat
+description: Generate repeated content.
+---
+
+Generate repeated content a specified number of times.
+
+## Usage
+
+```wire preview:250
+(repeat :count 5
+  (skeleton))
+```
+
+## With Index Variable
+
+```wire preview
+(repeat :count 3 :as "i"
+  (text "Item ${i}"))
+```
+
+## Properties
+
+| Property | Type | Example |
+|----------|------|---------|
+| `:count` | number | `:count 5` |
+| `:as` | string | `:as "i"` |
+
+## Examples
+
+### Loading Skeletons
+
+```wire preview:250
+(box :col :gap 8
+  (repeat :count 5
+    (skeleton :height "20px")))
+```
+
+### User List Skeleton
+
+```wire preview:350
+(box :col :gap 0
+  (repeat :count 5
+    (box :row :gap 12 :padding 12
+      (skeleton :width "40px" :height "40px")
+      (box :col :gap 4 :fill
+        (skeleton :height "16px" :width "60%")
+        (skeleton :height "12px" :width "40%")))))
+```
+
+### Numbered Items
+
+```wire preview:450
+(list :col :gap 0
+  (repeat :count 10 :as "n"
+    (box :row :between :padding 12
+      (text "Item ${n}")
+      (icon "chevron-right"))))
+```
+
+### Card Grid
+
+```wire preview:400
+(box :grid :cols 3 :gap 16
+  (repeat :count 6
+    (card :col :padding 16
+      (skeleton :height "100px")
+      (skeleton :height "20px" :width "70%")
+      (skeleton :height "16px"))))
+```
+
+### Table Rows
+
+```wire preview:350
+(box :col
+  (box :row :padding 12
+    (text "Name" :fill)
+    (text "Email" :fill)
+    (text "Role" :fill))
+  (divider)
+  (repeat :count 5
+    (box :row :padding 12
+      (skeleton :width "120px" :height "16px")
+      (skeleton :width "180px" :height "16px")
+      (skeleton :width "80px" :height "16px"))))
+```
+
+### Chat Messages
+
+```wire preview:450
+(scroll :col :gap 8 :padding 16 :height "400px"
+  (repeat :count 5 :as "i"
+    (box :row :gap 12
+      (avatar "User")
+      (card :padding 12 :fill
+        (text "Message ${i}")))))
+```
+
+### Progress Steps
+
+```wire preview
+(box :row :gap 16 :center
+  (repeat :count 4 :as "step"
+    (box :col :center :gap 8
+      (badge "${step}")
+      (text "Step ${step}" :low))))
+```
+
+### Placeholder Tags
+
+```wire preview
+(box :row :gap 8 :wrap
+  (repeat :count 8
+    (skeleton :width "60px" :height "24px")))
+```

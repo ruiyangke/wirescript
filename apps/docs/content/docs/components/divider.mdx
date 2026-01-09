@@ -1,0 +1,106 @@
+---
+title: divider
+description: Horizontal or vertical divider line.
+---
+
+A line to visually separate content, either horizontally (default) or vertically.
+
+## Usage
+
+```wire preview
+(divider)
+```
+
+## Orientation
+
+```wire preview:250
+(box :col :gap 16
+  (text "Horizontal (default)")
+  (divider :row)
+  (text "In a row layout:")
+  (box :row :gap 8 :height "40px"
+    (text "Left")
+    (divider :col)
+    (text "Right")))
+```
+
+## Properties
+
+<PropsTable element="divider" />
+
+## Examples
+
+### Separating Sections
+
+```wire preview:250
+(box :col :gap 16
+  (text "Section 1" :high)
+  (text "Content for section 1")
+  (divider)
+  (text "Section 2" :high)
+  (text "Content for section 2"))
+```
+
+### In Navigation
+
+```wire preview:250
+(nav :col :gap 4 :padding 16
+  (button "Dashboard" :ghost :full :start)
+  (button "Projects" :ghost :full :start)
+  (divider)
+  (button "Settings" :ghost :full :start)
+  (button "Logout" :ghost :full :start :danger))
+```
+
+### In Lists
+
+```wire preview:250
+(list :col :gap 0
+  (box :padding 12 (text "Item 1"))
+  (divider)
+  (box :padding 12 (text "Item 2"))
+  (divider)
+  (box :padding 12 (text "Item 3")))
+```
+
+### In Cards
+
+```wire preview:300
+(card :col :padding 0
+  (box :padding 16
+    (text "Card Title" :high))
+  (divider)
+  (box :padding 16
+    (text "Card content goes here"))
+  (divider)
+  (box :row :end :padding 12 :gap 8
+    (button "Cancel" :ghost)
+    (button "Save" :primary)))
+```
+
+### In Dropdowns
+
+```wire preview
+(dropdown :id "menu"
+  (button "Edit" :ghost :full)
+  (button "Duplicate" :ghost :full)
+  (divider)
+  (button "Archive" :ghost :full)
+  (divider)
+  (button "Delete" :danger :ghost :full))
+```
+
+### In Forms
+
+```wire preview:500
+(form :col :gap 16
+  (text "Account Info" :high)
+  (input "Email" :type email)
+  (input "Password" :type password)
+  (divider)
+  (text "Profile" :high)
+  (input "Display Name")
+  (input "Bio" :type textarea :rows 3)
+  (divider)
+  (button "Save Changes" :primary))
+```

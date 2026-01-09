@@ -1,0 +1,74 @@
+{
+  "name": "@wirescript/cli",
+  "version": "0.0.1",
+  "description": "CLI for WireScript - validate, render, and build wireframes",
+  "type": "module",
+  "license": "Apache-2.0",
+  "author": "Ruiyang Ke",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ruiyangke/wirescript.git",
+    "directory": "apps/cli"
+  },
+  "homepage": "https://wirescript.dev/docs/tools/cli",
+  "bugs": {
+    "url": "https://github.com/ruiyangke/wirescript/issues"
+  },
+  "keywords": [
+    "wirescript",
+    "wireframe",
+    "cli",
+    "validation",
+    "rendering",
+    "ui-design"
+  ],
+  "bin": {
+    "wirescript": "./dist/bin/wirescript.js"
+  },
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest",
+    "prepublishOnly": "npm run build"
+  },
+  "dependencies": {
+    "@wirescript/dsl": "workspace:*",
+    "@wirescript/renderer": "workspace:*",
+    "@wirescript/theme": "workspace:*",
+    "commander": "^12.0.0",
+    "picocolors": "^1.1.0",
+    "react": "catalog:",
+    "react-dom": "catalog:",
+    "vite": "^6.4.1",
+    "@vitejs/plugin-react": "^4.7.0",
+    "esbuild": "^0.20.2"
+  },
+  "optionalDependencies": {
+    "playwright": "^1.40.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.0",
+    "@types/react": "catalog:",
+    "@types/react-dom": "catalog:",
+    "typescript": "^5.7.0",
+    "vitest": "^2.1.0"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

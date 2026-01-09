@@ -1,0 +1,122 @@
+---
+title: progress
+description: Progress bar.
+---
+
+A progress bar showing completion percentage.
+
+## Usage
+
+```wire preview
+(progress :value 75)
+```
+
+## Examples
+
+```wire preview:250
+; With value
+(progress :value 75)
+
+; With max
+(progress :value 30 :max 100)
+
+; Indeterminate (no value)
+(progress)
+```
+
+## Properties
+
+<PropsTable element="progress" />
+
+## Examples
+
+### With Variants
+
+```wire preview:250
+(box :col :gap 12
+  (progress :value 75 :success)
+  (progress :value 50 :warning)
+  (progress :value 25 :danger)
+  (progress :value 90 :primary))
+```
+
+### Upload Progress
+
+```wire preview
+(card :col :gap 12 :padding 16
+  (box :row :between
+    (text "Uploading file.zip")
+    (text "75%" :low))
+  (progress :value 75))
+```
+
+### Multi-step Progress
+
+```wire preview
+(box :col :gap 16
+  (progress :value 33)
+  (box :row :between
+    (text "Step 1" :success)
+    (text "Step 2" :high)
+    (text "Step 3" :low)))
+```
+
+### Goal Progress
+
+```wire preview:250
+(card :col :gap 12 :padding 20
+  (box :row :between
+    (text "Monthly Goal")
+    (text "$7,500 / $10,000" :low))
+  (progress :value 75)
+  (text "75% complete" :low))
+```
+
+### Skills Display
+
+```wire preview:300
+(box :col :gap 16
+  (box :col :gap 8
+    (box :row :between
+      (text "React")
+      (text "90%"))
+    (progress :value 90))
+  (box :col :gap 8
+    (box :row :between
+      (text "TypeScript")
+      (text "85%"))
+    (progress :value 85))
+  (box :col :gap 8
+    (box :row :between
+      (text "Node.js")
+      (text "70%"))
+    (progress :value 70)))
+```
+
+### Loading State
+
+```wire preview
+(box :col :center :gap 16 :padding 48
+  (progress)
+  (text "Loading..." :low))
+```
+
+### Storage Usage
+
+```wire preview:250
+(card :col :gap 12 :padding 16
+  (box :row :between
+    (text "Storage")
+    (text "8.5 GB of 15 GB" :low))
+  (progress :value 57)
+  (box :row :gap 16
+    (box :row :gap 8
+      (badge "Documents")
+      (text "4.2 GB" :low))
+    (box :row :gap 8
+      (badge "Photos")
+      (text "3.1 GB" :low))
+    (box :row :gap 8
+      (badge "Other")
+      (text "1.2 GB" :low))))
+```

@@ -1,0 +1,100 @@
+---
+title: empty
+description: Empty state placeholder.
+---
+
+An empty state placeholder shown when there's no content to display.
+
+## Usage
+
+```wire preview:250
+(empty "No items found")
+```
+
+## With Icon
+
+```wire preview:300
+(empty "No messages yet" :icon "inbox")
+```
+
+## Properties
+
+<PropsTable element="empty" />
+
+Note: The content string (e.g., `(empty "No items")`) and `:message` property serve the same purpose - providing the main text. Use whichever is more convenient.
+
+## Examples
+
+### Basic Empty State
+
+```wire preview:300
+(empty "No items found" :icon "inbox")
+```
+
+### Empty State with Action
+
+```wire preview:350
+(box :col :center :gap 16 :padding 48
+  (empty "No projects yet" :icon "folder")
+  (button "Create Project" :primary))
+```
+
+### Empty Search Results
+
+```wire preview:350
+(box :col :center :gap 16 :padding 48
+  (empty "No results for 'search term'" :icon "search")
+  (text "Try adjusting your search or filters" :low))
+```
+
+### Empty Inbox
+
+```wire preview:350
+(box :col :center :full :gap 16
+  (empty "Your inbox is empty" :icon "mail")
+  (text "Messages you receive will appear here" :low))
+```
+
+### Empty Cart
+
+```wire preview:400
+(box :col :center :gap 16 :padding 48
+  (empty "Your cart is empty" :icon "shopping-cart")
+  (text "Add items to get started" :low)
+  (button "Browse Products" :primary))
+```
+
+### Empty Notifications
+
+```wire preview:300
+(box :col :center :gap 12 :padding 32
+  (empty "No notifications" :icon "bell")
+  (text "You're all caught up!" :low))
+```
+
+### Empty Table
+
+```wire preview:400
+(card :col :padding 0
+  (box :row :padding 16
+    (text "Users" :high))
+  (divider)
+  (box :col :center :gap 16 :padding 48
+    (empty "No users found" :icon "users")
+    (button "Invite Users" :primary)))
+```
+
+### Error State
+
+```wire preview:400
+(box :col :center :gap 16 :padding 48
+  (empty "Something went wrong" :icon "alert-circle")
+  (text "We couldn't load your data" :low)
+  (button "Try Again" :secondary))
+```
+
+### Using Message Property
+
+```wire preview:300
+(empty :message "No data available" :icon "database" :padding 32)
+```

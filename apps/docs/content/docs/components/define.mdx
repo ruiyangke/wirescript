@@ -1,0 +1,175 @@
+---
+title: define
+description: Create reusable components with parameters.
+---
+
+Define reusable components with parameters that can be used throughout your wireframes.
+
+## Usage
+
+```wire
+(define component-name (param1 param2)
+  (box :row
+    (text $param1)
+    (text $param2)))
+```
+
+## Calling Components
+
+Always use named arguments:
+
+```wire
+(component-name :param1 "Hello" :param2 "World")
+```
+
+## Rules
+
+1. Parameters are referenced with `$param` in the body
+2. Calls must use named arguments (`:param value`)
+3. Component names cannot shadow built-in elements
+
+## Examples
+
+### Stat Card
+
+```wire preview:300
+(wire
+  (define stat-card (label value)
+    (card :col :padding 16 :gap 8
+      (text $label :low)
+      (text $value :high)))
+
+  (screen dashboard "Dashboard" :desktop
+    (box :row :gap 16
+      (stat-card :label "Users" :value "1,234")
+      (stat-card :label "Revenue" :value "$5,678")
+      (stat-card :label "Orders" :value "890"))))
+```
+
+### User Card
+
+```wire preview:350
+(wire
+  (define user-card (name email role)
+    (card :row :gap 16 :padding 16
+      (avatar $name)
+      (box :col :gap 4 :fill
+        (text $name :high)
+        (text $email :low))
+      (badge $role)))
+
+  (screen users "Users" :desktop
+    (box :col :gap 8
+      (user-card :name "Alice" :email "alice@example.com" :role "Admin")
+      (user-card :name "Bob" :email "bob@example.com" :role "Editor"))))
+```
+
+### Nav Item
+
+```wire preview:400
+(wire
+  (define nav-item (label icon target)
+    (button $label :ghost :full :start :to $target))
+
+  (layout app-layout
+    (box :row :full
+      (nav :col :width "200px" :padding 16 :gap 4
+        (nav-item :label "Dashboard" :icon "home" :target dashboard)
+        (nav-item :label "Projects" :icon "folder" :target projects)
+        (nav-item :label "Settings" :icon "settings" :target settings))
+      (slot)))
+
+  (screen dashboard "Dashboard" :desktop :layout app-layout
+    (box :col :padding 24
+      (text "Dashboard Content" :high))))
+```
+
+### Feature Card
+
+```wire preview:400
+(wire
+  (define feature-card (title description icon)
+    (card :col :gap 12 :padding 20
+      (icon $icon)
+      (text $title :high)
+      (text $description :low)))
+
+  (screen landing "Landing" :desktop
+    (box :grid :cols 3 :gap 16 :padding 24
+      (feature-card
+        :title "Fast"
+        :description "Lightning quick performance"
+        :icon "zap")
+      (feature-card
+        :title "Secure"
+        :description "Enterprise-grade security"
+        :icon "shield")
+      (feature-card
+        :title "Simple"
+        :description "Easy to use interface"
+        :icon "smile"))))
+```
+
+### List Item
+
+```wire preview:400
+(wire
+  (define list-item (title subtitle action)
+    (box :row :between :padding 12
+      (box :col :gap 2
+        (text $title)
+        (text $subtitle :low))
+      (button $action :ghost)))
+
+  (screen settings "Settings" :desktop
+    (card :col :gap 0
+      (list-item :title "Account" :subtitle "Manage your account" :action "Edit")
+      (divider)
+      (list-item :title "Privacy" :subtitle "Control your privacy" :action "Edit")
+      (divider)
+      (list-item :title "Notifications" :subtitle "Configure alerts" :action "Edit"))))
+```
+
+### Metric Card
+
+```wire preview:350
+(wire
+  (define metric-card (label value change icon)
+    (card :col :gap 8 :padding 16
+      (box :row :between
+        (text $label :low)
+        (icon $icon))
+      (text $value :high)
+      (text $change :low)))
+
+  (screen analytics "Analytics" :desktop
+    (box :row :gap 16
+      (metric-card :label "Revenue" :value "$12,345" :change "+12% from last month" :icon "dollar-sign")
+      (metric-card :label "Users" :value "1,234" :change "+5% from last month" :icon "users")
+      (metric-card :label "Orders" :value "567" :change "+8% from last month" :icon "shopping-cart"))))
+```
+
+### Action Card
+
+```wire preview:400
+(wire
+  (define action-card (title description buttonText target)
+    (card :col :gap 16 :padding 20
+      (box :col :gap 4
+        (text $title :high)
+        (text $description :low))
+      (button $buttonText :primary :to $target)))
+
+  (screen home "Home" :desktop
+    (box :grid :cols 2 :gap 16
+      (action-card
+        :title "Create Project"
+        :description "Start a new project from scratch"
+        :buttonText "Get Started"
+        :target new-project)
+      (action-card
+        :title "Import Data"
+        :description "Import existing data from CSV"
+        :buttonText "Import"
+        :target import))))
+```

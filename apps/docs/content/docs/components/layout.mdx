@@ -1,0 +1,150 @@
+---
+title: layout
+description: Define reusable page layouts.
+---
+
+Define reusable page structures that can be shared across multiple screens.
+
+## Usage
+
+```wire
+(layout layout-name
+  (header (text "Header"))
+  (slot)  ; Screen content goes here
+  (footer (text "Footer")))
+```
+
+## Using a Layout
+
+```wire
+(screen home "Home" :desktop :layout layout-name
+  (text "This content replaces the slot"))
+```
+
+## Auto-Active Navigation
+
+Elements with `:to` matching the current screen automatically get `:active` styling:
+
+```wire
+(layout app-layout
+  (nav :row :gap 16
+    (button "Home" :ghost :to home)      ; Active when on home
+    (button "About" :ghost :to about))   ; Active when on about
+  (slot))
+```
+
+## Examples
+
+### Sidebar Layout
+
+```wire preview:400
+(wire
+  (layout sidebar-layout
+    (box :row :full
+      (nav :col :width "200px" :padding 16 :gap 8
+        (text "My App" :high)
+        (divider)
+        (button "Dashboard" :ghost :full :start :to dashboard)
+        (button "Projects" :ghost :full :start :to projects)
+        (button "Settings" :ghost :full :start :to settings))
+      (slot)))
+
+  (screen dashboard "Dashboard" :desktop :layout sidebar-layout
+    (box :col :padding 24
+      (text "Dashboard" :high)))
+
+  (screen projects "Projects" :desktop :layout sidebar-layout
+    (box :col :padding 24
+      (text "Projects" :high)))
+
+  (screen settings "Settings" :desktop :layout sidebar-layout
+    (box :col :padding 24
+      (text "Settings" :high))))
+```
+
+### Header + Footer Layout
+
+```wire preview:400
+(wire
+  (layout page-layout
+    (box :col :full
+      (header :row :between :padding 16
+        (text "Logo" :high)
+        (nav :row :gap 16
+          (text "Home" :to home)
+          (text "About" :to about)
+          (text "Contact" :to contact)))
+      (box :fill
+        (slot))
+      (footer :center :padding 16
+        (text "© 2024 Company" :low))))
+
+  (screen home "Home" :desktop :layout page-layout
+    (box :col :center :full :gap 24
+      (text "Welcome" :high)
+      (button "Get Started" :primary))))
+```
+
+### Dashboard Layout
+
+```wire preview:500
+(wire
+  (layout dashboard-layout
+    (box :col :full
+      (header :row :between :padding 16
+        (text "Dashboard" :high)
+        (box :row :gap 12
+          (icon "bell")
+          (avatar "User")))
+      (box :row :fill
+        (nav :col :width "200px" :padding 16 :gap 4
+          (button "Overview" :ghost :full :start :to overview)
+          (button "Analytics" :ghost :full :start :to analytics)
+          (button "Reports" :ghost :full :start :to reports)
+          (box :fill)
+          (divider)
+          (button "Settings" :ghost :full :start :to settings))
+        (scroll :fill
+          (slot)))))
+
+  (screen overview "Overview" :desktop :layout dashboard-layout
+    (box :col :padding 24 :gap 24
+      (text "Overview" :high)
+      (box :row :gap 16
+        (metric :label "Users" :value "1,234" :change "+12%" :trend up)
+        (metric :label "Revenue" :value "$45k" :change "+8%" :trend up))
+      (chart :type line :height 300))))
+```
+
+### Mobile Layout
+
+```wire preview:500
+(wire
+  (layout mobile-layout
+    (box :col :full
+      (header :row :between :padding 12
+        (icon "menu" :to "#nav-drawer")
+        (text "App" :high)
+        (icon "bell"))
+      (scroll :fill
+        (slot))
+      (nav :row :around :padding 8
+        (box :col :center :gap 2
+          (icon "home")
+          (text "Home" :low))
+        (box :col :center :gap 2
+          (icon "search")
+          (text "Search" :low))
+        (box :col :center :gap 2
+          (icon "user")
+          (text "Profile" :low)))))
+
+  (screen home "Home" :mobile :layout mobile-layout
+    (box :col :padding 16
+      (text "Welcome" :high))))
+```
+
+## See Also
+
+- [slot](/docs/components/slot) - Placeholder for screen content
+- [Layouts in Language Reference](/docs/guide/language#layouts)

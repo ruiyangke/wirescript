@@ -1,0 +1,39 @@
+{
+  "name": "@wirescript/playground",
+  "version": "0.0.1",
+  "private": true,
+  "description": "Web playground for WireScript - try it in the browser",
+  "type": "module",
+  "license": "Apache-2.0",
+  "author": "Ruiyang Ke",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "deploy": "vite build && wrangler pages deploy dist",
+    "lint": "biome check",
+    "format": "biome format --write"
+  },
+  "dependencies": {
+    "@wirescript/dsl": "workspace:*",
+    "@wirescript/editor": "workspace:*",
+    "@wirescript/renderer": "workspace:*",
+    "clsx": "^2.1.1",
+    "lucide-react": "^0.462.0",
+    "react": "catalog:",
+    "react-dom": "catalog:",
+    "react-resizable-panels": "^2.1.9",
+    "tailwind-merge": "^2.6.0"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^2.0.0",
+    "@tailwindcss/vite": "^4.1.0",
+    "@types/react": "catalog:",
+    "@types/react-dom": "catalog:",
+    "@vitejs/plugin-react": "^4.4.1",
+    "tailwindcss": "^4.1.0",
+    "typescript": "^5.8.3",
+    "vite": "^6.3.5",
+    "wrangler": "^4.14.1"
+  }
+}

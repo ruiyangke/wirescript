@@ -1,0 +1,82 @@
+---
+title: text
+description: Text display with emphasis levels.
+---
+
+Display text with various emphasis levels and optional navigation.
+
+## Usage
+
+```wire preview
+(text "Hello World")
+```
+
+## Emphasis Levels
+
+```wire preview:250
+(box :col :gap 8
+  (text "Heading" :high)
+  (text "Body text")
+  (text "Caption" :low))
+```
+
+## Variants
+
+```wire preview:250
+(box :col :gap 8
+  (text "Error message" :danger)
+  (text "Success!" :success)
+  (text "Warning" :warning)
+  (text "Info" :info))
+```
+
+## Navigation
+
+Text can be clickable:
+
+```wire
+(text "Go to settings" :to settings)
+(text "Open modal" :to "#my-modal")
+```
+
+## Properties
+
+<PropsTable element="text" />
+
+## Examples
+
+### Page Title
+
+```wire preview
+(box :col :gap 8
+  (text "Dashboard" :high)
+  (text "Welcome back, John" :low))
+```
+
+### Status Messages
+
+```wire preview:250
+(box :col :gap 8
+  (text "Changes saved successfully" :success)
+  (text "Please fix the errors below" :danger)
+  (text "Your session will expire soon" :warning))
+```
+
+### Linked Text
+
+```wire preview:250
+(box :col :gap 4
+  (text "Learn more about our features" :to features)
+  (text "View documentation" :to docs)
+  (text "Contact support" :to contact))
+```
+
+### Article Content
+
+```wire preview:300
+(box :col :gap 16
+  (text "Getting Started with WireScript" :high)
+  (text "Published on January 1, 2024" :low)
+  (text "WireScript is a domain-specific language for creating wireframes...")
+  (text "Read more" :to article-full))
+```

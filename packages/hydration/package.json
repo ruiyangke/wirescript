@@ -1,0 +1,66 @@
+{
+  "name": "@wirescript/hydration",
+  "version": "0.0.1",
+  "description": "Client-side hydration for WireScript wireframes",
+  "type": "module",
+  "license": "Apache-2.0",
+  "author": "Ruiyang Ke",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ruiyangke/wirescript.git",
+    "directory": "packages/hydration"
+  },
+  "homepage": "https://wirescript.dev",
+  "bugs": {
+    "url": "https://github.com/ruiyangke/wirescript/issues"
+  },
+  "keywords": [
+    "wirescript",
+    "wireframe",
+    "hydration",
+    "react",
+    "ui-design"
+  ],
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "sideEffects": false,
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "test": "echo 'No tests yet'",
+    "typecheck": "tsc --noEmit",
+    "lint": "biome check src",
+    "prepublishOnly": "npm run build"
+  },
+  "dependencies": {
+    "@wirescript/dsl": "workspace:*",
+    "@wirescript/renderer": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/react": "catalog:",
+    "@types/react-dom": "catalog:",
+    "react": "catalog:",
+    "react-dom": "catalog:",
+    "typescript": "^5.7.0"
+  },
+  "peerDependencies": {
+    "react": "^18.0.0 || ^19.0.0",
+    "react-dom": "^18.0.0 || ^19.0.0"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

@@ -1,0 +1,62 @@
+---
+title: section
+description: Semantic section container.
+---
+
+A semantic section element. Renders like `box` but provides semantic meaning. Content string is the section name.
+
+## Usage
+
+```wire preview
+(section "hero"
+  (text "Welcome"))
+```
+
+## Basic Examples
+
+```wire preview:400
+; Named section
+(section "hero" :col :center :padding 48
+  (text "Welcome" :high)
+  (text "Build something great"))
+
+; Features section
+(section "features" :col :gap 24 :padding 32
+  (text "Features" :high)
+  (box :grid :cols 3 :gap 16
+    (card :padding 16 (text "Feature 1"))
+    (card :padding 16 (text "Feature 2"))
+    (card :padding 16 (text "Feature 3"))))
+```
+
+## Properties
+
+<PropsTable element="section" />
+
+## Examples
+
+### Landing Page Sections
+
+```wire preview:550
+(wire
+  (screen landing "Landing" :desktop
+    (box :col
+      (section "hero" :col :center :padding 64 :gap 24
+        (text "WireScript" :high)
+        (text "Build wireframes with code")
+        (button "Get Started" :primary))
+
+      (section "features" :col :padding 48 :gap 32
+        (text "Features" :high)
+        (box :row :gap 24
+          (card :fill :padding 20
+            (text "Fast" :high)
+            (text "Lightning quick previews"))
+          (card :fill :padding 20
+            (text "Simple" :high)
+            (text "Easy to learn syntax"))))
+
+      (section "cta" :col :center :padding 48
+        (text "Ready to start?")
+        (button "Sign Up Free" :primary)))))
+```

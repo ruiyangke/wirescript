@@ -1,0 +1,114 @@
+---
+title: breadcrumb
+description: Breadcrumb navigation trail.
+---
+
+Breadcrumb navigation showing the current page hierarchy. Contains `crumb` children.
+
+## Usage
+
+```wire preview
+(breadcrumb
+  (crumb "Home" :to home)
+  (crumb "Products" :to products)
+  (crumb "Details"))
+```
+
+## Properties
+
+<PropsTable element="breadcrumb" />
+
+The last crumb typically has no `:to` property, indicating the current page. You can also use `:active` to explicitly mark a crumb as the current page.
+
+### Using the :active Flag
+
+```wire preview
+(breadcrumb
+  (crumb "Home" :to home)
+  (crumb "Products" :active)
+  (crumb "Details"))
+```
+
+## Examples
+
+### Basic Breadcrumb
+
+```wire preview
+(breadcrumb
+  (crumb "Home" :to home)
+  (crumb "Settings"))
+```
+
+### Deep Navigation
+
+```wire preview
+(breadcrumb
+  (crumb "Home" :to home)
+  (crumb "Products" :to products)
+  (crumb "Electronics" :to electronics)
+  (crumb "Phones" :to phones)
+  (crumb "iPhone 15"))
+```
+
+### Page Header with Breadcrumb
+
+```wire preview:250
+(box :col :gap 16 :padding 24
+  (breadcrumb
+    (crumb "Dashboard" :to dashboard)
+    (crumb "Settings" :to settings)
+    (crumb "Profile"))
+  (text "Profile Settings" :high)
+  (text "Manage your profile information" :low))
+```
+
+### Product Page
+
+```wire preview:400
+(box :col :gap 24
+  (breadcrumb
+    (crumb "Home" :to home)
+    (crumb "Electronics" :to electronics)
+    (crumb "Laptops" :to laptops)
+    (crumb "MacBook Pro"))
+  (box :row :gap 24
+    (image "MacBook Pro" :width "400px" :height "300px")
+    (box :col :gap 16 :fill
+      (text "MacBook Pro 14\"" :high)
+      (text "$1,999" :high)
+      (text "The most powerful MacBook Pro ever." :low)
+      (button "Add to Cart" :primary))))
+```
+
+### Documentation Page
+
+```wire preview:250
+(box :col :gap 16 :padding 24
+  (breadcrumb
+    (crumb "Docs" :to docs)
+    (crumb "Components" :to components)
+    (crumb "Button"))
+  (text "Button" :high)
+  (text "Interactive button with variants and states."))
+```
+
+### Admin Panel
+
+```wire preview:400
+(box :col :gap 16
+  (breadcrumb
+    (crumb "Admin" :to admin)
+    (crumb "Users" :to users)
+    (crumb "John Doe"))
+  (card :col :gap 16 :padding 24
+    (box :row :gap 16
+      (avatar "John Doe")
+      (box :col :gap 4
+        (text "John Doe" :high)
+        (text "john@example.com" :low)))
+    (divider)
+    (form :col :gap 16
+      (input "Name" :value "John Doe")
+      (input "Email" :type email :value "john@example.com")
+      (button "Save Changes" :primary))))
+```

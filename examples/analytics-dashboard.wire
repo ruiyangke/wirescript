@@ -1,0 +1,699 @@
+; Analytics Dashboard - Data analytics platform showcasing:
+; - Metric cards with icons and trends
+; - Multiple chart types (line, bar, pie, map)
+; - Real-time visitor tracking
+; - Traffic sources breakdown
+; - Geographic distribution
+; - Device and browser analytics
+; - Goal tracking and conversions
+; - Data tables with sorting
+; - Export and sharing functionality
+; - Mobile responsive design
+
+(wire
+  (meta
+    :title "Analytics Dashboard"
+    :context analytics
+    :audience "data-analysts"
+    :goal "track and analyze website metrics")
+
+  ; Reusable Components
+  (define metric-card (icon-name label value change trend)
+    (card :col :fill :gap 12 :padding 20
+      (box :row :between
+        (box :col :center :padding 12
+          (icon $icon-name))
+        (badge $trend))
+      (box :col :gap 4
+        (text $label :low)
+        (text $value :high))
+      (text $change :low)))
+
+  (define source-row (name percentage value)
+    (box :col :gap 8
+      (box :row :between
+        (text $name :low)
+        (text $percentage :medium))
+      (progress :value $value :primary)))
+
+  ; Shared Layout for Analytics Sidebar
+  (layout analytics-layout
+    (box :row :full
+      ; Sidebar
+      (nav :col :gap 4 :padding 16 :width "260px"
+        ; Logo
+        (box :row :gap 12 :padding 12
+          (icon "chart-bar")
+          (text "Analytics" :high))
+
+        (divider)
+
+        ; Reports
+        (box :col :gap 2
+          (text "Reports" :low :padding 12)
+          (button "Overview" :ghost :fill :icon "home" :to "overview")
+          (button "Audience" :ghost :fill :icon "users" :to "audience")
+          (button "Acquisition" :ghost :fill :icon "trending-up" :to "acquisition")
+          (button "Behavior" :ghost :fill :icon "mouse-pointer")
+          (button "Conversions" :ghost :fill :icon "target" :to "conversions"))
+
+        (divider)
+
+        ; Tools
+        (box :col :gap 2
+          (text "Tools" :low :padding 12)
+          (button "Explorer" :ghost :fill :icon "search")
+          (button "Segments" :ghost :fill :icon "layers")
+          (button "Alerts" :ghost :fill :icon "bell"))
+
+        (box :col :fill)
+
+        (divider)
+
+        ; Settings
+        (box :col :gap 2
+          (button "Settings" :ghost :fill :icon "settings")
+          (button "Help" :ghost :fill :icon "circle-help")))
+
+      ; Main Content Area
+      (slot)))
+
+  ; Overview Dashboard
+  (screen overview "Overview" :desktop :layout analytics-layout
+    (box :col :full
+      ; Header
+      (header :row :between :padding 20
+        (box :col :gap 4
+          (text "Dashboard Overview" :high)
+          (text "Real-time website analytics and metrics" :low))
+        (box :row :gap 12
+          (input :type select :options "Last 7 days,Last 30 days,Last 90 days,Custom")
+          (button "Compare" :ghost)
+          (button "Export" :ghost :to "#export")
+          (button "Share" :primary)))
+
+      (scroll :col :full :gap 24 :padding 24
+          ; Real-time banner
+          (card :row :between :padding 16
+            (box :row :gap 16
+              (box :col :center :padding 12
+                (icon "activity"))
+              (box :col :gap 4
+                (text "Real-time Visitors" :medium)
+                (text "Active users on your site right now" :low)))
+            (box :row :gap 24
+              (box :col :center :gap 2
+                (text "247" :high)
+                (text "Active Now" :low))
+              (box :col :center :gap 2
+                (text "1,234" :medium)
+                (text "Last Hour" :low))
+              (box :col :center :gap 2
+                (text "12,847" :medium)
+                (text "Today" :low))))
+
+          ; Metrics Row (wraps on narrow viewports)
+          (box :row :wrap :gap 20
+            (metric-card
+              :icon-name "users"
+              :label "Total Visitors"
+              :value "124,892"
+              :change "+12.5% vs last period"
+              :trend "↑")
+            (metric-card
+              :icon-name "eye"
+              :label "Page Views"
+              :value "543,210"
+              :change "+8.2% vs last period"
+              :trend "↑")
+            (metric-card
+              :icon-name "log-out"
+              :label "Bounce Rate"
+              :value "32.4%"
+              :change "-2.1% vs last period"
+              :trend "↓")
+            (metric-card
+              :icon-name "clock"
+              :label "Avg. Session"
+              :value "4m 32s"
+              :change "+0.8% vs last period"
+              :trend "↑"))
+
+          ; Charts Row
+          (box :row :gap 24
+            ; Main Traffic Chart
+            (card :col :fill :gap 16 :padding 24
+              (box :row :between
+                (text "Traffic Overview" :medium)
+                (box :row :gap 8
+                  (badge "Visitors" :primary)
+                  (badge "Page Views" :ghost)
+                  (badge "Sessions" :ghost)))
+              (chart "Line chart showing daily traffic over 30 days" :height "280px")
+              ; Chart legend
+              (box :row :center :gap 24
+                (box :row :gap 8
+                  (badge "" :primary)
+                  (text "Visitors" :low))
+                (box :row :gap 8
+                  (badge "" :success)
+                  (text "Page Views" :low))
+                (box :row :gap 8
+                  (badge "" :warning)
+                  (text "Sessions" :low))))
+
+            ; Traffic Sources
+            (card :col :gap 16 :padding 24 :width "380px"
+              (box :row :between
+                (text "Traffic Sources" :medium)
+                (button "Details" :ghost))
+              (chart "Donut chart showing traffic source distribution" :height "180px")
+              (box :col :gap 12
+                (source-row :name "Organic Search" :percentage "45%" :value 45)
+                (source-row :name "Direct" :percentage "28%" :value 28)
+                (source-row :name "Referral" :percentage "18%" :value 18)
+                (source-row :name "Social" :percentage "9%" :value 9))))
+
+          ; Middle Row - Geography and Devices
+          (box :row :gap 24
+            ; Geographic Distribution
+            (card :col :fill :gap 16 :padding 24
+              (box :row :between
+                (text "Geographic Distribution" :medium)
+                (input :type select :options "Countries,Cities,Regions"))
+              (chart "World map with visitor hotspots" :height "240px")
+              ; Top Countries
+              (box :row :gap 24
+                (box :col :gap 4
+                  (text "United States" :medium)
+                  (text "45,231 visitors" :low))
+                (box :col :gap 4
+                  (text "United Kingdom" :medium)
+                  (text "23,847 visitors" :low))
+                (box :col :gap 4
+                  (text "Germany" :medium)
+                  (text "18,392 visitors" :low))
+                (box :col :gap 4
+                  (text "Canada" :medium)
+                  (text "12,654 visitors" :low))))
+
+            ; Device & Browser
+            (card :col :gap 16 :padding 24 :width "380px"
+              (text "Devices & Browsers" :medium)
+              ; Devices
+              (box :col :gap 12
+                (text "Devices" :low)
+                (box :row :between
+                  (box :row :gap 8
+                    (icon "monitor")
+                    (text "Desktop"))
+                  (text "58%" :medium))
+                (box :row :between
+                  (box :row :gap 8
+                    (icon "smartphone")
+                    (text "Mobile"))
+                  (text "35%" :medium))
+                (box :row :between
+                  (box :row :gap 8
+                    (icon "tablet")
+                    (text "Tablet"))
+                  (text "7%" :medium)))
+              (divider)
+              ; Browsers
+              (box :col :gap 12
+                (text "Browsers" :low)
+                (box :row :between
+                  (text "Chrome" :low)
+                  (text "62%" :medium))
+                (box :row :between
+                  (text "Safari" :low)
+                  (text "21%" :medium))
+                (box :row :between
+                  (text "Firefox" :low)
+                  (text "12%" :medium))
+                (box :row :between
+                  (text "Edge" :low)
+                  (text "5%" :medium)))))
+
+          ; Top Pages Table
+          (card :col :gap 16 :padding 24
+            (box :row :between
+              (text "Top Pages" :medium)
+              (box :row :gap 12
+                (input :type text :placeholder "Search pages...")
+                (button "View All" :ghost)))
+
+            ; Table Header
+            (box :row :gap 16 :padding 12
+              (text "Page" :low :fill)
+              (text "Views" :low :width "100px")
+              (text "Unique" :low :width "100px")
+              (text "Bounce" :low :width "100px")
+              (text "Avg. Time" :low :width "100px"))
+
+            (divider)
+
+            ; Table Rows
+            (box :col :gap 0
+              (box :row :gap 16 :padding 12
+                (text "/home" :fill)
+                (text "45,231" :width "100px")
+                (text "32,847" :width "100px")
+                (text "28.4%" :width "100px")
+                (text "3m 12s" :width "100px"))
+              (divider)
+              (box :row :gap 16 :padding 12
+                (text "/products" :fill)
+                (text "32,847" :width "100px")
+                (text "24,523" :width "100px")
+                (text "35.2%" :width "100px")
+                (text "2m 45s" :width "100px"))
+              (divider)
+              (box :row :gap 16 :padding 12
+                (text "/pricing" :fill)
+                (text "28,392" :width "100px")
+                (text "21,294" :width "100px")
+                (text "42.1%" :width "100px")
+                (text "1m 58s" :width "100px"))
+              (divider)
+              (box :row :gap 16 :padding 12
+                (text "/blog" :fill)
+                (text "21,654" :width "100px")
+                (text "18,932" :width "100px")
+                (text "25.8%" :width "100px")
+                (text "5m 23s" :width "100px"))
+              (divider)
+              (box :row :gap 16 :padding 12
+                (text "/about" :fill)
+                (text "18,293" :width "100px")
+                (text "15,847" :width "100px")
+                (text "31.2%" :width "100px")
+                (text "2m 08s" :width "100px")))
+
+            ; Pagination
+            (box :row :between :padding 12
+              (text "Showing 1-5 of 156 pages" :low)
+              (box :row :gap 8
+                (button "Previous" :ghost :disabled)
+                (badge "1" :primary)
+                (button "2" :ghost)
+                (button "3" :ghost)
+                (button "Next" :ghost))))))
+
+    ; Export Modal
+    (modal :id "export"
+      (box :col :gap 20 :padding 24 :width "480px"
+        (box :row :between
+          (text "Export Report" :high)
+          (button :icon :ghost :icon "x" :to :close))
+
+        (box :col :gap 16
+          (box :col :gap 8
+            (text "Report Type" :medium)
+            (input :type select :options "Overview,Traffic Sources,Pages,Conversions"))
+
+          (box :col :gap 8
+            (text "Date Range" :medium)
+            (box :row :gap 12
+              (input :type date)
+              (text "to" :low)
+              (input :type date)))
+
+          (box :col :gap 8
+            (text "Format" :medium)
+            (box :row :gap 12
+              (box :row :gap 8
+                (input :type checkbox :checked true)
+                (text "PDF"))
+              (box :row :gap 8
+                (input :type checkbox)
+                (text "CSV"))
+              (box :row :gap 8
+                (input :type checkbox)
+                (text "Excel"))))
+
+          (box :col :gap 8
+            (text "Include" :medium)
+            (box :col :gap 8
+              (box :row :gap 8
+                (input :type checkbox :checked true)
+                (text "Charts and visualizations"))
+              (box :row :gap 8
+                (input :type checkbox :checked true)
+                (text "Data tables"))
+              (box :row :gap 8
+                (input :type checkbox)
+                (text "Raw data")))))
+
+        (box :row :gap 12 :end
+          (button "Cancel" :ghost :to :close)
+          (button "Export Report" :primary)))))
+
+  ; Audience Screen
+  (screen audience "Audience" :desktop :layout analytics-layout
+    (scroll :col :full :padding 24 :gap 24
+        (box :row :between
+          (text "Audience Overview" :high)
+          (input :type select :options "Last 7 days,Last 30 days,Last 90 days"))
+
+        ; Audience Metrics (wraps on narrow viewports)
+        (box :row :wrap :gap 20
+          (card :col :gap 12 :padding 20 :fill
+            (text "Users" :low)
+            (text "89,432" :high)
+            (box :row :gap 4
+              (badge "up" :success)
+              (text "+15.3%" :low)))
+          (card :col :gap 12 :padding 20 :fill
+            (text "New Users" :low)
+            (text "34,521" :high)
+            (box :row :gap 4
+              (badge "up" :success)
+              (text "+22.1%" :low)))
+          (card :col :gap 12 :padding 20 :fill
+            (text "Returning Users" :low)
+            (text "54,911" :high)
+            (box :row :gap 4
+              (badge "up" :success)
+              (text "+8.7%" :low)))
+          (card :col :gap 12 :padding 20 :fill
+            (text "Sessions/User" :low)
+            (text "2.4" :high)
+            (box :row :gap 4
+              (badge "down" :warning)
+              (text "-1.2%" :low))))
+
+        ; User Demographics
+        (box :row :gap 24
+          (card :col :fill :gap 16 :padding 24
+            (text "Age Distribution" :medium)
+            (chart "Bar chart showing age groups" :height "240px"))
+          (card :col :fill :gap 16 :padding 24
+            (text "Gender Distribution" :medium)
+            (chart "Pie chart showing gender split" :height "240px")))
+
+        ; User Interests
+        (card :col :gap 16 :padding 24
+          (text "User Interests" :medium)
+          (box :row :gap 12
+            (badge "Technology" :primary)
+            (badge "Business" :primary)
+            (badge "Finance" :primary)
+            (badge "Travel" :ghost)
+            (badge "Shopping" :ghost)
+            (badge "Entertainment" :ghost)
+            (badge "Sports" :ghost)))))
+
+  ; Conversions Screen
+  (screen conversions "Conversions" :desktop :layout analytics-layout
+    (scroll :col :full :padding 24 :gap 24
+        (box :row :between
+          (text "Goal Conversions" :high)
+          (button "Create Goal" :primary))
+
+        ; Goal Summary (wraps on narrow viewports)
+        (box :row :wrap :gap 20
+          (card :col :gap 12 :padding 20 :fill
+            (text "Total Conversions" :low)
+            (text "12,847" :high)
+            (text "+18.5% vs last period" :success))
+          (card :col :gap 12 :padding 20 :fill
+            (text "Conversion Rate" :low)
+            (text "4.2%" :high)
+            (text "+0.8% vs last period" :success))
+          (card :col :gap 12 :padding 20 :fill
+            (text "Goal Value" :low)
+            (text "$128,470" :high)
+            (text "+24.3% vs last period" :success)))
+
+        ; Conversion Funnel
+        (card :col :gap 16 :padding 24
+          (text "Conversion Funnel" :medium)
+          (chart "Funnel chart showing conversion steps" :height "280px")
+          (box :row :around
+            (box :col :center :gap 4
+              (text "Visitors" :low)
+              (text "124,892" :medium)
+              (text "100%" :low))
+            (box :col :center :gap 4
+              (text "Product View" :low)
+              (text "45,231" :medium)
+              (text "36.2%" :low))
+            (box :col :center :gap 4
+              (text "Add to Cart" :low)
+              (text "18,392" :medium)
+              (text "14.7%" :low))
+            (box :col :center :gap 4
+              (text "Checkout" :low)
+              (text "8,547" :medium)
+              (text "6.8%" :low))
+            (box :col :center :gap 4
+              (text "Purchase" :low)
+              (text "5,234" :medium)
+              (text "4.2%" :low))))
+
+        ; Goals Table
+        (card :col :gap 16 :padding 24
+          (text "Goal Completions" :medium)
+          (box :col :gap 0
+            (box :row :gap 16 :padding 12
+              (text "Goal" :low :fill)
+              (text "Completions" :low :width "120px")
+              (text "Value" :low :width "100px")
+              (text "Conv. Rate" :low :width "100px"))
+            (divider)
+            (box :row :gap 16 :padding 12
+              (text "Newsletter Signup" :fill)
+              (text "8,234" :width "120px")
+              (text "$0" :width "100px")
+              (text "6.6%" :width "100px"))
+            (divider)
+            (box :row :gap 16 :padding 12
+              (text "Account Creation" :fill)
+              (text "5,847" :width "120px")
+              (text "$0" :width "100px")
+              (text "4.7%" :width "100px"))
+            (divider)
+            (box :row :gap 16 :padding 12
+              (text "Purchase Complete" :fill)
+              (text "3,234" :width "120px")
+              (text "$96,470" :width "100px")
+              (text "2.6%" :width "100px"))
+            (divider)
+            (box :row :gap 16 :padding 12
+              (text "Contact Form Submit" :fill)
+              (text "1,892" :width "120px")
+              (text "$32,000" :width "100px")
+              (text "1.5%" :width "100px"))))))
+
+  ; Acquisition Screen
+  (screen acquisition "Acquisition" :desktop :layout analytics-layout
+    (scroll :col :fill :padding 24 :gap 24
+        ; Header
+        (box :row :between
+          (box :col :gap 4
+            (text "Acquisition" :high)
+            (text "How users find your website" :low))
+          (box :row :gap 12
+            (input "Last 30 days" :type select :options "Today,Last 7 days,Last 30 days,Last 90 days")
+            (button "Export" :ghost)))
+
+        ; Channel Overview
+        (box :grid :cols 4 :gap 16
+          (card :col :gap 12 :padding 20
+            (box :row :between
+              (icon "search")
+              (badge "+12.5%"))
+            (text "Organic Search" :low)
+            (text "45,231" :high)
+            (text "38.2% of total" :low))
+          (card :col :gap 12 :padding 20
+            (box :row :between
+              (icon "link")
+              (badge "+8.3%"))
+            (text "Direct" :low)
+            (text "28,492" :high)
+            (text "24.1% of total" :low))
+          (card :col :gap 12 :padding 20
+            (box :row :between
+              (icon "share-2")
+              (badge "+23.7%"))
+            (text "Social" :low)
+            (text "21,847" :high)
+            (text "18.4% of total" :low))
+          (card :col :gap 12 :padding 20
+            (box :row :between
+              (icon "mail")
+              (badge "-2.1%"))
+            (text "Email" :low)
+            (text "12,384" :high)
+            (text "10.5% of total" :low)))
+
+        ; Traffic Sources Table
+        (card :col :full
+          (box :row :between :padding 16
+            (text "All Traffic Sources" :high)
+            (box :row :gap 8
+              (input :type text :placeholder "Search sources...")
+              (button "Add Filter" :ghost)))
+          (divider)
+
+          ; Table Header
+          (box :row :gap 16 :padding 12
+            (text "Source / Medium" :low :fill)
+            (text "Users" :low :width "100px")
+            (text "Sessions" :low :width "100px")
+            (text "Bounce Rate" :low :width "100px")
+            (text "Conversion" :low :width "100px"))
+          (divider)
+
+          ; Table Rows
+          (box :row :gap 16 :padding 12
+            (text "google / organic" :fill)
+            (text "38,492" :width "100px")
+            (text "52,341" :width "100px")
+            (text "42.3%" :width "100px")
+            (text "3.2%" :width "100px"))
+          (divider)
+          (box :row :gap 16 :padding 12
+            (text "(direct) / (none)" :fill)
+            (text "24,182" :width "100px")
+            (text "31,294" :width "100px")
+            (text "38.7%" :width "100px")
+            (text "2.8%" :width "100px"))
+          (divider)
+          (box :row :gap 16 :padding 12
+            (text "facebook / social" :fill)
+            (text "12,847" :width "100px")
+            (text "15,392" :width "100px")
+            (text "51.2%" :width "100px")
+            (text "1.9%" :width "100px"))
+          (divider)
+          (box :row :gap 16 :padding 12
+            (text "twitter / social" :fill)
+            (text "8,234" :width "100px")
+            (text "9,847" :width "100px")
+            (text "48.9%" :width "100px")
+            (text "2.1%" :width "100px"))
+          (divider)
+          (box :row :gap 16 :padding 12
+            (text "newsletter / email" :fill)
+            (text "6,492" :width "100px")
+            (text "8,123" :width "100px")
+            (text "32.4%" :width "100px")
+            (text "4.5%" :width "100px"))
+          (divider)
+          (box :row :gap 16 :padding 12
+            (text "linkedin / social" :fill)
+            (text "4,128" :width "100px")
+            (text "5,294" :width "100px")
+            (text "45.1%" :width "100px")
+            (text "3.8%" :width "100px"))
+
+          ; Pagination
+          (box :row :center :gap 8 :padding 16
+            (button "Previous" :ghost :disabled)
+            (badge "1" :primary)
+            (button "2" :ghost)
+            (button "3" :ghost)
+            (button "Next" :ghost)))))
+
+  ; Mobile Analytics
+  (screen mobile-analytics "Analytics" :mobile
+    (box :col :full
+      ; Header
+      (header :row :between :padding 16
+        (text "Analytics" :high)
+        (box :row :gap 12
+          (icon "calendar")
+          (icon "download")))
+
+      ; Date selector
+      (box :row :padding 16
+        (input :type select :options "Last 7 days,Last 30 days,Last 90 days" :fill))
+
+      (scroll :col :full :gap 16 :padding 16
+        ; Quick Stats
+        (box :row :gap 12
+          (card :col :fill :gap 8 :padding 16
+            (text "Visitors" :low)
+            (text "124.9K" :high)
+            (badge "+12.5%" :success))
+          (card :col :fill :gap 8 :padding 16
+            (text "Page Views" :low)
+            (text "543.2K" :high)
+            (badge "+8.2%" :success)))
+
+        (box :row :gap 12
+          (card :col :fill :gap 8 :padding 16
+            (text "Bounce Rate" :low)
+            (text "32.4%" :high)
+            (badge "-2.1%" :success))
+          (card :col :fill :gap 8 :padding 16
+            (text "Avg. Session" :low)
+            (text "4m 32s" :high)
+            (badge "+0.8%" :success)))
+
+        ; Traffic Chart
+        (card :col :gap 12 :padding 16
+          (text "Traffic Trend" :medium)
+          (chart "Mini line chart" :height "160px"))
+
+        ; Traffic Sources
+        (card :col :gap 12 :padding 16
+          (text "Traffic Sources" :medium)
+          (box :col :gap 8
+            (box :row :between
+              (box :row :gap 8
+                (badge "" :primary)
+                (text "Organic" :low))
+              (text "45%" :medium))
+            (box :row :between
+              (box :row :gap 8
+                (badge "" :success)
+                (text "Direct" :low))
+              (text "28%" :medium))
+            (box :row :between
+              (box :row :gap 8
+                (badge "" :warning)
+                (text "Referral" :low))
+              (text "18%" :medium))
+            (box :row :between
+              (box :row :gap 8
+                (badge "" :info)
+                (text "Social" :low))
+              (text "9%" :medium))))
+
+        ; Top Pages
+        (card :col :gap 12 :padding 16
+          (box :row :between
+            (text "Top Pages" :medium)
+            (text "View All" :primary))
+          (box :col :gap 8
+            (box :row :between
+              (text "/home" :low)
+              (text "45,231" :medium))
+            (box :row :between
+              (text "/products" :low)
+              (text "32,847" :medium))
+            (box :row :between
+              (text "/pricing" :low)
+              (text "28,392" :medium)))))
+
+      ; Bottom Nav
+      (nav :row :around :padding 12 :sticky :bottom 0
+        (box :col :center :gap 4 :active
+          (icon "house")
+          (text "Overview" :low))
+        (box :col :center :gap 4
+          (icon "users")
+          (text "Audience" :low))
+        (box :col :center :gap 4
+          (icon "trending-up")
+          (text "Traffic" :low))
+        (box :col :center :gap 4
+          (icon "target")
+          (text "Goals" :low))
+        (box :col :center :gap 4
+          (icon "settings")
+          (text "Settings" :low))))))

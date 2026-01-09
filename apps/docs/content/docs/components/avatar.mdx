@@ -1,0 +1,113 @@
+---
+title: avatar
+description: User avatar with initials.
+---
+
+Displays a user avatar with initials derived from the content string.
+
+## Usage
+
+```wire preview
+(avatar "John Doe")
+```
+
+## Sizes
+
+```wire preview
+(box :row :gap 12 :center
+  (avatar "John Doe" :high)
+  (avatar "John Doe" :medium)
+  (avatar "John Doe" :low))
+```
+
+## Properties
+
+<PropsTable element="avatar" />
+
+## Examples
+
+```wire preview
+(box :row :gap 12
+  (avatar "John Doe")
+  (avatar "John")
+  (avatar "AB"))
+```
+
+## More Examples
+
+### User Card
+
+```wire preview
+(card :row :gap 16 :padding 16
+  (avatar "John Doe")
+  (box :col :gap 4 :fill
+    (text "John Doe" :high)
+    (text "john@example.com" :low))
+  (button "Follow" :primary))
+```
+
+### User List
+
+```wire preview:300
+(list :col :gap 0
+  (box :row :gap 12 :padding 12
+    (avatar "Alice Johnson")
+    (box :col :gap 2 :fill
+      (text "Alice Johnson")
+      (text "Online" :success :low))
+    (icon "message-circle"))
+  (divider)
+  (box :row :gap 12 :padding 12
+    (avatar "Bob Smith")
+    (box :col :gap 2 :fill
+      (text "Bob Smith")
+      (text "Away" :warning :low))
+    (icon "message-circle")))
+```
+
+### Comment
+
+```wire preview
+(box :row :gap 12 :start
+  (avatar "Jane")
+  (box :col :gap 8 :fill
+    (box :row :gap 8
+      (text "Jane Doe" :high)
+      (text "2 hours ago" :low))
+    (text "This is a great article! Thanks for sharing.")))
+```
+
+### Header with Avatar
+
+```wire preview
+(header :row :between :padding 16
+  (text "Dashboard" :high)
+  (box :row :gap 12
+    (icon "bell")
+    (avatar "User")))
+```
+
+### Team Members
+
+```wire preview
+(box :row :gap -8
+  (avatar "Alice")
+  (avatar "Bob")
+  (avatar "Carol")
+  (avatar "David")
+  (avatar "+3"))
+```
+
+### Profile Section
+
+```wire preview:300
+(box :col :center :gap 16 :padding 24
+  (avatar "John Doe")
+  (box :col :center :gap 4
+    (text "John Doe" :high)
+    (text "Product Designer" :low)
+    (text "San Francisco, CA" :low))
+  (box :row :gap 8
+    (button "Follow" :primary)
+    (button "Message" :secondary)))
+```

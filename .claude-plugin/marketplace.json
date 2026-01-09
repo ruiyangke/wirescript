@@ -1,0 +1,39 @@
+{
+  "name": "wirescript-plugins",
+  "owner": {
+    "name": "WireScript Team",
+    "url": "https://github.com/ruiyangke/wirescript"
+  },
+  "metadata": {
+    "description": "Official WireScript plugins for Claude Code",
+    "version": "1.0.0"
+  },
+  "plugins": [
+    {
+      "name": "wirescript",
+      "source": {
+        "source": "github",
+        "repo": "ruiyangke/wirescript",
+        "path": "packages/claude-plugin"
+      },
+      "description": "Claude Code plugin for WireScript DSL authoring. Provides syntax guidance, validation hooks, and comprehensive documentation for creating .wire wireframe files.",
+      "version": "1.0.0",
+      "author": {
+        "name": "WireScript Team",
+        "url": "https://github.com/ruiyangke/wirescript"
+      },
+      "homepage": "https://github.com/ruiyangke/wirescript",
+      "repository": "https://github.com/ruiyangke/wirescript",
+      "license": "Apache-2.0",
+      "keywords": [
+        "wireframe",
+        "wirescript",
+        "dsl",
+        "ui-design",
+        "prototyping",
+        "claude-code-plugin"
+      ],
+      "category": "development"
+    }
+  ]
+}

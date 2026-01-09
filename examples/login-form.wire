@@ -1,0 +1,177 @@
+; Login Form - Mobile authentication flow showcasing:
+; - Centered card layout on mobile
+; - Form validation patterns
+; - Social authentication options
+; - Password visibility toggle pattern
+; - Loading and error states
+; - Forgot password flow
+
+(wire
+  (meta
+    :title "Login"
+    :context authentication
+    :audience "mobile-users"
+    :goal "secure user authentication")
+
+  ; Main Login Screen
+  (screen login "Login" :mobile
+    (box :col :full :padding 24
+      ; Logo and branding
+      (box :col :center :gap 8 :padding 32
+        (box :row :center :gap 12
+          (icon "shield")
+          (text "SecureApp" :high))
+        (text "Welcome back" :medium)
+        (text "Sign in to continue to your account" :low))
+
+      ; Login Form Card
+      (card :col :gap 20 :padding 24
+        (form :col :gap 16
+          ; Email field
+          (box :col :gap 6
+            (text "Email" :medium)
+            (input :type email :placeholder "you@example.com"))
+
+          ; Password field with forgot link
+          (box :col :gap 6
+            (box :row :between
+              (text "Password" :medium)
+              (text "Forgot?" :primary :to "#forgot-password"))
+            (input :type password :placeholder "Enter your password"))
+
+          ; Remember me
+          (box :row :gap 12
+            (input :type checkbox)
+            (text "Remember me for 30 days" :low))
+
+          ; Submit button
+          (button "Sign In" :primary :full))
+
+        (divider)
+
+        ; Social login options
+        (box :col :gap 12
+          (text "Or continue with" :low :center)
+          (box :row :gap 12
+            (button "Google" :ghost :fill)
+            (button "Apple" :ghost :fill))))
+
+      ; Sign up link
+      (box :row :center :gap 8 :padding 24
+        (text "Don't have an account?" :low)
+        (text "Sign up" :primary :to signup)))
+
+    ; Forgot Password Modal
+    (modal :id "forgot-password"
+      (box :col :gap 24 :padding 24
+        (box :col :gap 8
+          (text "Reset Password" :high)
+          (text "Enter your email and we'll send you a reset link" :low))
+        (form :col :gap 16
+          (input "Email" :type email :placeholder "you@example.com")
+          (button "Send Reset Link" :primary :full))
+        (box :row :center
+          (button "Back to Login" :ghost :to :close)))))
+
+  ; Sign Up Screen
+  (screen signup "Sign Up" :mobile
+    (box :col :full :padding 24
+      ; Header
+      (box :col :center :gap 8 :padding 32
+        (box :row :center :gap 12
+          (icon "shield")
+          (text "SecureApp" :high))
+        (text "Create your account" :medium)
+        (text "Start your 14-day free trial" :low))
+
+      ; Sign Up Form
+      (card :col :gap 20 :padding 24
+        (form :col :gap 16
+          ; Name fields
+          (box :row :gap 12
+            (box :col :gap 6 :fill
+              (text "First name" :medium)
+              (input :type text :placeholder "John"))
+            (box :col :gap 6 :fill
+              (text "Last name" :medium)
+              (input :type text :placeholder "Doe")))
+
+          ; Email
+          (box :col :gap 6
+            (text "Email" :medium)
+            (input :type email :placeholder "you@example.com"))
+
+          ; Password with requirements
+          (box :col :gap 6
+            (text "Password" :medium)
+            (input :type password :placeholder "Min 8 characters")
+            (box :col :gap 4 :padding 8
+              (box :row :gap 8
+                (icon "check")
+                (text "At least 8 characters" :low))
+              (box :row :gap 8
+                (icon "check")
+                (text "One uppercase letter" :low))
+              (box :row :gap 8
+                (icon "x")
+                (text "One number" :low))))
+
+          ; Terms
+          (box :row :gap 12
+            (input :type checkbox)
+            (text "I agree to the Terms of Service and Privacy Policy" :low))
+
+          (button "Create Account" :primary :full))
+
+        (divider)
+
+        ; Social signup
+        (box :col :gap 12
+          (text "Or sign up with" :low :center)
+          (box :row :gap 12
+            (button "Google" :ghost :fill)
+            (button "Apple" :ghost :fill))))
+
+      ; Login link
+      (box :row :center :gap 8 :padding 24
+        (text "Already have an account?" :low)
+        (text "Sign in" :primary :to login))))
+
+  ; Loading State Example Screen
+  (screen login-loading "Login Loading" :mobile
+    (box :col :full :padding 24
+      (box :col :center :gap 8 :padding 32
+        (icon "shield")
+        (text "SecureApp" :high))
+
+      (card :col :gap 20 :padding 24
+        (form :col :gap 16
+          (box :col :gap 6
+            (text "Email" :medium)
+            (input :type email :placeholder "you@example.com" :disabled))
+          (box :col :gap 6
+            (text "Password" :medium)
+            (input :type password :placeholder "••••••••" :disabled))
+          (button "Signing in..." :primary :full :loading :disabled)))))
+
+  ; Error State Example Screen
+  (screen login-error "Login Error" :mobile
+    (box :col :full :padding 24
+      (box :col :center :gap 8 :padding 32
+        (icon "shield")
+        (text "SecureApp" :high))
+
+      ; Error banner
+      (card :row :gap 12 :padding 16 :danger
+        (icon "circle-alert")
+        (text "Invalid email or password. Please try again." :danger))
+
+      (card :col :gap 20 :padding 24
+        (form :col :gap 16
+          (box :col :gap 6
+            (text "Email" :medium)
+            (input :type email :placeholder "you@example.com" :error))
+          (box :col :gap 6
+            (text "Password" :medium)
+            (input :type password :placeholder "Enter your password" :error))
+          (button "Sign In" :primary :full))))))

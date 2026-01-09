@@ -1,0 +1,93 @@
+---
+title: chart
+description: Chart placeholder.
+---
+
+> **Note:** Chart is currently a placeholder component. All chart types render as a generic placeholder image. The `:type` property exists for semantic purposes but does not change the rendered output.
+
+A placeholder for charts and data visualizations.
+
+## Usage
+
+```wire preview
+(chart :type line)
+```
+
+## Chart Types
+
+```wire preview:300
+(chart :type bar :height 200)
+(chart :type line :height 200)
+(chart :type pie)
+(chart :type area :height 150)
+```
+
+## Properties
+
+<PropsTable element="chart" />
+
+## Chart Types
+
+| Type | Description |
+|------|-------------|
+| `bar` | Bar chart |
+| `line` | Line chart |
+| `pie` | Pie chart |
+| `area` | Area chart |
+
+## Examples
+
+### Dashboard Charts
+
+```wire preview:400
+(box :col :gap 24
+  (card :col :gap 16 :padding 20
+    (text "Revenue Over Time" :high)
+    (chart :type line :height 300))
+  (box :row :gap 16
+    (card :col :gap 16 :padding 20 :fill
+      (text "Sales by Category" :high)
+      (chart :type bar :height 200))
+    (card :col :gap 16 :padding 20 :fill
+      (text "Traffic Sources" :high)
+      (chart :type pie :height 200))))
+```
+
+### Analytics Page
+
+```wire preview:400
+(box :col :gap 24 :padding 24
+  (text "Analytics" :high)
+  (box :row :gap 16
+    (metric :label "Visitors" :value "45,678" :change "+12%" :trend up)
+    (metric :label "Page Views" :value "123,456" :change "+8%" :trend up))
+  (card :col :gap 16 :padding 20
+    (box :row :between
+      (text "Traffic" :high)
+      (input "Period" :type select :options "7 days,30 days,90 days"))
+    (chart :type area :height 350)))
+```
+
+### Comparison Charts
+
+```wire preview:300
+(box :grid :cols 2 :gap 16
+  (card :col :gap 12 :padding 16
+    (text "This Month" :low)
+    (chart :type bar :height 150))
+  (card :col :gap 12 :padding 16
+    (text "Last Month" :low)
+    (chart :type bar :height 150)))
+```
+
+### Stats with Chart
+
+```wire preview:250
+(card :col :padding 20
+  (box :row :between
+    (box :col :gap 4
+      (text "Monthly Revenue" :low)
+      (text "$45,678" :high)
+      (text "+12% from last month" :success :low))
+    (chart :type line :height 80)))
+```

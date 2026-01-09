@@ -1,0 +1,13 @@
+{
+  "PostToolUse": [
+    {
+      "matcher": "Write|Edit",
+      "hooks": [
+        {
+          "type": "command",
+          "command": "FILE_PATH=$(jq -r '.tool_input.file_path'); if [[ \"$FILE_PATH\" == *.wire ]]; then npx @wirescript/cli format \"$FILE_PATH\" 2>&1; echo '--- WireScript Validation ---'; npx @wirescript/cli verify \"$FILE_PATH\" 2>&1; fi"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,79 @@
+---
+title: scroll
+description: Scrollable container.
+---
+
+A container with overflow scrolling, useful for long lists or horizontally scrollable content.
+
+## Usage
+
+```wire preview
+(scroll :col :height "300px"
+  (text "Item 1")
+  (text "Item 2")
+  (text "Item 3"))
+```
+
+## Vertical Scroll
+
+```wire preview:300
+(scroll :col :gap 8 :padding 16 :height "400px"
+  (card :padding 16 (text "Card 1"))
+  (card :padding 16 (text "Card 2"))
+  (card :padding 16 (text "Card 3"))
+  (card :padding 16 (text "Card 4"))
+  (card :padding 16 (text "Card 5")))
+```
+
+## Horizontal Scroll
+
+```wire preview
+(scroll :row :gap 12 :padding 8
+  (badge "Tag 1")
+  (badge "Tag 2")
+  (badge "Tag 3")
+  (badge "Tag 4")
+  (badge "Tag 5")
+  (badge "Tag 6"))
+```
+
+## Properties
+
+<PropsTable element="scroll" />
+
+## Examples
+
+### Chat Messages
+
+```wire preview:300
+(scroll :col :gap 8 :padding 16 :fill
+  (box :row :start
+    (card :padding 12 :width "70%"
+      (text "Hey, how are you?")))
+  (box :row :end
+    (card :padding 12 :width "70%"
+      (text "I'm good, thanks!")))
+  (box :row :start
+    (card :padding 12 :width "70%"
+      (text "Great to hear!"))))
+```
+
+### Image Gallery
+
+```wire preview
+(scroll :row :gap 8
+  (image "Photo 1" :width "200px" :height "150px")
+  (image "Photo 2" :width "200px" :height "150px")
+  (image "Photo 3" :width "200px" :height "150px")
+  (image "Photo 4" :width "200px" :height "150px"))
+```
+
+### Long List
+
+```wire preview:300
+(scroll :col :gap 0 :height "300px"
+  (repeat :count 20 :as "i"
+    (box :row :padding 12 :between
+      (text "Item ${i}")
+      (icon "chevron-right"))))
+```

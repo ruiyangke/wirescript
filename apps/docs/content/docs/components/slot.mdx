@@ -1,0 +1,104 @@
+---
+title: slot
+description: Layout placeholder for screen content.
+---
+
+A placeholder element used in layouts to mark where screen content should be inserted.
+
+## Usage
+
+```wire
+(layout my-layout
+  (header (text "Header"))
+  (slot)  ; Screen content goes here
+  (footer (text "Footer")))
+```
+
+## How It Works
+
+When a screen uses a layout, the screen's content replaces the `(slot)` element:
+
+```wire preview
+(wire
+  ; Define layout with slot
+  (layout app-layout
+    (box :row :full
+      (nav :col :width "200px"
+        (text "Navigation"))
+      (slot)))  ; Content placeholder
+
+  ; Screen content replaces the slot
+  (screen home "Home" :desktop :layout app-layout
+    (box :col :padding 24
+      (text "This replaces the slot"))))
+```
+
+## Examples
+
+### Basic Layout
+
+```wire preview
+(layout page-layout
+  (header :row :between :padding 16
+    (text "Logo" :high)
+    (nav :row :gap 16
+      (text "Home")
+      (text "About")))
+  (slot)
+  (footer :center :padding 16
+    (text "© 2024" :low)))
+```
+
+### Sidebar Layout
+
+```wire preview
+(layout sidebar-layout
+  (box :row :full
+    (nav :col :width "240px" :padding 16 :gap 8
+      (text "App Name" :high)
+      (divider)
+      (button "Dashboard" :ghost :full :start :to dashboard)
+      (button "Projects" :ghost :full :start :to projects)
+      (button "Settings" :ghost :full :start :to settings))
+    (box :col :fill
+      (slot))))
+```
+
+### Dashboard Layout
+
+```wire preview
+(layout dashboard-layout
+  (box :col :full
+    (header :row :between :padding 16
+      (text "Dashboard" :high)
+      (box :row :gap 12
+        (icon "bell")
+        (avatar "User")))
+    (box :row :fill
+      (nav :col :width "200px" :padding 16
+        (button "Overview" :ghost :full :start :to overview)
+        (button "Analytics" :ghost :full :start :to analytics))
+      (slot))))
+```
+
+### Using the Layout
+
+```wire preview
+(screen overview "Overview" :desktop :layout dashboard-layout
+  (box :col :padding 24 :gap 24
+    (text "Overview" :high)
+    (box :row :gap 16
+      (metric :label "Users" :value "1,234")
+      (metric :label "Revenue" :value "$5,678"))
+    (chart :type line :height 300)))
+
+(screen analytics "Analytics" :desktop :layout dashboard-layout
+  (box :col :padding 24 :gap 24
+    (text "Analytics" :high)
+    (chart :type bar :height 400)))
+```
+
+## See Also
+
+- [layout](/docs/components/layout) - Define reusable page layouts
+- [Layouts in Language Reference](/docs/guide/language#layouts)

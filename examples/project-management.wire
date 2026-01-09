@@ -1,0 +1,748 @@
+; Project Management App - Advanced example showcasing:
+; - Repeat for generating multiple items
+; - Kanban board with drag-drop-like UI
+; - Complex modals with forms
+; - Tabs for view switching
+; - Breadcrumbs for navigation
+; - Progress indicators
+; - Multiple screen states
+
+(wire
+  (meta
+    :title "Project Management"
+    :context project-management
+    :audience "product-teams"
+    :goal "track projects and tasks")
+
+  ; Component Definitions
+  (define task-card (title assignee priority due)
+    (card :col :gap 12 :padding 12
+      (box :row :between
+        (badge $priority)
+        (dropdown
+          (button "Edit Task" :ghost :full)
+          (button "Add Subtask" :ghost :full)
+          (button "Copy Link" :ghost :full)
+          (divider)
+          (button "Move to..." :ghost :full)
+          (button "Duplicate" :ghost :full)
+          (divider)
+          (button "Delete" :danger :ghost :full)))
+      (text $title :medium)
+      (box :row :between
+        (box :row :gap 8
+          (avatar $assignee)
+          (text $assignee :low))
+        (text $due :low))))
+
+  (define project-card (name progress tasks members)
+    (card :col :gap 16 :padding 20
+      (box :row :between
+        (text $name :medium)
+        (dropdown
+          (button "Open Project" :ghost :full)
+          (button "Edit" :ghost :full)
+          (button "Duplicate" :ghost :full)
+          (divider)
+          (button "Archive" :ghost :full)
+          (button "Delete" :danger :ghost :full)))
+      (progress)
+      (box :row :between
+        (text $tasks :low)
+        (box :row :gap -8
+          (repeat :count 3 :as "member"
+            (avatar $member))))))
+
+  (define team-member (name role avatar status)
+    (box :row :between :padding 12
+      (box :row :gap 12
+        (avatar $name)
+        (box :col :gap 2
+          (text $name :medium)
+          (text $role :low)))
+      (badge $status)))
+
+  (define activity-log (user action target time)
+    (box :row :gap 12 :padding 8
+      (avatar $user)
+      (box :col :fill :gap 2
+        (box :row :gap 4
+          (text $user :medium)
+          (text $action :low)
+          (text $target :medium))
+        (text $time :low))))
+
+  (define milestone (name date status)
+    (box :row :between :padding 12
+      (box :row :gap 12
+        (icon "flag")
+        (box :col :gap 2
+          (text $name :medium)
+          (text $date :low)))
+      (badge $status)))
+
+  ; Screen 1: Projects Overview
+  (screen projects "Projects" :desktop
+    (box :col :full
+      ; Header
+      (header :row :between :padding 16
+        (box :row :gap 24
+          (text "ProjectHub" :high)
+          (nav :row :gap 16
+            (text "Projects" :active :to "projects")
+            (text "My Tasks" :to "my-tasks")
+            (text "Team" :to "team")
+            (text "Calendar" :to "calendar")))
+        (box :row :gap 12
+          (input "Search..." :type text)
+          (button :icon :primary :icon "plus" :to "#new-project")
+          (avatar "Me")))
+
+      ; Main Content (scrollable)
+      (scroll :col :full :padding 24 :gap 24
+        ; Page Header
+        (box :row :between
+          (box :col :gap 4
+            (text "All Projects" :high)
+            (text "12 active projects" :low))
+          (box :row :gap 12
+            (input "Filter" :type select :options "All,Active,Completed,On Hold")
+            (input "Sort" :type select :options "Recent,Name,Progress")))
+
+        ; Stats (wraps on narrow viewports)
+        (box :row :wrap :gap 16
+          (card :col :fill :padding 16 :gap 8
+            (text "Active" :low)
+            (text "8" :high))
+          (card :col :fill :padding 16 :gap 8
+            (text "On Track" :low)
+            (text "6" :high :success))
+          (card :col :fill :padding 16 :gap 8
+            (text "At Risk" :low)
+            (text "2" :high :warning))
+          (card :col :fill :padding 16 :gap 8
+            (text "Completed" :low)
+            (text "24" :high)))
+
+        ; Projects Grid
+        (box :grid :cols 3 :gap 24
+          (project-card :name "Website Redesign" :progress "75%" :tasks "24/32 tasks" :members "5")
+          (project-card :name "Mobile App v2" :progress "45%" :tasks "18/40 tasks" :members "4")
+          (project-card :name "API Integration" :progress "90%" :tasks "27/30 tasks" :members "3")
+          (project-card :name "Marketing Campaign" :progress "30%" :tasks "9/30 tasks" :members "6")
+          (project-card :name "Customer Portal" :progress "60%" :tasks "15/25 tasks" :members "4")
+          (project-card :name "Analytics Dashboard" :progress "15%" :tasks "6/40 tasks" :members "3"))))
+
+    ; Modal: New Project
+    (modal :id "new-project"
+      (box :col :gap 24 :padding 24 :width "600px"
+        (box :row :between
+          (text "Create New Project" :high)
+          (button :icon :ghost :icon "x" :to :close))
+        (form :col :gap 20
+          (input "Project Name" :type text :placeholder "Enter project name...")
+          (input "Description" :type textarea :rows 3 :placeholder "Describe the project...")
+          (box :row :gap 16
+            (input "Start Date" :type date)
+            (input "End Date" :type date))
+          (input "Priority" :type select :options "Low,Medium,High,Critical")
+          (box :col :gap 8
+            (text "Team Members" :medium)
+            (box :row :gap 8
+              (avatar "Alice")
+              (avatar "Bob")
+              (avatar "Carol")
+              (button :icon :ghost :icon "plus")))
+          (box :col :gap 8
+            (text "Project Template" :medium)
+            (box :row :gap 12
+              (card :col :center :padding 16 :gap 8
+                (icon "layout-grid")
+                (text "Blank" :low))
+              (card :col :center :padding 16 :gap 8
+                (icon "code")
+                (text "Software" :low))
+              (card :col :center :padding 16 :gap 8
+                (icon "megaphone")
+                (text "Marketing" :low))
+              (card :col :center :padding 16 :gap 8
+                (icon "palette")
+                (text "Design" :low)))))
+        (box :row :end :gap 12
+          (button "Cancel" :ghost :to :close)
+          (button "Create Project" :primary :to :submit)))))
+
+  ; Screen 2: Project Board (Kanban)
+  (screen project-board "Project Board" :desktop
+    (box :col :full
+      ; Header with breadcrumbs
+      (header :col :gap 8 :padding 16
+        (breadcrumb
+          (crumb "Projects" :to "projects")
+          (crumb "Website Redesign"))
+        (box :row :between
+          (box :row :gap 16
+            (text "Website Redesign" :high)
+            (badge "On Track" :success))
+          (box :row :gap 12
+            (box :row :gap -8
+              (repeat :count 5 :as "m"
+                (avatar $m)))
+            (button "Share" :ghost)
+            (button "Settings" :ghost :to "#project-settings"))))
+
+      ; Tabs for views
+      (tabs
+        (tab "Board" :active)
+        (tab "List")
+        (tab "Timeline")
+        (tab "Files")
+        (tab "Activity"))
+
+      ; Kanban Board
+      (box :row :gap 16 :padding 16 :full
+        ; Column: Backlog
+        (box :col :gap 12 :width "300px"
+          (box :row :between :padding 8
+            (box :row :gap 8
+              (text "Backlog" :medium)
+              (badge "5"))
+            (button :icon :ghost :icon "plus" :to "#new-task"))
+          (task-card :title "Research competitor features" :assignee "Alice" :priority "Low" :due "No date")
+          (task-card :title "Write technical spec" :assignee "Bob" :priority "Medium" :due "Mar 15")
+          (task-card :title "Design system audit" :assignee "Carol" :priority "Low" :due "Mar 20")
+          (skeleton)
+          (skeleton))
+
+        ; Column: To Do
+        (box :col :gap 12 :width "300px"
+          (box :row :between :padding 8
+            (box :row :gap 8
+              (text "To Do" :medium)
+              (badge "4"))
+            (button :icon :ghost :icon "plus" :to "#new-task"))
+          (task-card :title "Homepage wireframes" :assignee "Carol" :priority "High" :due "Mar 10")
+          (task-card :title "Set up CI/CD pipeline" :assignee "Bob" :priority "Medium" :due "Mar 12")
+          (task-card :title "User interviews" :assignee "Alice" :priority "High" :due "Mar 11")
+          (task-card :title "Database schema design" :assignee "David" :priority "Medium" :due "Mar 14"))
+
+        ; Column: In Progress
+        (box :col :gap 12 :width "300px"
+          (box :row :between :padding 8
+            (box :row :gap 8
+              (text "In Progress" :medium)
+              (badge "3" :primary))
+            (button :icon :ghost :icon "plus" :to "#new-task"))
+          (task-card :title "Navigation component" :assignee "Carol" :priority "High" :due "Mar 8")
+          (task-card :title "API endpoints design" :assignee "Bob" :priority "High" :due "Mar 9")
+          (task-card :title "User flow diagrams" :assignee "Alice" :priority "Medium" :due "Mar 10"))
+
+        ; Column: Review
+        (box :col :gap 12 :width "300px"
+          (box :row :between :padding 8
+            (box :row :gap 8
+              (text "Review" :medium)
+              (badge "2" :warning))
+            (button :icon :ghost :icon "plus" :to "#new-task"))
+          (task-card :title "Landing page design" :assignee "Carol" :priority "High" :due "Mar 6")
+          (task-card :title "Auth flow implementation" :assignee "Bob" :priority "High" :due "Mar 7"))
+
+        ; Column: Done
+        (box :col :gap 12 :width "300px"
+          (box :row :between :padding 8
+            (box :row :gap 8
+              (text "Done" :medium)
+              (badge "8" :success))
+            (button :icon :ghost :icon "plus" :to "#new-task"))
+          (task-card :title "Project setup" :assignee "Bob" :priority "Medium" :due "Mar 1")
+          (task-card :title "Requirements doc" :assignee "Alice" :priority "High" :due "Mar 2")
+          (task-card :title "Stakeholder meeting" :assignee "Alice" :priority "High" :due "Mar 3"))))
+
+    ; Modal: New Task
+    (modal :id "new-task"
+      (box :col :gap 24 :padding 24 :width "550px"
+        (box :row :between
+          (text "Create Task" :high)
+          (button :icon :ghost :icon "x" :to :close))
+        (form :col :gap 16
+          (input "Task Title" :type text :placeholder "What needs to be done?")
+          (input "Description" :type textarea :rows 3 :placeholder "Add more details...")
+          (box :row :gap 16
+            (input "Assignee" :type select :options "Alice,Bob,Carol,David,Unassigned")
+            (input "Priority" :type select :options "Low,Medium,High,Critical"))
+          (box :row :gap 16
+            (input "Due Date" :type date)
+            (input "Status" :type select :options "Backlog,To Do,In Progress,Review,Done"))
+          (box :col :gap 8
+            (text "Labels" :medium)
+            (box :row :gap 8
+              (badge "Bug" :danger)
+              (badge "Feature" :primary)
+              (badge "Design" :info)
+              (button "Add" :ghost :icon "plus")))
+          (box :col :gap 8
+            (text "Subtasks" :medium)
+            (box :col :gap 4
+              (box :row :gap 8
+                (input :type checkbox)
+                (input "Subtask 1" :type text :placeholder "Add subtask..."))
+              (button "Add Subtask" :ghost :icon "plus"))))
+        (box :row :end :gap 12
+          (button "Cancel" :ghost :to :close)
+          (button "Create Task" :primary :to :submit))))
+
+    ; Drawer: Project Settings
+    (drawer :id "project-settings" :right
+      (box :col :gap 24 :padding 24 :width "400px"
+        (box :row :between
+          (text "Project Settings" :high)
+          (button :icon :ghost :icon "x" :to :close))
+        (box :col :gap 20
+          (box :col :gap 8
+            (text "General" :medium)
+            (input "Project Name" :type text :placeholder "Website Redesign")
+            (input "Description" :type textarea :rows 2))
+          (divider)
+          (box :col :gap 8
+            (text "Status" :medium)
+            (input "Status" :type select :options "On Track,At Risk,Off Track,Completed"))
+          (divider)
+          (box :col :gap 8
+            (text "Dates" :medium)
+            (box :row :gap 12
+              (input "Start" :type date)
+              (input "End" :type date)))
+          (divider)
+          (box :col :gap 8
+            (text "Team" :medium)
+            (team-member :name "Alice" :role "Project Lead" :avatar "A" :status "Active")
+            (team-member :name "Bob" :role "Developer" :avatar "B" :status "Active")
+            (team-member :name "Carol" :role "Designer" :avatar "C" :status "Active")
+            (button "Add Member" :ghost :full :icon "plus"))
+          (divider)
+          (box :col :gap 8
+            (text "Milestones" :medium)
+            (milestone :name "Alpha Release" :date "Mar 15" :status "Upcoming")
+            (milestone :name "Beta Release" :date "Apr 1" :status "Upcoming")
+            (milestone :name "Launch" :date "Apr 15" :status "Upcoming")
+            (button "Add Milestone" :ghost :full :icon "plus")))
+        (box :col :fill)
+        (box :row :gap 12
+          (button "Archive Project" :danger :ghost :full)
+          (button "Save Changes" :primary :full :to :close))))
+
+    ; Edit Task Modal (inside project-board screen)
+    (modal :id "edit-task"
+      (box :col :gap 24 :padding 24 :width "600px"
+        (box :row :between
+          (text "Edit Task" :high)
+          (button :icon :ghost :icon "x" :to :close))
+
+        (form :col :gap 20
+          (box :col :gap 4
+            (text "Task Name *" :medium)
+            (input :type text :placeholder "Task name"))
+
+          (box :col :gap 4
+            (text "Description" :medium)
+            (input :type text :placeholder "Add a more detailed description..."))
+
+          (box :row :gap 16
+            (box :col :gap 4 :fill
+              (text "Status" :medium)
+              (input :type select :options "To Do,In Progress,In Review,Done"))
+            (box :col :gap 4 :fill
+              (text "Priority" :medium)
+              (input :type select :options "High,Medium,Low")))
+
+          (box :row :gap 16
+            (box :col :gap 4 :fill
+              (text "Assignee" :medium)
+              (input :type select :options "Alice,Bob,Carol,David,Unassigned"))
+            (box :col :gap 4 :fill
+              (text "Due Date" :medium)
+              (input :type text :placeholder "Select date")))
+
+          (box :col :gap 4
+            (text "Labels" :medium)
+            (box :row :gap 8
+              (badge "Bug" :danger)
+              (badge "Feature" :primary)
+              (badge "Design")
+              (button "Add" :ghost :icon "plus")))
+
+          (box :col :gap 4
+            (text "Attachments" :medium)
+            (box :row :gap 8
+              (badge "design-v2.fig")
+              (badge "specs.pdf")
+              (button "Upload" :ghost))))
+
+        (box :row :between
+          (button "Delete Task" :danger :ghost)
+          (box :row :gap 12
+            (button "Cancel" :ghost :to :close)
+            (button "Save Changes" :primary))))))
+
+  ; Screen 3: My Tasks
+  (screen my-tasks "My Tasks" :desktop
+    (box :col :full
+      ; Header
+      (header :row :between :padding 16
+        (box :row :gap 24
+          (text "ProjectHub" :high)
+          (nav :row :gap 16
+            (text "Projects" :to "projects")
+            (text "My Tasks" :active :to "my-tasks")
+            (text "Team" :to "team")
+            (text "Calendar" :to "calendar")))
+        (box :row :gap 12
+          (input "Search..." :type text)
+          (button :icon :primary :icon "plus" :to "#new-task")
+          (avatar "Me")))
+
+      ; Content (scrollable)
+      (scroll :col :full :padding 24 :gap 24
+        (box :row :between
+          (box :col :gap 4
+            (text "My Tasks" :high)
+            (text "15 tasks assigned to you" :low))
+          (box :row :gap 12
+            (input "Filter" :type select :options "All,Due Today,Due This Week,Overdue")
+            (input "Group by" :type select :options "Status,Project,Priority,Due Date")))
+
+        ; Task Groups
+        (box :col :gap 24
+          ; Overdue
+          (box :col :gap 8
+            (box :row :gap 8
+              (text "Overdue" :medium :danger)
+              (badge "2" :danger))
+            (card :col :gap 0
+              (box :row :between :padding 16
+                (box :row :gap 12
+                  (input :type checkbox)
+                  (box :col :gap 2
+                    (text "Review PR #234" :medium)
+                    (text "API Integration" :low)))
+                (box :row :gap 12
+                  (badge "High" :danger)
+                  (text "Mar 5" :low :danger)))
+              (divider)
+              (box :row :between :padding 16
+                (box :row :gap 12
+                  (input :type checkbox)
+                  (box :col :gap 2
+                    (text "Update documentation" :medium)
+                    (text "Customer Portal" :low)))
+                (box :row :gap 12
+                  (badge "Medium")
+                  (text "Mar 6" :low :danger)))))
+
+          ; Due Today
+          (box :col :gap 8
+            (box :row :gap 8
+              (text "Due Today" :medium)
+              (badge "3" :warning))
+            (card :col :gap 0
+              (box :row :between :padding 16
+                (box :row :gap 12
+                  (input :type checkbox)
+                  (box :col :gap 2
+                    (text "Navigation component" :medium)
+                    (text "Website Redesign" :low)))
+                (box :row :gap 12
+                  (badge "High" :danger)
+                  (text "Today" :low)))
+              (divider)
+              (box :row :between :padding 16
+                (box :row :gap 12
+                  (input :type checkbox)
+                  (box :col :gap 2
+                    (text "API endpoints design" :medium)
+                    (text "Website Redesign" :low)))
+                (box :row :gap 12
+                  (badge "High" :danger)
+                  (text "Today" :low)))
+              (divider)
+              (box :row :between :padding 16
+                (box :row :gap 12
+                  (input :type checkbox)
+                  (box :col :gap 2
+                    (text "Weekly standup notes" :medium)
+                    (text "Mobile App v2" :low)))
+                (box :row :gap 12
+                  (badge "Low")
+                  (text "Today" :low)))))
+
+          ; This Week
+          (box :col :gap 8
+            (box :row :gap 8
+              (text "This Week" :medium)
+              (badge "5"))
+            (card :col :gap 0
+              (repeat :count 5 :as "task"
+                (box :col
+                  (box :row :between :padding 16
+                    (box :row :gap 12
+                      (input :type checkbox)
+                      (box :col :gap 2
+                        (text "Task item" :medium)
+                        (text "Project name" :low)))
+                    (box :row :gap 12
+                      (badge "Medium")
+                      (text "Mar 12" :low)))
+                  (divider)))))))))
+
+  ; Screen 4: Team
+  (screen team "Team" :desktop
+    (box :col :full
+      ; Header
+      (header :row :between :padding 16
+        (box :row :gap 24
+          (text "ProjectHub" :high)
+          (nav :row :gap 16
+            (text "Projects" :to "projects")
+            (text "My Tasks" :to "my-tasks")
+            (text "Team" :active :to "team")
+            (text "Calendar" :to "calendar")))
+        (box :row :gap 12
+          (input "Search..." :type text)
+          (button "Invite" :primary :to "#invite-member")
+          (avatar "Me")))
+
+      ; Content
+      (box :row :full :padding 24 :gap 24
+        ; Team List
+        (box :col :fill :gap 24
+          (box :row :between
+            (text "Team Members" :high)
+            (input "Department" :type select :options "All,Engineering,Design,Product,Marketing"))
+
+          (box :grid :cols 2 :gap 16
+            (repeat :count 6 :as "member"
+              (card :row :gap 16 :padding 16
+                (avatar "Team Member")
+                (box :col :fill :gap 4
+                  (text "Team Member" :medium)
+                  (text "Role Title" :low)
+                  (box :row :gap 8
+                    (badge "Engineering")
+                    (text "12 tasks" :low)))
+                (button :icon :ghost :icon "more-horizontal")))))
+
+        ; Activity Feed
+        (box :col :gap 16 :width "350px"
+          (text "Recent Activity" :medium)
+          (card :col :gap 0 :full
+            (activity-log :user "Alice" :action "completed" :target "Homepage wireframes" :time "2 min ago")
+            (divider)
+            (activity-log :user "Bob" :action "commented on" :target "API design" :time "15 min ago")
+            (divider)
+            (activity-log :user "Carol" :action "created" :target "New task" :time "1 hour ago")
+            (divider)
+            (activity-log :user "David" :action "moved" :target "Bug fix to Done" :time "2 hours ago")
+            (divider)
+            (activity-log :user "Alice" :action "assigned" :target "Review to Bob" :time "3 hours ago")))))
+
+    ; Modal: Invite Member
+    (modal :id "invite-member"
+      (box :col :gap 24 :padding 24 :width "450px"
+        (box :row :between
+          (text "Invite Team Member" :high)
+          (button :icon :ghost :icon "x" :to :close))
+        (form :col :gap 16
+          (input "Email Address" :type email :placeholder "colleague@company.com")
+          (input "Role" :type select :options "Admin,Member,Viewer")
+          (input "Department" :type select :options "Engineering,Design,Product,Marketing,Other")
+          (box :col :gap 8
+            (text "Project Access" :medium)
+            (box :col :gap 4
+              (input "Website Redesign" :type checkbox :checked true)
+              (input "Mobile App v2" :type checkbox)
+              (input "API Integration" :type checkbox)
+              (input "Marketing Campaign" :type checkbox))))
+        (box :row :end :gap 12
+          (button "Cancel" :ghost :to :close)
+          (button "Send Invite" :primary :to :submit)))))
+
+  ; Calendar Screen
+  (screen calendar "Calendar" :desktop
+    (box :col :full
+      ; Header - consistent with other screens
+      (header :row :between :padding 16
+        (box :row :gap 24
+          (text "ProjectHub" :high)
+          (nav :row :gap 16
+            (text "Projects" :to "projects")
+            (text "My Tasks" :to "my-tasks")
+            (text "Team" :to "team")
+            (text "Calendar" :active :to "calendar")))
+        (box :row :gap 12
+          (input "Search..." :type text)
+          (button :icon :primary :icon "plus" :to "#new-event")
+          (avatar "Me")))
+
+      ; Content (scrollable)
+      (scroll :col :full :padding 24 :gap 24
+        ; Page Header
+        (box :row :between
+          (box :col :gap 4
+            (text "Calendar" :high)
+            (text "March 2024" :low))
+          (box :row :gap 12
+            (button "Today" :ghost)
+            (box :row :gap 4
+              (button :icon :ghost :icon "chevron-left")
+              (button :icon :ghost :icon "chevron-right"))
+            (input "View" :type select :options "Month,Week,Day")))
+
+        ; Calendar Grid
+        (card :col :full :gap 0
+          ; Day Headers
+          (box :grid :cols 7 :gap 0
+            (box :center :padding 12
+              (text "Sun" :low))
+            (box :center :padding 12
+              (text "Mon" :low))
+            (box :center :padding 12
+              (text "Tue" :low))
+            (box :center :padding 12
+              (text "Wed" :low))
+            (box :center :padding 12
+              (text "Thu" :low))
+            (box :center :padding 12
+              (text "Fri" :low))
+            (box :center :padding 12
+              (text "Sat" :low)))
+
+          (divider)
+
+          ; Week 1 (Feb 25 - Mar 2)
+          (box :grid :cols 7 :gap 0
+            (box :col :padding 8 :gap 4 :height "90px"
+              (text "25" :low))
+            (box :col :padding 8 :gap 4 :height "90px"
+              (text "26" :low))
+            (box :col :padding 8 :gap 4 :height "90px"
+              (text "27" :low))
+            (box :col :padding 8 :gap 4 :height "90px"
+              (text "28" :low))
+            (box :col :padding 8 :gap 4 :height "90px"
+              (text "29" :low))
+            (box :col :padding 8 :gap 4 :height "90px"
+              (text "1" :medium)
+              (badge "Sprint Start" :primary))
+            (box :col :padding 8 :gap 4 :height "90px"
+              (text "2" :low)))
+
+          (divider)
+
+          ; Week 2 (Mar 3 - 9)
+          (box :grid :cols 7 :gap 0
+            (box :col :padding 8 :gap 4 :height "90px"
+              (text "3" :low))
+            (box :col :padding 8 :gap 4 :height "90px"
+              (text "4" :medium)
+              (badge "Team Standup" :info))
+            (box :col :padding 8 :gap 4 :height "90px"
+              (text "5" :medium))
+            (box :col :padding 8 :gap 4 :height "90px"
+              (text "6" :medium)
+              (badge "Design Review" :info))
+            (box :col :padding 8 :gap 4 :height "90px"
+              (text "7" :medium))
+            (box :col :padding 8 :gap 4 :height "90px"
+              (text "8" :medium)
+              (badge "Demo Day" :success))
+            (box :col :padding 8 :gap 4 :height "90px"
+              (text "9" :low)))
+
+          (divider)
+
+          ; Week 3 (Mar 10 - 16)
+          (box :grid :cols 7 :gap 0
+            (box :col :padding 8 :gap 4 :height "90px"
+              (text "10" :low))
+            (box :col :padding 8 :gap 4 :height "90px"
+              (text "11" :medium)
+              (badge "Client Call" :warning))
+            (box :col :padding 8 :gap 4 :height "90px"
+              (text "12" :medium))
+            (box :col :padding 8 :gap 4 :height "90px"
+              (text "13" :medium)
+              (badge "Code Review"))
+            (box :col :padding 8 :gap 4 :height "90px"
+              (text "14" :medium))
+            (box :col :padding 8 :gap 4 :height "90px"
+              (text "15" :medium :active)
+              (badge "Today" :primary))
+            (box :col :padding 8 :gap 4 :height "90px"
+              (text "16" :low)))
+
+          (divider)
+
+          ; Week 4 (Mar 17 - 23)
+          (box :grid :cols 7 :gap 0
+            (box :col :padding 8 :gap 4 :height "90px"
+              (text "17" :low))
+            (box :col :padding 8 :gap 4 :height "90px"
+              (text "18" :medium)
+              (badge "Sprint Review" :info))
+            (box :col :padding 8 :gap 4 :height "90px"
+              (text "19" :medium))
+            (box :col :padding 8 :gap 4 :height "90px"
+              (text "20" :medium)
+              (badge "Planning" :primary))
+            (box :col :padding 8 :gap 4 :height "90px"
+              (text "21" :medium))
+            (box :col :padding 8 :gap 4 :height "90px"
+              (text "22" :medium)
+              (badge "Release" :success))
+            (box :col :padding 8 :gap 4 :height "90px"
+              (text "23" :low)))
+
+          (divider)
+
+          ; Week 5 (Mar 24 - 30)
+          (box :grid :cols 7 :gap 0
+            (box :col :padding 8 :gap 4 :height "90px"
+              (text "24" :low))
+            (box :col :padding 8 :gap 4 :height "90px"
+              (text "25" :medium))
+            (box :col :padding 8 :gap 4 :height "90px"
+              (text "26" :medium)
+              (badge "Retro" :info))
+            (box :col :padding 8 :gap 4 :height "90px"
+              (text "27" :medium))
+            (box :col :padding 8 :gap 4 :height "90px"
+              (text "28" :medium))
+            (box :col :padding 8 :gap 4 :height "90px"
+              (text "29" :medium)
+              (badge "Q1 Review" :warning))
+            (box :col :padding 8 :gap 4 :height "90px"
+              (text "30" :low))))))
+
+    ; Modal: New Event
+    (modal :id "new-event"
+      (box :col :gap 24 :padding 24 :width "450px"
+        (box :row :between
+          (text "New Event" :high)
+          (button :icon :ghost :icon "x" :to :close))
+        (form :col :gap 16
+          (input "Event Title" :type text :placeholder "Enter event name...")
+          (box :row :gap 16
+            (input "Date" :type date)
+            (input "Time" :type text :placeholder "10:00 AM"))
+          (input "Description" :type textarea :rows 2 :placeholder "Add details...")
+          (input "Type" :type select :options "Meeting,Review,Release,Other")
+          (box :col :gap 8
+            (text "Invite" :medium)
+            (box :row :gap 8
+              (avatar "Alice")
+              (avatar "Bob")
+              (avatar "Carol")
+              (button :icon :ghost :icon "plus"))))
+        (box :row :end :gap 12
+          (button "Cancel" :ghost :to :close)
+          (button "Create Event" :primary :to :submit)))))))

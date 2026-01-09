@@ -1,0 +1,151 @@
+---
+title: input
+description: Form input with 16 input types.
+---
+
+Form input element with label. The content string is the label, not placeholder.
+
+## Usage
+
+```wire preview
+(input "Email" :type email)
+```
+
+## Text Inputs
+
+```wire preview:400
+(box :col :gap 12
+  (input "Username")
+  (input "Email" :type email :placeholder "you@example.com")
+  (input "Password" :type password)
+  (input "Search" :type search)
+  (input "Phone" :type tel))
+```
+
+## Textarea
+
+```wire preview:350
+(box :col :gap 12
+  (input "Bio" :type textarea :rows 4)
+  (input "Description" :type textarea :rows 6 :placeholder "Enter description..."))
+```
+
+## Selection
+
+```wire preview:250
+(box :col :gap 12
+  (input "Country" :type select :options "USA,Canada,UK,Germany")
+  (input "Plan" :type radio :options "Free,Pro,Enterprise"))
+```
+
+## Toggles
+
+```wire preview:250
+(box :col :gap 12
+  (input "Remember me" :type checkbox)
+  (input "Enable notifications" :type toggle)
+  (input "Accept terms" :type checkbox :checked))
+```
+
+## Numbers
+
+```wire preview:300
+(box :col :gap 12
+  (input "Quantity" :type number :min 1 :max 100)
+  (input "Age" :type number :placeholder "18")
+  (input "Volume" :type slider :min 0 :max 100 :value 50))
+```
+
+## Date & Time
+
+```wire preview:250
+(box :col :gap 12
+  (input "Start Date" :type date)
+  (input "Meeting Time" :type time))
+```
+
+## Other Types
+
+```wire preview:250
+(box :col :gap 12
+  (input "Color" :type color)
+  (input "Upload" :type file))
+```
+
+## States
+
+```wire preview:300
+(box :col :gap 12
+  (input "Email" :type email :error)
+  (input "Name" :disabled)
+  (input "Verified" :type checkbox :checked :disabled))
+```
+
+## Input Types
+
+| Type | Description |
+|------|-------------|
+| `text` | Text input (default) |
+| `email` | Email input |
+| `password` | Password input |
+| `search` | Search input |
+| `tel` | Phone input |
+| `textarea` | Multi-line text |
+| `select` | Dropdown select |
+| `radio` | Radio button group |
+| `checkbox` | Checkbox |
+| `toggle` | Toggle switch |
+| `number` | Number input |
+| `slider` | Range slider |
+| `date` | Date picker |
+| `time` | Time picker |
+| `color` | Color picker |
+| `file` | File upload |
+
+## Properties
+
+<PropsTable element="input" />
+
+Note: For checkbox/toggle inputs, use `:checked true` or `:checked false` as a property to set the initial state.
+
+## Examples
+
+### Login Form
+
+```wire preview:300
+(form :col :gap 16
+  (input "Email" :type email :placeholder "you@example.com")
+  (input "Password" :type password)
+  (input "Remember me" :type checkbox)
+  (button "Sign In" :primary :full))
+```
+
+### Settings Form
+
+```wire preview:400
+(form :col :gap 20
+  (input "Display Name" :value "John Doe")
+  (input "Email" :type email :value "john@example.com")
+  (input "Bio" :type textarea :rows 3)
+  (input "Country" :type select :options "USA,Canada,UK")
+  (input "Dark Mode" :type toggle)
+  (input "Email Notifications" :type toggle :checked))
+```
+
+### Search Bar
+
+```wire preview
+(box :row :gap 8
+  (input "Search" :type search :placeholder "Search..." :fill)
+  (button "Search" :primary))
+```
+
+### Filter Form
+
+```wire preview:300
+(form :col :gap 16
+  (input "Category" :type select :options "All,Electronics,Clothing,Books")
+  (input "Price Range" :type slider :min 0 :max 1000)
+  (input "In Stock Only" :type checkbox)
+  (button "Apply Filters" :primary :full))
+```

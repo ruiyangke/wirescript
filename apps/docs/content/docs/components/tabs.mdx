@@ -1,0 +1,116 @@
+---
+title: tabs
+description: Tab navigation.
+---
+
+Tab container for switching between views. Contains `tab` children.
+
+## Usage
+
+```wire preview
+(tabs
+  (tab "Overview" :active)
+  (tab "Details")
+  (tab "Settings"))
+```
+
+## Tab States
+
+```wire preview
+(tabs
+  (tab "Active" :active)
+  (tab "Normal"))
+```
+
+## With Navigation
+
+```wire
+(tabs
+  (tab "Home" :to home)
+  (tab "Profile" :to profile)
+  (tab "Settings" :to settings))
+```
+
+## Properties
+
+<PropsTable element="tabs" />
+
+## Tabs with Content
+
+Tabs can contain children that render as panel content:
+
+```wire preview:250
+(tabs
+  (tab "Overview" :active
+    (text "Overview content here"))
+  (tab "Details"
+    (text "Details content here")))
+```
+
+## Examples
+
+### Settings Page
+
+```wire preview:300
+(box :col :gap 24 :padding 24
+  (text "Settings" :high)
+  (tabs
+    (tab "General" :active)
+    (tab "Security")
+    (tab "Notifications")
+    (tab "Billing"))
+  (card :col :gap 16 :padding 24
+    (input "Display Name")
+    (input "Email" :type email)
+    (input "Bio" :type textarea :rows 3)
+    (box :row :end
+      (button "Save Changes" :primary))))
+```
+
+### Profile Tabs
+
+```wire preview:300
+(box :col :gap 16
+  (box :row :gap 16 :padding 16
+    (avatar "John Doe")
+    (box :col :gap 4
+      (text "John Doe" :high)
+      (text "Software Engineer" :low)))
+  (tabs
+    (tab "Posts" :active)
+    (tab "About")
+    (tab "Friends")
+    (tab "Photos"))
+  (box :col :gap 16 :padding 16
+    (text "Recent Posts" :high)
+    (card :padding 16
+      (text "My first post..."))))
+```
+
+### Dashboard Tabs
+
+```wire preview:400
+(box :col :gap 16
+  (tabs
+    (tab "Overview" :active)
+    (tab "Analytics")
+    (tab "Reports")
+    (tab "Settings"))
+  (box :row :gap 16
+    (metric :label "Users" :value "1,234")
+    (metric :label "Revenue" :value "$5,678"))
+  (chart :type line :height 300))
+```
+
+### Product Tabs
+
+```wire preview:300
+(box :col :gap 16
+  (tabs
+    (tab "Description" :active)
+    (tab "Specifications")
+    (tab "Reviews"))
+  (box :col :gap 8 :padding 16
+    (text "Product Description" :high)
+    (text "This is a detailed description of the product...")))
+```

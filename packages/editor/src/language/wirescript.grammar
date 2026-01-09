@@ -1,0 +1,113 @@
+@top Document { expression* }
+
+expression {
+  List |
+  Atom
+}
+
+List {
+  "(" ListContent ")"
+}
+
+ListContent {
+  FormKeyword expression* |
+  ElementKeyword expression* |
+  OverlayKeyword expression* |
+  Symbol expression*
+}
+
+Atom {
+  String |
+  Number |
+  Keyword |
+  ParamRef |
+  Symbol
+}
+
+@tokens {
+  // Whitespace
+  whitespace { $[ \t\n\r]+ }
+
+  // Comments
+  Comment { ";" ![\n]* }
+
+  // Strings
+  String { '"' (!["\\] | "\\" _)* '"' }
+
+  // Numbers
+  Number { "-"? $[0-9]+ ("." $[0-9]+)? }
+
+  // Keywords (:symbol) - used for both flags and property keys in Common Lisp style
+  Keyword { ":" $[a-zA-Z_] $[a-zA-Z0-9_\-]* }
+
+  // Parameter references ($name)
+  ParamRef { "$" $[a-zA-Z_] $[a-zA-Z0-9_\-]* }
+
+  // Symbols
+  Symbol { $[a-zA-Z_] $[a-zA-Z0-9_\-]* }
+
+  // Parentheses
+  "(" ")"
+
+  @precedence { Keyword, ParamRef, Symbol }
+}
+
+// Form keywords
+FormKeyword {
+  @specialize<Symbol, "wire"> |
+  @specialize<Symbol, "meta"> |
+  @specialize<Symbol, "define"> |
+  @specialize<Symbol, "screen"> |
+  @specialize<Symbol, "repeat">
+}
+
+// Element type keywords
+ElementKeyword {
+  // Containers
+  @specialize<Symbol, "box"> |
+  @specialize<Symbol, "card"> |
+  @specialize<Symbol, "section"> |
+  @specialize<Symbol, "header"> |
+  @specialize<Symbol, "footer"> |
+  @specialize<Symbol, "nav"> |
+  @specialize<Symbol, "form"> |
+  @specialize<Symbol, "list"> |
+  @specialize<Symbol, "scroll"> |
+  @specialize<Symbol, "group"> |
+  // Content
+  @specialize<Symbol, "text"> |
+  @specialize<Symbol, "button"> |
+  @specialize<Symbol, "input"> |
+  @specialize<Symbol, "image"> |
+  @specialize<Symbol, "icon"> |
+  @specialize<Symbol, "divider"> |
+  @specialize<Symbol, "avatar"> |
+  @specialize<Symbol, "badge"> |
+  @specialize<Symbol, "datepicker"> |
+  // Data
+  @specialize<Symbol, "metric"> |
+  @specialize<Symbol, "chart"> |
+  @specialize<Symbol, "progress"> |
+  @specialize<Symbol, "skeleton"> |
+  // Navigation
+  @specialize<Symbol, "tabs"> |
+  @specialize<Symbol, "tab"> |
+  @specialize<Symbol, "breadcrumb"> |
+  @specialize<Symbol, "crumb"> |
+  // Utility
+  @specialize<Symbol, "tooltip"> |
+  @specialize<Symbol, "toast"> |
+  @specialize<Symbol, "empty">
+}
+
+// Overlay keywords
+OverlayKeyword {
+  @specialize<Symbol, "modal"> |
+  @specialize<Symbol, "drawer"> |
+  @specialize<Symbol, "dropdown"> |
+  @specialize<Symbol, "popover">
+}
+
+@skip { whitespace | Comment }
+
+@detectDelim

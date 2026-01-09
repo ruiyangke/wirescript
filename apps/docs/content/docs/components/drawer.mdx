@@ -1,0 +1,181 @@
+---
+title: drawer
+description: Slide-in panel.
+---
+
+A slide-in panel from the left or right side. Defined inside screens and triggered by `:to "#id"`.
+
+## Usage
+
+```wire preview:400
+(screen main "Main" :desktop
+  (box :col :center :full
+    (button "Open Drawer" :primary :to "#my-drawer"))
+
+  (drawer :id "my-drawer" :right
+    (box :col :gap 16 :padding 24
+      (box :row :between
+        (text "Drawer Content" :high)
+        (icon "x" :to :close))
+      (text "This is a slide-in panel."))))
+```
+
+## Position
+
+```wire
+; Right side (default)
+(drawer :id "settings" :right
+  (text "Settings"))
+
+; Left side
+(drawer :id "menu" :left
+  (text "Menu"))
+```
+
+## Flags
+
+| Flag | Effect |
+|------|--------|
+| `:open` | Drawer is initially open |
+| `:left` | Drawer slides from left |
+| `:right` | Drawer slides from right |
+| `:top` | Drawer slides from top |
+| `:bottom` | Drawer slides from bottom |
+| `:row` | Horizontal layout |
+| `:col` | Vertical layout |
+| `:grid` | Grid layout |
+| `:center` | Center alignment |
+| `:start` | Start alignment |
+| `:end` | End alignment |
+| `:between` | Space between |
+| `:full` | Full size |
+| `:fill` | Fill available space |
+
+## Properties
+
+| Property | Type | Example |
+|----------|------|---------|
+| `:id` | string | `:id "settings"` |
+| `:title` | string | `:title "Settings"` |
+| `:position` | string | `:position "left"` |
+| `:gap` | number | `:gap 16` |
+| `:padding` | number | `:padding 24` |
+| `:width` | any | `:width "350px"` |
+| `:height` | any | `:height "100%"` |
+
+Note: Default width is 400px if not specified.
+
+## Examples
+
+### Initially Open Drawer
+
+```wire preview:400
+(screen main "Main" :desktop
+  (drawer :id "sidebar" :left :open :width "280px"
+    (box :col :gap 16 :padding 24
+      (text "Sidebar" :high)
+      (text "This drawer opens automatically.")
+      (button "Close" :ghost :to :close))))
+```
+
+### Settings Drawer
+
+```wire preview:400
+(screen main "Main" :desktop
+  (header :row :between :padding 16
+    (text "App" :high)
+    (icon "settings" :to "#settings"))
+
+  (drawer :id "settings" :right :width "350px"
+    (box :col :gap 16 :padding 24
+      (box :row :between
+        (text "Settings" :high)
+        (icon "x" :to :close))
+      (divider)
+      (input "Dark Mode" :type toggle)
+      (input "Notifications" :type toggle)
+      (input "Sound" :type toggle))))
+```
+
+### Mobile Navigation
+
+```wire preview:500
+(screen main "Main" :mobile
+  (header :row :between :padding 12
+    (icon "menu" :to "#nav")
+    (text "App" :high)
+    (icon "bell"))
+
+  (drawer :id "nav" :left :width "280px"
+    (box :col :gap 8 :padding 16
+      (box :row :between
+        (text "Menu" :high)
+        (icon "x" :to :close))
+      (divider)
+      (button "Home" :ghost :full :start :to home)
+      (button "Profile" :ghost :full :start :to profile)
+      (button "Settings" :ghost :full :start :to settings)
+      (box :fill)
+      (button "Logout" :ghost :full :start :danger))))
+```
+
+### Filter Drawer
+
+```wire preview:500
+(screen products "Products" :desktop
+  (box :row :between :padding 16
+    (text "Products" :high)
+    (button "Filters" :secondary :to "#filters"))
+
+  (drawer :id "filters" :right :width "320px"
+    (box :col :gap 16 :padding 24
+      (box :row :between
+        (text "Filters" :high)
+        (icon "x" :to :close))
+      (divider)
+      (input "Category" :type select :options "All,Electronics,Clothing")
+      (input "Price Range" :type slider :min 0 :max 1000)
+      (input "In Stock" :type checkbox)
+      (input "On Sale" :type checkbox)
+      (box :row :gap 12
+        (button "Clear" :ghost :fill)
+        (button "Apply" :primary :fill)))))
+```
+
+### Cart Drawer
+
+```wire preview:500
+(screen shop "Shop" :desktop
+  (header :row :between :padding 16
+    (text "Shop" :high)
+    (box :row :gap 4
+      (icon "shopping-cart" :to "#cart")
+      (badge "3" :primary)))
+
+  (drawer :id "cart" :right :width "400px"
+    (box :col :full
+      (box :row :between :padding 16
+        (text "Your Cart" :high)
+        (icon "x" :to :close))
+      (divider)
+      (scroll :col :gap 0 :fill
+        (box :row :gap 12 :padding 16
+          (image "Product" :width "80px" :height "80px")
+          (box :col :gap 4 :fill
+            (text "Product Name")
+            (text "$29.00" :low))
+          (icon "trash"))
+        (divider)
+        (box :row :gap 12 :padding 16
+          (image "Product" :width "80px" :height "80px")
+          (box :col :gap 4 :fill
+            (text "Another Product")
+            (text "$49.00" :low))
+          (icon "trash")))
+      (divider)
+      (box :col :gap 12 :padding 16
+        (box :row :between
+          (text "Total")
+          (text "$78.00" :high))
+        (button "Checkout" :primary :full)))))
+```
