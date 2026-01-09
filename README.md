@@ -2,7 +2,7 @@
 
 **Lisp-like syntax for wireframes. Embeds in Markdown. Perfect for AI.**
 
-```wire
+```lisp
 (wire
   (screen login "Login" :mobile
     (box :center :gap 24 :padding 48
@@ -84,7 +84,7 @@ Install the [Chrome Extension](https://chromewebstore.google.com/detail/wirescri
 
 ## Syntax Overview
 
-```wire
+```lisp
 (wire
   ; Define reusable components
   (define user-card (name role)
@@ -126,7 +126,7 @@ Install the [Chrome Extension](https://chromewebstore.google.com/detail/wirescri
 
 Boolean modifiers that change appearance or behavior:
 
-```wire
+```lisp
 (button "Submit" :primary :disabled)
 ```
 
@@ -143,7 +143,7 @@ Boolean modifiers that change appearance or behavior:
 
 Key-value pairs for configuration:
 
-```wire
+```lisp
 (box :gap 16 :padding 24 :width "300px")
 ```
 
@@ -159,7 +159,7 @@ Key-value pairs for configuration:
 
 Link buttons to screens or overlays using `:to`:
 
-```wire
+```lisp
 ; Navigate to a screen
 (button "Dashboard" :to dashboard)
 

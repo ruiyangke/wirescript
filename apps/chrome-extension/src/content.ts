@@ -176,20 +176,13 @@ function escapeHtml(str: string): string {
   );
 }
 
-// Quick validation that content looks like WireScript (stricter check)
+// Quick validation that content looks like WireScript
 function looksLikeWireScript(source: string): boolean {
   const trimmed = source.trim();
-  // Must start with WireScript-specific patterns at the BEGINNING of the content
-  // NO /m flag - we only want to match at the actual start of the string
-  return (
-    /^@(screen|meta|define)\b/.test(trimmed) ||
-    /^Layout\s*(\(|{|$)/.test(trimmed) ||
-    /^Header\s*(\(|{|$)/.test(trimmed) ||
-    /^Card\s*(\(|{|$)/.test(trimmed) ||
-    /^Section\s*(\(|{|$)/.test(trimmed) ||
-    /^Nav\s*(\(|{|$)/.test(trimmed) ||
-    /^Box\s*(\(|{|$)/.test(trimmed)
-  );
+  // Skip leading comments (; style in WireScript)
+  const withoutComments = trimmed.replace(/^(;[^\n]*\n|\s)*/g, '');
+  // WireScript must start with (wire ...
+  return /^\(wire\b/.test(withoutComments);
 }
 
 // Extract lightweight metadata without full compilation
@@ -198,25 +191,26 @@ function extractLightweightMeta(source: string): { title: string; viewport: stri
   let viewport = 'desktop';
   let screenCount = 1;
 
-  // Try to extract title from @meta or @screen
-  const metaTitleMatch = source.match(/@meta[^}]*title\s*:\s*["']([^"']+)["']/);
+  // Try to extract title from (meta :title "...")
+  const metaTitleMatch = source.match(/\(meta[^)]*:title\s+"([^"]+)"/);
   if (metaTitleMatch) {
     title = metaTitleMatch[1];
   } else {
-    const screenNameMatch = source.match(/@screen\s+(\w+)/);
-    if (screenNameMatch) {
-      title = screenNameMatch[1];
+    // Try to extract from (screen name "Title" ...)
+    const screenTitleMatch = source.match(/\(screen\s+\w+\s+"([^"]+)"/);
+    if (screenTitleMatch) {
+      title = screenTitleMatch[1];
     }
   }
 
-  // Extract viewport
-  const viewportMatch = source.match(/viewport\s*:\s*["']?(mobile|tablet|desktop)["']?/);
+  // Extract viewport from :mobile, :tablet, :desktop keywords
+  const viewportMatch = source.match(/:(mobile|tablet|desktop)\b/);
   if (viewportMatch) {
     viewport = viewportMatch[1];
   }
 
   // Count screens
-  const screenMatches = source.match(/@screen\b/g);
+  const screenMatches = source.match(/\(screen\b/g);
   if (screenMatches) {
     screenCount = screenMatches.length;
   }
@@ -431,6 +425,10 @@ function extractSource(block: HTMLElement): string | null {
 // Check if element is a WireScript code block
 function isWireScriptBlock(block: HTMLElement): boolean {
   const classList = block.className;
+  const pre = block.querySelector('pre') || (block.tagName === 'PRE' ? block : null);
+  const code = pre?.querySelector('code');
+  const lang = pre?.getAttribute('lang') || '';
+  const dataLang = code?.getAttribute('data-lang') || '';
 
   // Check for GitHub's language-specific class (if linguist recognizes it)
   if (/\bhighlight-source-wire(script)?\b/.test(classList)) {
@@ -439,18 +437,12 @@ function isWireScriptBlock(block: HTMLElement): boolean {
 
   // For unrecognized languages, check the code block's lang attribute or info string
   // GitHub renders ```wire as <div class="snippet-clipboard-content"><pre lang="wire">
-  const pre = block.querySelector('pre') || (block.tagName === 'PRE' ? block : null);
-  const code = pre?.querySelector('code');
-
-  // Check lang attribute on pre (GitHub uses this for unrecognized languages)
-  const lang = pre?.getAttribute('lang');
-  if (lang?.match(/^wire(script)?$/i)) {
+  if (/^wire(script)?$/i.test(lang)) {
     return true;
   }
 
   // Check data-lang attribute on code
-  const dataLang = code?.getAttribute('data-lang');
-  if (dataLang?.match(/^wire(script)?$/i)) {
+  if (/^wire(script)?$/i.test(dataLang)) {
     return true;
   }
 
@@ -1064,6 +1056,12 @@ function processCodeBlock(block: HTMLElement) {
 
   const source = extractSource(block);
   if (!source) return;
+
+  // Validate content looks like WireScript before processing
+  // If it doesn't start with recognized patterns, leave it as a normal code block
+  if (!looksLikeWireScript(source)) {
+    return;
+  }
 
   // Mark as processed
   block.setAttribute('data-wirescript-processed', 'true');

@@ -96,6 +96,15 @@ function escapeHtml(str: string): string {
   );
 }
 
+// Quick validation that content looks like WireScript
+function looksLikeWireScript(source: string): boolean {
+  const trimmed = source.trim();
+  // Skip leading comments (; style in WireScript)
+  const withoutComments = trimmed.replace(/^(;[^\n]*\n|\s)*/g, '');
+  // WireScript must start with (wire ...
+  return /^\(wire\b/.test(withoutComments);
+}
+
 // Parse source and extract metadata (with document)
 function parseSource(source: string): Metadata {
   try {
@@ -403,6 +412,17 @@ export default class WireScriptPlugin extends Plugin {
   }
 
   private processWireBlock(source: string, el: HTMLElement, ctx: MarkdownPostProcessorContext) {
+    // Skip if content doesn't look like valid WireScript
+    if (!looksLikeWireScript(source)) {
+      // Show as plain code block
+      const pre = document.createElement('pre');
+      const code = document.createElement('code');
+      code.textContent = source;
+      pre.appendChild(code);
+      el.appendChild(pre);
+      return;
+    }
+
     el.addClass('wirescript-container');
 
     const meta = this.getMetadata(source);
@@ -521,7 +541,6 @@ export default class WireScriptPlugin extends Plugin {
       // Create iframe
       const iframe = document.createElement('iframe');
       iframe.style.cssText = 'width:100%;border:none;display:block;overflow:hidden;';
-      iframe.setAttribute('sandbox', 'allow-same-origin allow-scripts');
       el.appendChild(iframe);
 
       const iframeDoc = await waitForIframe(iframe);
@@ -661,7 +680,6 @@ export default class WireScriptPlugin extends Plugin {
       // Create hidden iframe
       const iframe = document.createElement('iframe');
       iframe.style.cssText = `position:fixed;left:0;top:0;width:${viewportWidth}px;height:2000px;z-index:-9999;opacity:0;pointer-events:none;`;
-      iframe.setAttribute('sandbox', 'allow-same-origin allow-scripts');
       document.body.appendChild(iframe);
 
       try {
@@ -712,8 +730,7 @@ export default class WireScriptPlugin extends Plugin {
       } finally {
         document.body.removeChild(iframe);
       }
-    } catch (e) {
-      console.error('Failed to render PNG:', e);
+    } catch {
       return null;
     }
   }
@@ -737,7 +754,7 @@ export default class WireScriptPlugin extends Plugin {
         </button>
       </div>
       <div class="wirescript-fullscreen-content">
-        <iframe class="wirescript-fullscreen-iframe" sandbox="allow-same-origin allow-scripts"></iframe>
+        <iframe class="wirescript-fullscreen-iframe"></iframe>
       </div>
     `;
 
