@@ -75,6 +75,7 @@ describe('TCK: Repeat', () => {
       }
     });
 
+    // biome-ignore lint/suspicious/noTemplateCurlyInString: Intentional - describing syntax in test name
     it('variable can be used in content with ${var}', () => {
       const result = parse(`
         (wire

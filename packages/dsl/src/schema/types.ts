@@ -159,19 +159,44 @@ export const ACTION_KEYWORDS_SET: ReadonlySet<string> = new Set(ACTION_KEYWORDS)
 /** Valid element types */
 export const ELEMENT_TYPES = [
   // Containers
-  'box', 'card', 'section', 'header', 'footer', 'nav', 'form', 'list', 'scroll', 'group',
+  'box',
+  'card',
+  'section',
+  'header',
+  'footer',
+  'nav',
+  'form',
+  'list',
+  'scroll',
+  'group',
   // Content
-  'text', 'icon', 'image', 'avatar', 'badge', 'divider',
+  'text',
+  'icon',
+  'image',
+  'avatar',
+  'badge',
+  'divider',
   // Interactive
-  'button', 'dropdown',
+  'button',
+  'dropdown',
   // Inputs
-  'input', 'datepicker',
+  'input',
+  'datepicker',
   // Data
-  'metric', 'progress', 'chart', 'skeleton',
+  'metric',
+  'progress',
+  'chart',
+  'skeleton',
   // Navigation
-  'tabs', 'tab', 'breadcrumb', 'crumb',
+  'tabs',
+  'tab',
+  'breadcrumb',
+  'crumb',
   // Utility
-  'tooltip', 'toast', 'empty', 'slot',
+  'tooltip',
+  'toast',
+  'empty',
+  'slot',
 ] as const;
 
 export type ElementTypeName = (typeof ELEMENT_TYPES)[number];
@@ -180,23 +205,56 @@ export const ELEMENT_TYPES_SET: ReadonlySet<string> = new Set(ELEMENT_TYPES);
 /** Valid flags/props that can be applied to elements */
 export const VALID_FLAGS = [
   // Layout
-  'row', 'col', 'grid', 'wrap',
+  'row',
+  'col',
+  'grid',
+  'wrap',
   // Alignment
-  'start', 'center', 'end', 'between', 'around', 'stretch',
+  'start',
+  'center',
+  'end',
+  'between',
+  'around',
+  'stretch',
   // Emphasis
-  'high', 'medium', 'low',
+  'high',
+  'medium',
+  'low',
   // Variant
-  'primary', 'secondary', 'ghost', 'danger', 'success', 'warning', 'info',
+  'primary',
+  'secondary',
+  'ghost',
+  'danger',
+  'success',
+  'warning',
+  'info',
   // State
-  'disabled', 'loading', 'active', 'checked', 'open', 'error',
+  'disabled',
+  'loading',
+  'active',
+  'checked',
+  'open',
+  'error',
   // Size
-  'full', 'fit', 'fill',
+  'full',
+  'fit',
+  'fill',
   // Position
-  'sticky', 'fixed', 'absolute', 'relative', 'top', 'bottom', 'left', 'right',
+  'sticky',
+  'fixed',
+  'absolute',
+  'relative',
+  'top',
+  'bottom',
+  'left',
+  'right',
   // Viewport
-  'mobile', 'tablet', 'desktop',
+  'mobile',
+  'tablet',
+  'desktop',
   // Shape
-  'circle', 'text',
+  'circle',
+  'text',
 ] as const;
 
 export type ValidFlag = (typeof VALID_FLAGS)[number];
@@ -206,10 +264,18 @@ export const VALID_FLAGS_SET: ReadonlySet<string> = new Set(VALID_FLAGS);
 // AST Nodes
 // =============================================================================
 
+/** Include statement */
+export interface IncludeNode {
+  type: 'include';
+  path: string;
+  loc?: SourceLocation;
+}
+
 /** Root document */
 export interface WireDocument {
   type: 'wire';
   meta: MetaNode;
+  includes: IncludeNode[];
   components: ComponentDef[];
   layouts: LayoutNode[];
   screens: ScreenNode[];

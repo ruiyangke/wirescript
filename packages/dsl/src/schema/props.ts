@@ -42,7 +42,9 @@ export function nav() {
 // Prop Type
 // =============================================================================
 
-export type PropDef = ReturnType<typeof bool | typeof num | typeof str | typeof sym | typeof any | typeof nav>;
+export type PropDef = ReturnType<
+  typeof bool | typeof num | typeof str | typeof sym | typeof any | typeof nav
+>;
 
 // =============================================================================
 // Prop Groups

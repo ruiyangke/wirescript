@@ -22,12 +22,17 @@ function toCssDimension(value: PropValue | undefined): string | undefined {
   if (typeof value === 'number') return `${value}px`;
   if (typeof value === 'string') {
     // If already has a unit, pass through
-    if (value.includes('%') || value.includes('px') || value.includes('em') || value.includes('rem')) {
+    if (
+      value.includes('%') ||
+      value.includes('px') ||
+      value.includes('em') ||
+      value.includes('rem')
+    ) {
       return value;
     }
     // Try to parse as number and add px
-    const num = parseFloat(value);
-    if (!isNaN(num)) return `${num}px`;
+    const num = Number.parseFloat(value);
+    if (!Number.isNaN(num)) return `${num}px`;
     return value;
   }
   return undefined;

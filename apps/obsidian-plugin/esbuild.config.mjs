@@ -5,7 +5,7 @@ import { fileURLToPath } from 'node:url';
 import esbuild from 'esbuild';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const rootDir = join(__dirname, '../..');
+const _rootDir = join(__dirname, '../..');
 const prod = process.argv[2] === 'production';
 
 // Get renderer CSS as string for Shadow DOM injection

@@ -6,6 +6,7 @@
  */
 
 import { describe, expect, it } from 'vitest';
+import { compile } from '../../index.js';
 import { parse } from '../../schema/parser.js';
 import { TokenizerError, tokenize } from '../../tokenizer.js';
 
@@ -84,8 +85,10 @@ describe('TCK: Error Handling', () => {
         expect(result.success).toBe(false);
       });
 
-      it('document without screens is error', () => {
-        const result = parse('(wire (meta :title "Test"))');
+      it('document without screens is error (in compile)', () => {
+        // The "at least one screen" check is in compile(), not parse()
+        // This allows library files with only define/layout to be included
+        const result = compile('(wire (meta :title "Test"))');
         expect(result.success).toBe(false);
         expect(result.errors[0].message).toContain('at least one screen');
       });
@@ -166,7 +169,8 @@ describe('TCK: Error Handling', () => {
 
   describe('9.5 Error Messages', () => {
     it('error messages are descriptive', () => {
-      const result = parse('(wire)');
+      // Use compile to get the "at least one screen" error
+      const result = compile('(wire)');
       expect(result.errors.length).toBeGreaterThan(0);
       // Message should explain what's wrong
       expect(result.errors[0].message.length).toBeGreaterThan(10);

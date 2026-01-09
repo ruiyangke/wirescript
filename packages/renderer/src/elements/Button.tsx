@@ -1,8 +1,8 @@
 import type { ElementNode } from '@wirescript/dsl';
 import { useIsAutoActive } from '../AutoActiveContext.js';
 import { ElementRenderer, generateElementKey } from '../ElementRenderer.js';
-import { getIcon } from '../icons.js';
 import { useInteraction } from '../InteractionContext.js';
+import { getIcon } from '../icons.js';
 import { getVariant, hasFlag } from '../layout.js';
 import { cn } from '../lib/utils.js';
 import { Button as ShadcnButton } from '../ui/button.js';

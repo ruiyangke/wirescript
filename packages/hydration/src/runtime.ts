@@ -9,11 +9,11 @@
  * entry point should provide the component registry.
  */
 
-import { hydrateRoot } from 'react-dom/client';
-import { createElement, type ComponentType } from 'react';
 import type { PropValue } from '@wirescript/dsl';
-import { InteractionProvider } from './contexts/InteractionContext.js';
+import { type ComponentType, createElement } from 'react';
+import { hydrateRoot } from 'react-dom/client';
 import { AutoActiveProvider } from './contexts/AutoActiveContext.js';
+import { InteractionProvider } from './contexts/InteractionContext.js';
 
 /** Component props shape */
 interface ElementProps {
@@ -123,18 +123,17 @@ export function hydrateIsland(
 
   // Build the component tree with providers
   const componentElement = createElement(Component, { element: elementNode });
-  const autoActiveWrapped = createElement(
-    AutoActiveProvider,
-    { screenId: providers.screenId, children: componentElement },
-  );
-  const fullyWrapped = createElement(
-    InteractionProvider,
-    {
-      initialScreen: providers.screenId,
-      screenUrls: providers.screenUrls,
-      children: autoActiveWrapped,
-    },
-  );
+  const autoActiveWrapped = createElement(AutoActiveProvider, {
+    screenId: providers.screenId,
+    // biome-ignore lint/correctness/noChildrenProp: createElement API requires children as prop
+    children: componentElement,
+  });
+  const fullyWrapped = createElement(InteractionProvider, {
+    initialScreen: providers.screenId,
+    screenUrls: providers.screenUrls,
+    // biome-ignore lint/correctness/noChildrenProp: createElement API requires children as prop
+    children: autoActiveWrapped,
+  });
 
   // Hydrate the island
   hydrateRoot(island.container, fullyWrapped);

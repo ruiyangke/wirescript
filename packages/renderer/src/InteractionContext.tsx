@@ -46,7 +46,7 @@ export function InteractionProvider({
         openOverlays: new Set(), // Close overlays on external navigation
       }));
     }
-  }, [initialScreen]);
+  }, [initialScreen, state.currentScreen]);
 
   const openOverlay = useCallback((id: string) => {
     setState((prev) => {

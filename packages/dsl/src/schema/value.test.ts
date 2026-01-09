@@ -99,7 +99,7 @@ describe('StringValue', () => {
     });
 
     it('should convert numeric strings to float', () => {
-      expect(new StringValue('3.14159').asFloat()).toBeCloseTo(3.14159);
+      expect(new StringValue('3.14159').asFloat()).toBeCloseTo(Math.PI);
       expect(new StringValue('-0.5').asFloat()).toBe(-0.5);
     });
 

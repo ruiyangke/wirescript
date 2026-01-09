@@ -2,12 +2,12 @@
  * Tests for the verify command
  */
 
-import { describe, expect, it, beforeEach, afterEach } from 'vitest';
-import { writeFileSync, unlinkSync, mkdirSync, rmdirSync } from 'node:fs';
-import { join } from 'node:path';
+import { mkdirSync, rmdirSync, unlinkSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
-import { verify } from './verify.js';
+import { join } from 'node:path';
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { EXIT_CODES } from '../utils/errors.js';
+import { verify } from './verify.js';
 
 describe('verify', () => {
   const testDir = join(tmpdir(), 'wirescript-cli-test');

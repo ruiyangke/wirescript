@@ -186,7 +186,11 @@ function looksLikeWireScript(source: string): boolean {
 }
 
 // Extract lightweight metadata without full compilation
-function extractLightweightMeta(source: string): { title: string; viewport: string; screenCount: number } {
+function extractLightweightMeta(source: string): {
+  title: string;
+  viewport: string;
+  screenCount: number;
+} {
   let title = 'Wireframe';
   let viewport = 'desktop';
   let screenCount = 1;
@@ -466,7 +470,7 @@ function runCleanup(state: WireBlockState) {
   for (const fn of state.cleanupFns) {
     try {
       fn();
-    } catch (e) {
+    } catch (_e) {
       // Silently ignore cleanup errors
     }
   }
@@ -583,7 +587,11 @@ function startBackgroundRender(state: WireBlockState) {
       if (controller.signal.aborted || !pngDataUrl) return;
 
       // Update placeholder if still showing skeleton (not already activated)
-      if (container.isConnected && state.renderState === 'placeholder' && container.querySelector('.wirescript-placeholder')) {
+      if (
+        container.isConnected &&
+        state.renderState === 'placeholder' &&
+        container.querySelector('.wirescript-placeholder')
+      ) {
         container.innerHTML = generatePngPreview(pngDataUrl, lightMeta.title);
         // Re-attach click handlers since we replaced innerHTML
         attachPlaceholderHandlers(state);
@@ -603,14 +611,14 @@ function attachPlaceholderHandlers(state: WireBlockState) {
   const clickHandler = (e: MouseEvent) => {
     if (state.renderState !== 'placeholder') return;
     e.stopPropagation();
-    activateWireframe(state);
+    void activateWireframe(state);
   };
 
   const keyHandler = (e: KeyboardEvent) => {
     if (state.renderState !== 'placeholder') return;
     if (e.key === 'Enter' || e.key === ' ') {
       e.preventDefault();
-      activateWireframe(state);
+      void activateWireframe(state);
     }
   };
 
@@ -627,7 +635,7 @@ function attachPlaceholderHandlers(state: WireBlockState) {
 function openFullscreen(state: WireBlockState) {
   if (fullscreenOverlay || !state.meta?.document) return;
 
-  const { meta, source } = state;
+  const { meta } = state;
   const viewportWidth = VIEWPORT_WIDTHS[meta.viewport] || VIEWPORT_WIDTHS.desktop;
 
   const overlay = document.createElement('div');
@@ -793,7 +801,7 @@ function showError(state: WireBlockState, message: string) {
     if (target.closest('[data-action="retry"]')) {
       e.stopPropagation();
       state.renderState = 'placeholder'; // Reset state so activateWireframe can run
-      activateWireframe(state);
+      void activateWireframe(state);
     }
   };
 
@@ -839,7 +847,7 @@ function showCodeView(state: WireBlockState) {
     const target = e.target as HTMLElement;
     if (target.closest('[data-action="toggle"]')) {
       e.stopPropagation();
-      activateWireframe(state);
+      void activateWireframe(state);
     }
   };
 
@@ -1098,7 +1106,9 @@ function processCodeBlocksIn(root: Element | Document) {
     'div.highlight-source-wire, div.highlight-source-wirescript, div.highlight, div.snippet-clipboard-content'
   );
 
-  blocks.forEach((block) => processCodeBlock(block));
+  for (const block of blocks) {
+    processCodeBlock(block);
+  }
 }
 
 // Debounced processing

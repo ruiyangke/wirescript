@@ -2,12 +2,12 @@
  * Tests for the list command
  */
 
-import { describe, expect, it, beforeEach, afterEach } from 'vitest';
-import { writeFileSync, unlinkSync, mkdirSync, rmdirSync } from 'node:fs';
-import { join } from 'node:path';
+import { mkdirSync, rmdirSync, unlinkSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
-import { list, formatListResult } from './list.js';
+import { join } from 'node:path';
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { EXIT_CODES } from '../utils/errors.js';
+import { formatListResult, list } from './list.js';
 
 describe('list', () => {
   const testDir = join(tmpdir(), 'wirescript-cli-list-test');

@@ -1,5 +1,5 @@
 import { render, screen, waitFor } from '@testing-library/react';
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 // Mock the WireRenderer to avoid complex dependency chain
 vi.mock('@wirescript/renderer', () => ({
@@ -19,7 +19,7 @@ describe('PreviewPage', () => {
 
   beforeEach(() => {
     // Mock window.location with a proper Location-like object
-    delete (window as { location?: Location }).location;
+    (window as { location?: Location }).location = undefined;
     window.location = {
       ...originalLocation,
       search: '',

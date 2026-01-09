@@ -4,28 +4,28 @@
 
 import { readFileSync } from 'node:fs';
 import { FileError } from '../../utils/errors.js';
-import { brutalism } from './brutalism.js';
 import { blueprint } from './blueprint.js';
+import { brutalism } from './brutalism.js';
 import { clean } from './clean.js';
 import { sketch } from './sketch.js';
 import type {
+  SketchSettings,
   Theme,
-  ThemeName,
   ThemeColors,
   ThemeFonts,
-  ThemeSpacing,
+  ThemeName,
   ThemeRadius,
-  SketchSettings,
+  ThemeSpacing,
 } from './types.js';
 
 export type {
+  SketchSettings,
   Theme,
-  ThemeName,
   ThemeColors,
   ThemeFonts,
-  ThemeSpacing,
+  ThemeName,
   ThemeRadius,
-  SketchSettings,
+  ThemeSpacing,
 } from './types.js';
 export { THEME_NAMES } from './types.js';
 

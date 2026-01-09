@@ -1,13 +1,11 @@
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
 import { defineConfig, defineDocs, frontmatterSchema, metaSchema } from 'fumadocs-mdx/config';
-import { readFileSync } from 'fs';
-import { join } from 'path';
 import { remarkWirePreview } from './src/lib/remark-wire-preview';
 
 // Load WireScript TextMate grammar
 const wireScriptGrammar = {
-  ...JSON.parse(
-    readFileSync(join(process.cwd(), 'wirescript.tmLanguage.json'), 'utf-8')
-  ),
+  ...JSON.parse(readFileSync(join(process.cwd(), 'wirescript.tmLanguage.json'), 'utf-8')),
   name: 'wire', // Override to match code fence identifier
 };
 

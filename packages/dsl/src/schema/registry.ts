@@ -16,6 +16,7 @@ import {
   datepicker,
   divider,
   dropdown,
+  type ElementSchemaConfig,
   empty,
   footer,
   form,
@@ -37,7 +38,6 @@ import {
   text,
   toast,
   tooltip,
-  type ElementSchemaConfig,
 } from './elements.js';
 import { bool, num } from './props.js';
 

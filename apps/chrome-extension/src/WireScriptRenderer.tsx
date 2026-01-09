@@ -26,6 +26,7 @@ export function WireScriptRenderer({ document, initialScreen }: WireScriptRender
                 const isActive = screen.id === activeScreenId;
                 return (
                   <button
+                    type="button"
                     key={screen.id}
                     onClick={() => setSelectedScreen(screen.id)}
                     className={`

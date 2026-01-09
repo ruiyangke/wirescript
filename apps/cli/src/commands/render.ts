@@ -6,19 +6,19 @@ import { createWriteStream, writeFileSync } from 'node:fs';
 import { renderScreen } from '../core/renderer.js';
 import { renderStandalone } from '../core/templates/standalone.js';
 import {
+  type Format,
+  isValidFormat,
+  SCREENSHOT_PADDING_PX,
+  VALID_FORMATS,
+} from '../utils/constants.js';
+import {
   EXIT_CODES,
+  type ExitCode,
   getErrorCode,
   getErrorMessage,
   RenderError,
-  type ExitCode,
 } from '../utils/errors.js';
 import { compileWireFile } from '../utils/input.js';
-import {
-  SCREENSHOT_PADDING_PX,
-  VALID_FORMATS,
-  isValidFormat,
-  type Format,
-} from '../utils/constants.js';
 import {
   createOutputOptions,
   formatFailure,
@@ -76,7 +76,10 @@ export async function render(filePath: string, options: RenderOptions = {}): Pro
 
   // Read, validate, and compile
   const { result } = await compileWireFile(filePath, { throwOnError: true });
-  const wireDoc = result.document!;
+  if (!result.document) {
+    throw new RenderError('Compilation failed: no document', filePath);
+  }
+  const wireDoc = result.document;
 
   // Theme name (currently only brutalism is fully supported)
   const themeName = options.theme || 'brutalism';

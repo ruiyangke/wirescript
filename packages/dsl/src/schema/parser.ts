@@ -13,7 +13,6 @@
 
 import { TokenizerError, tokenize } from '../tokenizer.js';
 import { getSchema } from './registry.js';
-import { NumberValue, StringValue, SymbolValue } from './value.js';
 import {
   ACTION_KEYWORDS_SET,
   type ActionRef,
@@ -21,17 +20,18 @@ import {
   type ComponentDef,
   type ContentValue,
   type ElementNode,
+  type IncludeNode,
   type LayoutNode,
   type MetaNode,
   type NavigationTarget,
+  OVERLAY_TYPES_SET,
   type OverlayNode,
   type OverlayType,
-  OVERLAY_TYPES_SET,
   type ParamRef,
   type ParseError,
   type ParseResult,
-  type PropValue,
   type PropsSchema,
+  type PropValue,
   type RepeatNode,
   type ScreenNode,
   type SourceLocation,
@@ -41,6 +41,7 @@ import {
   type Viewport,
   type WireDocument,
 } from './types.js';
+import { NumberValue, StringValue, SymbolValue } from './value.js';
 
 // =============================================================================
 // Constants
@@ -174,6 +175,7 @@ export class SchemaParser {
     this.expectSymbol('wire');
 
     let meta: MetaNode = { type: 'meta', props: {} };
+    const includes: IncludeNode[] = [];
     const components: ComponentDef[] = [];
     const layouts: LayoutNode[] = [];
     const screens: ScreenNode[] = [];
@@ -184,6 +186,9 @@ export class SchemaParser {
         const formType = this.expectSymbol();
 
         switch (formType) {
+          case 'include':
+            includes.push(this.parseInclude(formStart));
+            break;
           case 'meta':
             meta = this.parseMeta(formStart);
             break;
@@ -216,18 +221,27 @@ export class SchemaParser {
 
     const endToken = this.expect('RPAREN');
 
-    if (screens.length === 0) {
-      this.addError('Document must have at least one screen', startToken);
-    }
+    // Note: "Document must have at least one screen" check moved to compile()
+    // to allow library files with only define/layout declarations
 
     return {
       type: 'wire',
       meta,
+      includes,
       components,
       layouts,
       screens,
       loc: this.makeLoc(startToken, endToken),
     };
+  }
+
+  private parseInclude(startToken: Token): IncludeNode {
+    if (!this.check('STRING')) {
+      throw this.error('Include expects a string path');
+    }
+    const path = this.advance().value;
+    const endToken = this.expect('RPAREN');
+    return { type: 'include', path, loc: this.makeLoc(startToken, endToken) };
   }
 
   private parseMeta(startToken: Token): MetaNode {
@@ -786,7 +800,7 @@ export class SchemaParser {
         const next = this.tokens[this.pos + 1];
         if (
           next?.type === 'SYMBOL' &&
-          ['meta', 'define', 'layout', 'screen'].includes(next.value)
+          ['include', 'meta', 'define', 'layout', 'screen'].includes(next.value)
         ) {
           return; // Found recovery point
         }

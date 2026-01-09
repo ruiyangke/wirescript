@@ -60,8 +60,9 @@ describe('TCK: Layouts', () => {
       `);
       expect(result.success).toBe(true);
       const layout = result.document?.layouts[0];
-      expect(layout?.body.children[1].type === 'element' &&
-             layout.body.children[1].elementType).toBe('slot');
+      expect(
+        layout?.body.children[1].type === 'element' && layout.body.children[1].elementType
+      ).toBe('slot');
     });
 
     it('slot can be nested in containers', () => {

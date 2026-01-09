@@ -10,7 +10,7 @@ import type { Theme } from '../types.js';
 /**
  * Convert camelCase to kebab-case
  */
-function toKebabCase(str: string): string {
+function _toKebabCase(str: string): string {
   return str.replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase();
 }
 

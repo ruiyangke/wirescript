@@ -3,7 +3,7 @@
  */
 
 import type { ParseError } from '@wirescript/dsl';
-import { EXIT_CODES, getErrorMessage, type ExitCode } from '../utils/errors.js';
+import { EXIT_CODES, type ExitCode, getErrorMessage } from '../utils/errors.js';
 import { compileWireFile } from '../utils/input.js';
 import { createOutputOptions, formatFailure, printError } from '../utils/output.js';
 

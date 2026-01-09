@@ -10,12 +10,7 @@
 import { readFileSync, writeFileSync } from 'node:fs';
 import { format } from '@wirescript/dsl';
 import { EXIT_CODES, type ExitCode } from '../utils/errors.js';
-import {
-  createOutputOptions,
-  formatFailure,
-  formatSuccess,
-  printError,
-} from '../utils/output.js';
+import { createOutputOptions, formatFailure, formatSuccess, printError } from '../utils/output.js';
 
 export interface FormatOptions {
   /** Write changes to file (default: true) */

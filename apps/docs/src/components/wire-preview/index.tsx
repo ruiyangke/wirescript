@@ -37,7 +37,9 @@ export function WirePreview({ code, previewHeight = 200 }: WirePreviewProps) {
     codeToHtml(code, {
       lang: wireGrammar as never,
       themes: { light: 'catppuccin-latte', dark: 'dracula' },
-    }).then(setHighlightedCode);
+    })
+      .then(setHighlightedCode)
+      .catch(() => setHighlightedCode(`<pre><code>${code}</code></pre>`));
   }, [code]);
 
   const handleCopy = useCallback(() => {
@@ -49,10 +51,7 @@ export function WirePreview({ code, previewHeight = 200 }: WirePreviewProps) {
   return (
     <figure className="wire-preview not-prose my-4 overflow-hidden rounded-xl border bg-fd-card text-sm shadow-sm">
       {/* Preview */}
-      <div
-        className="relative bg-fd-background"
-        style={{ height: previewHeight }}
-      >
+      <div className="relative bg-fd-background" style={{ height: previewHeight }}>
         <a
           href={`https://playground.wirescript.org/?code=${encodeURIComponent(sourceCode)}`}
           target="_blank"
@@ -112,6 +111,7 @@ export function WirePreview({ code, previewHeight = 200 }: WirePreviewProps) {
             '[&_.line]:before:inline-block [&_.line]:before:w-8 [&_.line]:before:mr-4',
             '[&_.line]:before:text-right [&_.line]:before:text-fd-muted-foreground/50',
           ].join(' ')}
+          // biome-ignore lint/security/noDangerouslySetInnerHtml: Rendering syntax-highlighted code
           dangerouslySetInnerHTML={{ __html: highlightedCode }}
         />
       </div>

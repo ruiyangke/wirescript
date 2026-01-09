@@ -2,12 +2,12 @@
  * Tests for the build command
  */
 
-import { describe, expect, it, beforeEach, afterEach } from 'vitest';
-import { writeFileSync, mkdirSync, rmSync, existsSync, readFileSync } from 'node:fs';
-import { join } from 'node:path';
+import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
-import { build } from './build.js';
+import { join } from 'node:path';
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { EXIT_CODES } from '../utils/errors.js';
+import { build } from './build.js';
 
 describe('build', () => {
   const testDir = join(tmpdir(), 'wirescript-cli-build-test');

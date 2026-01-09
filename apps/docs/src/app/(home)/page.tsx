@@ -1,5 +1,17 @@
+import {
+  ArrowRight,
+  BookOpen,
+  Bot,
+  Chrome,
+  Code2,
+  ExternalLink,
+  FileText,
+  Layers,
+  Repeat,
+  Terminal,
+  Zap,
+} from 'lucide-react';
 import Link from 'next/link';
-import { ArrowRight, Code2, Layers, Zap, Repeat, FileText, Bot, Chrome, BookOpen, Terminal, ExternalLink } from 'lucide-react';
 import { createHighlighter } from 'shiki';
 import wireGrammar from '../../../wirescript.tmLanguage.json';
 
@@ -34,13 +46,12 @@ export default async function HomePage() {
         </div>
 
         <h1 className="max-w-4xl text-4xl font-bold tracking-tight md:text-6xl">
-          Wireframes that live with{' '}
-          <span className="text-fd-primary">your docs</span>
+          Wireframes that live with <span className="text-fd-primary">your docs</span>
         </h1>
 
         <p className="mt-6 max-w-2xl text-lg text-fd-muted-foreground md:text-xl">
-          WireScript uses Lisp-like syntax that embeds into Markdown.
-          Pure text. No HTML/CSS/JS. Perfect for AI to generate, easy for humans to iterate.
+          WireScript uses Lisp-like syntax that embeds into Markdown. Pure text. No HTML/CSS/JS.
+          Perfect for AI to generate, easy for humans to iterate.
         </p>
 
         <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
@@ -67,12 +78,11 @@ export default async function HomePage() {
         <div className="mx-auto max-w-5xl">
           <div className="grid gap-8 md:grid-cols-2 md:items-center">
             <div>
-              <h2 className="text-2xl font-bold md:text-3xl">
-                Embed wireframes in Markdown
-              </h2>
+              <h2 className="text-2xl font-bold md:text-3xl">Embed wireframes in Markdown</h2>
               <p className="mt-4 text-fd-muted-foreground">
-                Drop WireScript into any <code className="rounded bg-fd-secondary px-1.5 py-0.5 text-sm">.md</code> file.
-                No build step, no external tools. Version control your UI alongside your specs.
+                Drop WireScript into any{' '}
+                <code className="rounded bg-fd-secondary px-1.5 py-0.5 text-sm">.md</code> file. No
+                build step, no external tools. Version control your UI alongside your specs.
               </p>
               <ul className="mt-6 space-y-3 text-sm">
                 <li className="flex items-center gap-2">
@@ -99,6 +109,7 @@ export default async function HomePage() {
               <div className="absolute -inset-px rounded-xl bg-gradient-to-br from-fd-primary/20 to-transparent" />
               <div
                 className="relative overflow-x-auto rounded-xl border border-fd-border text-sm [&>pre]:p-4 [&>pre]:!bg-fd-background"
+                // biome-ignore lint/security/noDangerouslySetInnerHtml: Rendering syntax-highlighted code
                 dangerouslySetInnerHTML={{ __html: highlightedCode }}
               />
             </div>
@@ -110,9 +121,7 @@ export default async function HomePage() {
       <section className="px-6 py-20">
         <div className="mx-auto max-w-5xl">
           <div className="text-center">
-            <h2 className="text-2xl font-bold md:text-3xl">
-              Iterate fast. Stay focused.
-            </h2>
+            <h2 className="text-2xl font-bold md:text-3xl">Iterate fast. Stay focused.</h2>
             <p className="mt-4 text-fd-muted-foreground">
               No design tools. No context switching. Just text that renders into wireframes.
             </p>
@@ -157,9 +166,7 @@ export default async function HomePage() {
       <section className="border-t border-fd-border px-6 py-20">
         <div className="mx-auto max-w-5xl">
           <div className="text-center">
-            <h2 className="text-2xl font-bold md:text-3xl">
-              View wireframes everywhere
-            </h2>
+            <h2 className="text-2xl font-bold md:text-3xl">View wireframes everywhere</h2>
             <p className="mt-4 text-fd-muted-foreground">
               Render WireScript directly in GitHub, Obsidian, or the command line.
             </p>
@@ -178,7 +185,8 @@ export default async function HomePage() {
               </div>
               <h3 className="mt-4 font-semibold">Chrome Extension</h3>
               <p className="mt-2 text-sm text-fd-muted-foreground">
-                Renders wireframes inline in GitHub READMEs, issues, and PRs. Click to interact, toggle code view, or go fullscreen.
+                Renders wireframes inline in GitHub READMEs, issues, and PRs. Click to interact,
+                toggle code view, or go fullscreen.
               </p>
               <div className="mt-4 flex flex-wrap gap-2">
                 <a
@@ -211,7 +219,8 @@ export default async function HomePage() {
               </div>
               <h3 className="mt-4 font-semibold">Obsidian Plugin</h3>
               <p className="mt-2 text-sm text-fd-muted-foreground">
-                Render wireframes inline in your Obsidian notes. Switch between screens, navigate overlays, and iterate alongside your thinking.
+                Render wireframes inline in your Obsidian notes. Switch between screens, navigate
+                overlays, and iterate alongside your thinking.
               </p>
               <div className="mt-4 flex flex-wrap gap-2">
                 <Link
@@ -235,7 +244,8 @@ export default async function HomePage() {
               </div>
               <h3 className="mt-4 font-semibold">CLI</h3>
               <p className="mt-2 text-sm text-fd-muted-foreground">
-                Validate, render, and build wireframes from the command line. Export to HTML or PNG, generate static documentation sites.
+                Validate, render, and build wireframes from the command line. Export to HTML or PNG,
+                generate static documentation sites.
               </p>
               <div className="mt-4 flex flex-wrap gap-2">
                 <Link
@@ -253,9 +263,7 @@ export default async function HomePage() {
       {/* Quick Start */}
       <section className="border-t border-fd-border bg-fd-secondary/30 px-6 py-20">
         <div className="mx-auto max-w-3xl text-center">
-          <h2 className="text-2xl font-bold md:text-3xl">
-            Start in 5 minutes
-          </h2>
+          <h2 className="text-2xl font-bold md:text-3xl">Start in 5 minutes</h2>
           <p className="mt-4 text-fd-muted-foreground">
             Learn the syntax. Embed in your docs. Let AI do the drawing.
           </p>

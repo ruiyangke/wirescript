@@ -5,7 +5,13 @@
  * tree-shaking of unused icons from the bundle.
  */
 
-import type { ChildNode, ElementNode, OverlayNode, ScreenNode, WireDocument } from '@wirescript/dsl';
+import type {
+  ChildNode,
+  ElementNode,
+  OverlayNode,
+  ScreenNode,
+  WireDocument,
+} from '@wirescript/dsl';
 
 /**
  * Mapping from kebab-case icon names to PascalCase component names
@@ -301,9 +307,7 @@ export function generateMinimalIconsModule(icons: Set<string>): string {
   registryEntries.sort();
 
   const imports =
-    componentNames.length > 0
-      ? `import { ${componentNames.join(', ')} } from 'lucide-react';`
-      : '';
+    componentNames.length > 0 ? `import { ${componentNames.join(', ')} } from 'lucide-react';` : '';
 
   return `/**
  * Minimal icon registry - auto-generated for this document

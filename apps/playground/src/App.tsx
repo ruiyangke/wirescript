@@ -1,6 +1,6 @@
 import { compile } from '@wirescript/dsl';
 import { WireScriptEditor } from '@wirescript/editor';
-import { ThemeProvider, WireRenderer, type Viewport } from '@wirescript/renderer';
+import { ThemeProvider, type Viewport, WireRenderer } from '@wirescript/renderer';
 import {
   AlertTriangle,
   Check,
@@ -164,7 +164,7 @@ export function App() {
   // Re-enable auto-fit when viewport or editor collapsed state changes
   useEffect(() => {
     setAutoFit(true);
-  }, [viewportPreset, editorCollapsed]);
+  }, []);
 
   // Load example
   const loadExample = useCallback((example: Example) => {
@@ -234,6 +234,7 @@ export function App() {
             {/* Examples dropdown */}
             <div className="relative">
               <button
+                type="button"
                 onClick={() => setShowExamples(!showExamples)}
                 className="flex items-center gap-2 rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50"
               >
@@ -243,10 +244,13 @@ export function App() {
 
               {showExamples && (
                 <>
+                  {/* biome-ignore lint/a11y/useKeyWithClickEvents: Backdrop click-to-dismiss is mouse-only UI pattern */}
+                  {/* biome-ignore lint/a11y/noStaticElementInteractions: Backdrop element for closing dropdown */}
                   <div className="fixed inset-0 z-10" onClick={() => setShowExamples(false)} />
                   <div className="absolute left-0 top-full z-20 mt-1 w-72 rounded-lg border border-gray-200 bg-white py-1 shadow-lg">
                     {EXAMPLES.map((example) => (
                       <button
+                        type="button"
                         key={example.id}
                         onClick={() => loadExample(example)}
                         className="flex w-full flex-col gap-0.5 px-4 py-2 text-left hover:bg-gray-50"
@@ -279,6 +283,7 @@ export function App() {
 
             {/* Share button */}
             <button
+              type="button"
               onClick={handleShare}
               className="flex items-center gap-2 rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50"
             >
@@ -319,6 +324,7 @@ export function App() {
           {editorCollapsed ? (
             <div className="flex h-full w-12 shrink-0 flex-col items-center border-r border-gray-200 bg-white py-3">
               <button
+                type="button"
                 onClick={() => setEditorCollapsed(false)}
                 className="rounded p-2 text-gray-500 hover:bg-gray-100 hover:text-gray-700"
                 title="Show editor"
@@ -345,6 +351,7 @@ export function App() {
                     </div>
                     <div className="flex items-center gap-1">
                       <button
+                        type="button"
                         onClick={handleCopyCode}
                         className={`rounded p-1 transition-colors ${codeCopied ? 'text-green-600' : 'text-gray-400 hover:bg-gray-100 hover:text-gray-600'}`}
                         title={codeCopied ? 'Copied!' : 'Copy code'}
@@ -352,6 +359,7 @@ export function App() {
                         {codeCopied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
                       </button>
                       <button
+                        type="button"
                         onClick={() => setEditorCollapsed(true)}
                         className="rounded p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-600"
                         title="Collapse editor"
@@ -380,27 +388,29 @@ export function App() {
 
                   {/* Viewport selector */}
                   <div className="ml-4 flex items-center rounded-lg border border-gray-200 p-0.5">
-                    {(Object.entries(VIEWPORT_PRESETS) as [ViewportPreset, (typeof VIEWPORT_PRESETS)[ViewportPreset]][]).map(
-                      ([key, preset]) => {
-                        const Icon = preset.icon;
-                        const isActive = viewportPreset === key;
-                        return (
-                          <button
-                            key={key}
-                            onClick={() => setViewportPreset(key)}
-                            className={`flex items-center gap-1.5 rounded-md px-2 py-1 text-xs font-medium transition-colors ${
-                              isActive
-                                ? 'text-blue-600'
-                                : 'text-gray-400 hover:text-gray-600'
-                            }`}
-                            title={`${preset.label} (${preset.width}×${preset.height})`}
-                          >
-                            <Icon className="h-3.5 w-3.5" />
-                            <span className="hidden sm:inline">{preset.label}</span>
-                          </button>
-                        );
-                      }
-                    )}
+                    {(
+                      Object.entries(VIEWPORT_PRESETS) as [
+                        ViewportPreset,
+                        (typeof VIEWPORT_PRESETS)[ViewportPreset],
+                      ][]
+                    ).map(([key, preset]) => {
+                      const Icon = preset.icon;
+                      const isActive = viewportPreset === key;
+                      return (
+                        <button
+                          type="button"
+                          key={key}
+                          onClick={() => setViewportPreset(key)}
+                          className={`flex items-center gap-1.5 rounded-md px-2 py-1 text-xs font-medium transition-colors ${
+                            isActive ? 'text-blue-600' : 'text-gray-400 hover:text-gray-600'
+                          }`}
+                          title={`${preset.label} (${preset.width}×${preset.height})`}
+                        >
+                          <Icon className="h-3.5 w-3.5" />
+                          <span className="hidden sm:inline">{preset.label}</span>
+                        </button>
+                      );
+                    })}
                   </div>
 
                   <span className="ml-2 text-xs text-gray-400">
@@ -411,11 +421,10 @@ export function App() {
                 {/* Zoom controls */}
                 <div className="flex items-center gap-1">
                   <button
+                    type="button"
                     onClick={() => setAutoFit(true)}
                     className={`rounded px-2 py-1 text-xs font-medium transition-colors ${
-                      autoFit
-                        ? 'text-blue-600'
-                        : 'text-gray-400 hover:text-gray-600'
+                      autoFit ? 'text-blue-600' : 'text-gray-400 hover:text-gray-600'
                     }`}
                     title="Fit to view"
                   >
@@ -425,6 +434,7 @@ export function App() {
                   <div className="mx-1 h-4 w-px bg-gray-200" />
 
                   <button
+                    type="button"
                     onClick={handleZoomOut}
                     disabled={zoom <= MIN_ZOOM}
                     className="rounded p-1 text-gray-500 hover:bg-gray-100 disabled:opacity-40"
@@ -447,6 +457,7 @@ export function App() {
                   </select>
 
                   <button
+                    type="button"
                     onClick={handleZoomIn}
                     disabled={zoom >= MAX_ZOOM}
                     className="rounded p-1 text-gray-500 hover:bg-gray-100 disabled:opacity-40"
@@ -463,8 +474,7 @@ export function App() {
                 className="min-h-0 flex-1 overflow-auto"
                 style={{
                   backgroundColor: '#f8f8f8',
-                  backgroundImage:
-                    'radial-gradient(circle, #d1d5db 1px, transparent 1px)',
+                  backgroundImage: 'radial-gradient(circle, #d1d5db 1px, transparent 1px)',
                   backgroundSize: '16px 16px',
                 }}
               >
@@ -472,20 +482,24 @@ export function App() {
                   {errors.length > 0 ? (
                     <div className="max-w-md rounded-lg border border-red-200 bg-red-50 p-4">
                       <h3 className="mb-2 font-medium text-red-800">Parse Error</h3>
-                      {errors.map((error, i) => (
-                        <p key={i} className="text-sm text-red-600">
+                      {errors.map((error) => (
+                        <p key={`${error.line}:${error.message}`} className="text-sm text-red-600">
                           {error.line > 0 && `Line ${error.line}: `}
                           {error.message}
                         </p>
                       ))}
                     </div>
                   ) : wireDoc ? (
+                    // biome-ignore lint/a11y/useSemanticElements: Container div with zoom styling, button would affect layout
                     <div
                       className={`shadow-xl transition-all duration-150 ${clickEffect ? 'ring-2 ring-blue-400 ring-offset-2' : ''}`}
                       style={{
                         zoom: zoom / 100,
                       }}
                       onClick={handlePreviewClick}
+                      onKeyDown={(e) => e.key === 'Enter' && handlePreviewClick()}
+                      role="button"
+                      tabIndex={0}
                     >
                       <WireRenderer
                         document={wireDoc}

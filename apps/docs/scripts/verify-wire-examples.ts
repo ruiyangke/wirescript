@@ -2,10 +2,10 @@
  * Extract and verify all wire code examples from MDX files
  */
 
-import { compile } from '../../../packages/dsl/dist/index.js';
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { compile } from '../../../packages/dsl/dist/index.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const DOCS_DIR = path.join(__dirname, '../content/docs');
@@ -98,7 +98,7 @@ function splitTopLevelExpressions(code: string): string[] {
 
   for (let i = 0; i < code.length; i++) {
     const char = code[i];
-    const nextChar = code[i + 1];
+    const _nextChar = code[i + 1];
 
     // Handle comments
     if (char === ';' && !inString) {
@@ -175,7 +175,11 @@ function wrapInWireDocument(code: string): { wrapped: string; skipped: boolean }
   // If we have screens, just wrap in wire
   if (hasScreen) {
     const nonScreenExprs = expressions.filter(
-      (e) => !e.startsWith('(screen ') && !e.startsWith('(define ') && !e.startsWith('(layout ') && !e.startsWith('(meta ')
+      (e) =>
+        !e.startsWith('(screen ') &&
+        !e.startsWith('(define ') &&
+        !e.startsWith('(layout ') &&
+        !e.startsWith('(meta ')
     );
     if (nonScreenExprs.length === 0) {
       return { wrapped: `(wire\n  ${expressions.join('\n  ')})`, skipped: false };
@@ -230,12 +234,42 @@ function wrapInWireDocument(code: string): { wrapped: string; skipped: boolean }
   if (elementMatch) {
     const elementName = elementMatch[1];
     const builtinElements = [
-      'box', 'card', 'section', 'header', 'footer', 'nav', 'form', 'list', 'scroll', 'group',
-      'text', 'button', 'input', 'image', 'icon', 'divider', 'avatar', 'badge', 'datepicker',
-      'metric', 'chart', 'progress', 'skeleton',
-      'tabs', 'tab', 'breadcrumb', 'crumb',
-      'modal', 'drawer', 'dropdown', 'popover',
-      'tooltip', 'toast', 'empty', 'slot', 'repeat',
+      'box',
+      'card',
+      'section',
+      'header',
+      'footer',
+      'nav',
+      'form',
+      'list',
+      'scroll',
+      'group',
+      'text',
+      'button',
+      'input',
+      'image',
+      'icon',
+      'divider',
+      'avatar',
+      'badge',
+      'datepicker',
+      'metric',
+      'chart',
+      'progress',
+      'skeleton',
+      'tabs',
+      'tab',
+      'breadcrumb',
+      'crumb',
+      'modal',
+      'drawer',
+      'dropdown',
+      'popover',
+      'tooltip',
+      'toast',
+      'empty',
+      'slot',
+      'repeat',
     ];
     if (!builtinElements.includes(elementName)) {
       // Unknown element name - likely showing component usage
@@ -282,7 +316,7 @@ function findMdxFiles(dir: string): string[] {
 function generateOutputFilename(block: CodeBlock): string {
   const relPath = path.relative(DOCS_DIR, block.file);
   // Remove .mdx extension and convert path separators to dashes
-  const docName = relPath.replace(/\.mdx$/, '').replace(/[\/\\]/g, '-');
+  const docName = relPath.replace(/\.mdx$/, '').replace(/[/\\]/g, '-');
   return `${docName}-${block.index}.wire`;
 }
 
@@ -442,7 +476,9 @@ console.log(`Total: ${allBlocks.length}`);
 
 if (writeFiles) {
   const writtenFiles = results.filter((r) => r.outputFile).length;
-  console.log(`\n📁 Written: ${writtenFiles} .wire files to ${path.relative(process.cwd(), OUTPUT_DIR)}/`);
+  console.log(
+    `\n📁 Written: ${writtenFiles} .wire files to ${path.relative(process.cwd(), OUTPUT_DIR)}/`
+  );
 }
 
 process.exit(failCount > 0 ? 1 : 0);

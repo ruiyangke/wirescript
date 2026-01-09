@@ -62,9 +62,11 @@ describe('TCK: Syntax', () => {
       });
 
       it('document must have at least one screen', () => {
+        // Note: "at least one screen" is checked in compile(), not parse()
+        // This allows library files with only define/layout to be included
         const result = parse('(wire (meta :title "Test"))');
-        expect(result.success).toBe(false);
-        expect(result.errors[0].message).toContain('at least one screen');
+        expect(result.success).toBe(true); // parse succeeds
+        expect(result.document?.screens).toHaveLength(0);
       });
 
       it('document may have multiple screens', () => {

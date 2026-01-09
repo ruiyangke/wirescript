@@ -37,28 +37,28 @@ export class SymbolValue {
 
   /** Convert to integer - throws if not a valid integer */
   asInt(): number {
-    const n = parseInt(this.raw, 10);
-    if (isNaN(n)) throw new Error(`Symbol '${this.raw}' is not an integer`);
+    const n = Number.parseInt(this.raw, 10);
+    if (Number.isNaN(n)) throw new Error(`Symbol '${this.raw}' is not an integer`);
     return n;
   }
 
   /** Try to convert to integer - returns undefined if not valid */
   tryInt(): number | undefined {
-    const n = parseInt(this.raw, 10);
-    return isNaN(n) ? undefined : n;
+    const n = Number.parseInt(this.raw, 10);
+    return Number.isNaN(n) ? undefined : n;
   }
 
   /** Convert to float - throws if not a valid number */
   asFloat(): number {
-    const n = parseFloat(this.raw);
-    if (isNaN(n)) throw new Error(`Symbol '${this.raw}' is not a number`);
+    const n = Number.parseFloat(this.raw);
+    if (Number.isNaN(n)) throw new Error(`Symbol '${this.raw}' is not a number`);
     return n;
   }
 
   /** Try to convert to float - returns undefined if not valid */
   tryFloat(): number | undefined {
-    const n = parseFloat(this.raw);
-    return isNaN(n) ? undefined : n;
+    const n = Number.parseFloat(this.raw);
+    return Number.isNaN(n) ? undefined : n;
   }
 
   /** Get as string (identity) */
@@ -104,28 +104,28 @@ export class StringValue {
 
   /** Convert to integer */
   asInt(): number {
-    const n = parseInt(this.raw, 10);
-    if (isNaN(n)) throw new Error(`String '${this.raw}' is not an integer`);
+    const n = Number.parseInt(this.raw, 10);
+    if (Number.isNaN(n)) throw new Error(`String '${this.raw}' is not an integer`);
     return n;
   }
 
   /** Try to convert to integer */
   tryInt(): number | undefined {
-    const n = parseInt(this.raw, 10);
-    return isNaN(n) ? undefined : n;
+    const n = Number.parseInt(this.raw, 10);
+    return Number.isNaN(n) ? undefined : n;
   }
 
   /** Convert to float */
   asFloat(): number {
-    const n = parseFloat(this.raw);
-    if (isNaN(n)) throw new Error(`String '${this.raw}' is not a number`);
+    const n = Number.parseFloat(this.raw);
+    if (Number.isNaN(n)) throw new Error(`String '${this.raw}' is not a number`);
     return n;
   }
 
   /** Try to convert to float */
   tryFloat(): number | undefined {
-    const n = parseFloat(this.raw);
-    return isNaN(n) ? undefined : n;
+    const n = Number.parseFloat(this.raw);
+    return Number.isNaN(n) ? undefined : n;
   }
 
   /** Get as string (identity) */
@@ -153,7 +153,7 @@ export class NumberValue {
   private readonly num: number;
 
   constructor(raw: string | number) {
-    this.num = typeof raw === 'number' ? raw : parseFloat(raw);
+    this.num = typeof raw === 'number' ? raw : Number.parseFloat(raw);
   }
 
   /** Raw number value */

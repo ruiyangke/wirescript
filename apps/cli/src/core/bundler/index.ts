@@ -5,6 +5,6 @@
  * Supports icon tree-shaking to reduce bundle size.
  */
 
-export { bundleWithVite, formatBytes } from './vite-bundler.js';
 export { generateHydratePageData } from './hydrate-entry-template.js';
 export { extractUsedIcons } from './icon-analyzer.js';
+export { bundleWithVite, formatBytes } from './vite-bundler.js';

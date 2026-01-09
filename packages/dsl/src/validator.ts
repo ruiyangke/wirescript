@@ -139,11 +139,7 @@ export class Validator {
     ) {
       // Unknown element - could be forward reference or typo
       // Only warn, don't error (forward compatibility)
-      this.addWarning(
-        `Unknown element type: '${element.elementType}'`,
-        loc?.line,
-        loc?.column
-      );
+      this.addWarning(`Unknown element type: '${element.elementType}'`, loc?.line, loc?.column);
     }
 
     // Validate content param refs
@@ -216,7 +212,19 @@ export class Validator {
       // Warn on unknown flags (boolean props)
       if (value === true && !VALID_FLAGS_SET.has(key)) {
         // Don't warn for known prop names like 'to', 'icon', etc.
-        const knownProps = ['to', 'icon', 'src', 'alt', 'placeholder', 'value', 'type', 'id', 'name', 'title', 'label'];
+        const knownProps = [
+          'to',
+          'icon',
+          'src',
+          'alt',
+          'placeholder',
+          'value',
+          'type',
+          'id',
+          'name',
+          'title',
+          'label',
+        ];
         if (!knownProps.includes(key)) {
           this.addWarning(`Unknown flag ':${key}'`, loc?.line, loc?.column);
         }
@@ -225,11 +233,7 @@ export class Validator {
       // Validate param refs in values
       if (availableParams && isParamRef(value)) {
         if (!availableParams.has(value.name)) {
-          this.addError(
-            `Unknown parameter reference '$${value.name}'`,
-            loc?.line,
-            loc?.column
-          );
+          this.addError(`Unknown parameter reference '$${value.name}'`, loc?.line, loc?.column);
         }
       }
     }

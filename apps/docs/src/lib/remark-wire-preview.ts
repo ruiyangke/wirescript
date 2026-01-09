@@ -47,17 +47,16 @@ export function remarkWirePreview() {
       if (lang === 'wire-preview' || lang.startsWith('wire-preview:')) {
         isPreview = true;
         const heightMatch = lang.match(/^wire-preview:(\d+)$/);
-        height = heightMatch ? parseInt(heightMatch[1], 10) : undefined;
+        height = heightMatch ? Number.parseInt(heightMatch[1], 10) : undefined;
       }
       // Format 2: wire with meta "preview" or "preview:300" (space-separated)
       else if (lang === 'wire' && (meta === 'preview' || meta.startsWith('preview:'))) {
         isPreview = true;
         const heightMatch = meta.match(/^preview:(\d+)$/);
-        height = heightMatch ? parseInt(heightMatch[1], 10) : undefined;
+        height = heightMatch ? Number.parseInt(heightMatch[1], 10) : undefined;
       }
 
       if (isPreview) {
-
         const jsxNode = {
           type: 'mdxJsxFlowElement' as const,
           name: 'WirePreview',
@@ -99,7 +98,9 @@ export function remarkWirePreview() {
           children: [],
         };
 
-        parent.children![index] = jsxNode as unknown as Node;
+        if (parent.children && index !== undefined) {
+          parent.children[index] = jsxNode as unknown as Node;
+        }
       }
     });
   };

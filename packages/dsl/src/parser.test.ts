@@ -372,10 +372,11 @@ describe('Parser', () => {
       expect(result.success).toBe(false);
     });
 
-    it('should fail on missing screen', () => {
+    it('should allow documents without screens in parse (checked in compile)', () => {
+      // The "at least one screen" check moved to compile() to allow library files
       const result = parse('(wire (meta :title "Test"))');
-      expect(result.success).toBe(false);
-      expect(result.errors[0].message).toContain('at least one screen');
+      expect(result.success).toBe(true);
+      expect(result.document?.screens).toHaveLength(0);
     });
 
     it('should fail on unbalanced parentheses', () => {
@@ -859,7 +860,11 @@ describe('Parser', () => {
       expect(result.success).toBe(true);
       let current = result.document?.screens[0].root;
       let depth = 0;
-      while (current && current.children && current.children.length > 0 && current.children[0].type === 'element') {
+      while (
+        current?.children &&
+        current.children.length > 0 &&
+        current.children[0].type === 'element'
+      ) {
         depth++;
         current = current.children[0];
       }

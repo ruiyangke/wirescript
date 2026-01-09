@@ -1,4 +1,10 @@
-import type { ComponentDef, ContentValue, ElementNode, PropValue, RepeatNode } from '@wirescript/dsl';
+import type {
+  ComponentDef,
+  ContentValue,
+  ElementNode,
+  PropValue,
+  RepeatNode,
+} from '@wirescript/dsl';
 import { useComponentDef } from './ComponentsContext.js';
 import { Box } from './elements/Box.js';
 import { getElementComponent } from './elements/index.js';
@@ -17,7 +23,8 @@ function generateElementKey(node: RenderNode, index: number): string {
   // For elements, use type + content hash + props hash for better stability
   const content = typeof node.content === 'string' ? node.content : '';
   const contentHash = content ? simpleHash(content) : '';
-  const propsHash = Object.keys(node.props).length > 0 ? simpleHash(JSON.stringify(node.props)) : '';
+  const propsHash =
+    Object.keys(node.props).length > 0 ? simpleHash(JSON.stringify(node.props)) : '';
   return `${node.elementType}-${contentHash}-${propsHash}-${index}`;
 }
 

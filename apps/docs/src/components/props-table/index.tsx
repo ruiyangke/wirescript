@@ -1,7 +1,7 @@
 'use client';
 
-import schemas from '@wirescript/dsl/schemas.json';
 import type { ElementSchema, PropSchema } from '@wirescript/dsl';
+import schemas from '@wirescript/dsl/schemas.json';
 
 interface PropsTableProps {
   /** Element name to show props for */
@@ -104,7 +104,7 @@ export function PropsTable({ element, only, exclude }: PropsTableProps) {
 
     // Apply only/exclude filters
     if (only && !only.includes(category)) continue;
-    if (exclude && exclude.includes(category)) continue;
+    if (exclude?.includes(category)) continue;
 
     if (!grouped[category]) grouped[category] = [];
     grouped[category].push([name, prop]);
@@ -112,11 +112,21 @@ export function PropsTable({ element, only, exclude }: PropsTableProps) {
 
   // Sort categories in a logical order
   const categoryOrder = [
-    'layout', 'alignment', 'sizing', 'spacing', 'dimensions',
-    'position', 'variant', 'emphasis', 'state', 'navigation',
-    'input', 'content', 'other'
+    'layout',
+    'alignment',
+    'sizing',
+    'spacing',
+    'dimensions',
+    'position',
+    'variant',
+    'emphasis',
+    'state',
+    'navigation',
+    'input',
+    'content',
+    'other',
   ];
-  const sortedCategories = categoryOrder.filter(cat => grouped[cat]?.length > 0);
+  const sortedCategories = categoryOrder.filter((cat) => grouped[cat]?.length > 0);
 
   return (
     <div className="space-y-6">
@@ -127,7 +137,7 @@ export function PropsTable({ element, only, exclude }: PropsTableProps) {
       </div>
 
       {/* Props by category */}
-      {sortedCategories.map(category => {
+      {sortedCategories.map((category) => {
         const categoryInfo = PROP_CATEGORIES[category] || { label: 'Element-specific', props: [] };
         const categoryProps = grouped[category];
 
@@ -151,12 +161,8 @@ export function PropsTable({ element, only, exclude }: PropsTableProps) {
                       <td className="py-2 pr-4">
                         <code className="text-primary">:{name}</code>
                       </td>
-                      <td className="py-2 pr-4 text-muted-foreground">
-                        {formatType(prop)}
-                      </td>
-                      <td className="py-2 text-muted-foreground">
-                        {formatDefault(prop)}
-                      </td>
+                      <td className="py-2 pr-4 text-muted-foreground">{formatType(prop)}</td>
+                      <td className="py-2 text-muted-foreground">{formatDefault(prop)}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -218,12 +224,8 @@ export function PropsList({ element }: { element: string }) {
                   <td className="py-2 pr-4">
                     <code className="text-primary">:{name}</code>
                   </td>
-                  <td className="py-2 pr-4 text-muted-foreground">
-                    {formatType(prop)}
-                  </td>
-                  <td className="py-2 text-muted-foreground">
-                    {formatDefault(prop)}
-                  </td>
+                  <td className="py-2 pr-4 text-muted-foreground">{formatType(prop)}</td>
+                  <td className="py-2 text-muted-foreground">{formatDefault(prop)}</td>
                 </tr>
               ))}
             </tbody>
@@ -249,7 +251,7 @@ export function FlagsDisplay({ element }: { element: string }) {
 
   return (
     <div className="flex flex-wrap gap-2">
-      {flags.map(name => (
+      {flags.map((name) => (
         <code key={name} className="px-2 py-1 bg-muted rounded text-sm">
           :{name}
         </code>

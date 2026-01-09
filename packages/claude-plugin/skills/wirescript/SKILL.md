@@ -6,12 +6,12 @@ description: |
   - Designing UI layouts, screens, or components
   - Generating wireframes from descriptions
   Triggers: wireframe, .wire, WireScript, UI layout, screen, prototype
-allowed-tools: Read, Write, Grep, Glob, Bash
+allowed-tools: Read, Write, Edit, Grep, Glob, Bash
 ---
 
 # WireScript Language Guide
 
-WireScript is a Lisp-style DSL for rapid UI wireframe prototyping.
+WireScript is a Lisp-like DSL for rapid UI wireframe prototyping.
 
 ## Quick Start
 
@@ -24,11 +24,246 @@ WireScript is a Lisp-style DSL for rapid UI wireframe prototyping.
       (button "Get Started" :primary))))
 ```
 
+---
+
+## Wireframe Process
+
+When asked to create a wireframe, follow this process:
+
+### 1. Understand the Request
+- What is the app/feature? (e-commerce, dashboard, social, etc.)
+- Who are the users? (admin, customer, mobile user)
+- What are the key flows? (login → browse → checkout)
+
+### 2. Plan Screens
+List the screens needed:
+```
+- login: Authentication
+- home: Main dashboard/landing
+- detail: Item/content view
+- settings: User preferences
+```
+
+### 3. Choose Viewport
+| Viewport | Use When |
+|----------|----------|
+| `:mobile` | Phone-first apps, simple flows |
+| `:tablet` | Mixed use, moderate complexity |
+| `:desktop` | Admin panels, data-heavy apps |
+
+### 4. Identify Patterns
+- **Shared navigation?** → Define a `layout`
+- **Repeated UI blocks?** → Define `components`
+- **Destructive actions?** → Use `modal` for confirmation
+- **Forms/filters?** → Use `drawer` for slide-out panels
+
+### 5. Build in Order
+```lisp
+(wire
+  (meta ...)           ; 1. Metadata
+  (define ...)         ; 2. Reusable components
+  (layout ...)         ; 3. Shared layouts
+  (screen ... ))       ; 4. Screens with overlays
+```
+
+### 6. Validate
+```bash
+npx @wirescript/cli verify <file.wire>
+```
+
+---
+
+## Decision Framework
+
+### Container Selection
+| Need | Use |
+|------|-----|
+| Generic flex/grid layout | `box` |
+| Elevated/bordered content | `card` |
+| Page header with border | `header` |
+| Page footer with border | `footer` |
+| Navigation links | `nav` |
+| Form inputs grouped | `form` |
+| Scrollable content | `scroll` |
+| Input + button together | `group` |
+
+### Overlay Selection
+| Need | Use |
+|------|-----|
+| Confirmation dialog | `modal` - centered, blocks interaction |
+| Side panel (settings, filters) | `drawer` - slides from edge |
+| Quick info on hover/click | `popover` - attached to trigger |
+
+### Input Types
+| Data | Type |
+|------|------|
+| Short text | `text` (default) |
+| Email address | `email` |
+| Password | `password` |
+| Long text | `textarea` |
+| Yes/no toggle | `toggle` or `checkbox` |
+| One of many | `radio` or `select` |
+| Date | `date` or use `datepicker` |
+| Numeric range | `slider` |
+
+### Screen Definition
+```lisp
+(screen screen-id "Display Title" :viewport :layout layout-name
+  (content ...)
+  (modal :id "..." ...)
+  (drawer :id "..." ...))
+```
+
+| Part | Required | Example |
+|------|----------|---------|
+| `screen-id` | Yes | `home`, `user-profile`, `checkout` |
+| `"Title"` | Yes | `"Home"`, `"User Profile"` |
+| `:viewport` | Yes | `:mobile`, `:tablet`, `:desktop` |
+| `:layout` | No | `:layout app-layout` |
+
+---
+
+## Complete Example
+
+A task management app with multiple screens, shared layout, and overlays:
+
+```lisp
+(wire
+  (meta :title "TaskFlow" :context "Team task management" :audience "Desktop users")
+
+  ; Reusable components
+  (define task-card (title status assignee)
+    (card :row :between :padding 12
+      (box :row :gap 12
+        (input :type checkbox)
+        (box :col :gap 4
+          (text $title)
+          (text $assignee :low)))
+      (badge $status)))
+
+  (define stat-card (icon label value)
+    (card :col :gap 8 :padding 16
+      (box :row :between
+        (icon $icon)
+        (icon "more-horizontal"))
+      (text $value :high)
+      (text $label :low)))
+
+  ; Shared layout with sidebar navigation
+  (layout app-layout
+    (box :row :full
+      (nav :col :width "240px" :padding 16 :gap 4
+        (text "TaskFlow" :high)
+        (divider)
+        (button "Dashboard" :ghost :full :start :to dashboard)
+        (button "My Tasks" :ghost :full :start :to tasks)
+        (button "Team" :ghost :full :start :to team)
+        (box :fill)
+        (divider)
+        (box :row :gap 12
+          (avatar "JD")
+          (box :col
+            (text "John Doe")
+            (text "Admin" :low))))
+      (slot)))
+
+  ; Dashboard screen
+  (screen dashboard "Dashboard" :desktop :layout app-layout
+    (box :col :gap 24 :padding 24
+      (box :row :between
+        (text "Dashboard" :high)
+        (button "New Task" :primary :to "#new-task"))
+
+      ; Stats row
+      (box :row :gap 16
+        (stat-card :icon "check-circle" :label "Completed" :value "24")
+        (stat-card :icon "clock" :label "In Progress" :value "12")
+        (stat-card :icon "alert-circle" :label "Overdue" :value "3"))
+
+      ; Recent tasks
+      (box :col :gap 16
+        (box :row :between
+          (text "Recent Tasks" :medium)
+          (button "View All" :ghost :to tasks))
+        (task-card :title "Review design specs" :status "In Progress" :assignee "Alice")
+        (task-card :title "Update API docs" :status "Todo" :assignee "Bob")
+        (task-card :title "Fix login bug" :status "Done" :assignee "Carol")))
+
+    ; New task modal
+    (modal :id "new-task"
+      (box :col :gap 16 :padding 24 :width "400px"
+        (text "Create New Task" :high)
+        (input "Title" :placeholder "Task title...")
+        (input "Description" :type textarea :rows 3)
+        (input "Assignee" :type select :options "Alice,Bob,Carol")
+        (input "Priority" :type radio :options "Low,Medium,High")
+        (box :row :gap 12 :end
+          (button "Cancel" :ghost :to :close)
+          (button "Create" :primary)))))
+
+  ; Tasks screen
+  (screen tasks "My Tasks" :desktop :layout app-layout
+    (box :col :gap 16 :padding 24
+      (box :row :between
+        (text "My Tasks" :high)
+        (box :row :gap 8
+          (button "Filter" :ghost :to "#filter-drawer")
+          (button "New Task" :primary :to "#new-task")))
+
+      (tabs
+        (tab "All" :active)
+        (tab "In Progress")
+        (tab "Completed"))
+
+      (scroll :height "calc(100vh - 200px)"
+        (box :col :gap 8
+          (repeat :count 10 :as "i"
+            (task-card :title "Task ${i}" :status "Todo" :assignee "You")))))
+
+    ; Filter drawer
+    (drawer :id "filter-drawer" :right :width "320px"
+      (box :col :gap 16 :padding 24
+        (box :row :between
+          (text "Filters" :high)
+          (button "X" :ghost :to :close))
+        (input "Status" :type select :options "All,Todo,In Progress,Done")
+        (input "Priority" :type select :options "All,Low,Medium,High")
+        (input "Assignee" :type select :options "All,Alice,Bob,Carol")
+        (box :row :gap 12
+          (button "Reset" :ghost :full)
+          (button "Apply" :primary :full)))))
+
+  ; Team screen
+  (screen team "Team" :desktop :layout app-layout
+    (box :col :gap 24 :padding 24
+      (text "Team Members" :high)
+      (box :grid :cols 3 :gap 16
+        (repeat :count 6 :as "i"
+          (card :col :center :gap 12 :padding 24
+            (avatar "User ${i}")
+            (text "Team Member ${i}")
+            (text "Role" :low)
+            (box :row :gap 8
+              (badge "12 tasks")
+              (badge "3 done" :success))))))))
+```
+
+This example demonstrates:
+- **`meta`** for context
+- **`define`** for reusable task-card and stat-card components
+- **`layout`** with sidebar nav and auto-active highlighting
+- **3 screens** sharing the same layout
+- **`modal`** for task creation
+- **`drawer`** for filters
+- **`tabs`** for content filtering
+- **`repeat`** for generating lists
+- **`:to`** navigation between screens and overlays
+
 ## Document Structure
 
 ```lisp
 (wire
-  (meta :title "..." :context ... :audience "...")
+  (meta :title "..." :context "..." :audience "...")
 
   ; 1. Component definitions
   (define component-name (param1 param2)
@@ -49,9 +284,31 @@ WireScript is a Lisp-style DSL for rapid UI wireframe prototyping.
     (drawer :id "drawer-id" ...)))
 ```
 
+### `meta` (optional)
+
+Document-level metadata for context:
+
+```lisp
+(meta :title "My App" :context "E-commerce platform" :audience "Mobile users")
+```
+
+| Props | `:title` `:context` `:audience` |
+
 ---
 
 ## Core Syntax
+
+### Comments
+
+Use semicolons for single-line comments:
+
+```lisp
+; This is a comment
+(wire
+  ; Define the login screen
+  (screen login "Login" :mobile
+    (text "Welcome")))  ; inline comment
+```
 
 ### Argument Order (STRICT)
 
@@ -110,527 +367,161 @@ Same `:keyword` token - context determines meaning:
 ```
 
 ---
+## Common Properties
 
-## All Elements (35)
+These property groups are shared across elements. Use them based on element type.
+
+### Container Props
+Most containers (`box`, `card`, `section`, `header`, `footer`, `nav`, `form`, `list`, `scroll`, `group`, `tabs`, `breadcrumb`, `skeleton`) support:
+
+| Group | Props |
+|-------|-------|
+| Layout | `:row` `:col` `:grid` `:wrap` |
+| Alignment | `:start` `:center` `:end` `:between` `:around` `:stretch` |
+| Sizing | `:full` `:fit` `:fill` |
+| Spacing | `:gap N` `:padding N` |
+| Dimensions | `:width "..."` `:height "..."` |
+| Position | `:sticky` `:fixed` `:absolute` `:relative` `:top N` `:left N` `:right N` `:bottom N` |
+
+### Variant Props
+Styled elements (`box`, `card`, `button`, `badge`, `text`, `icon`, `metric`, `progress`, `toast`, `dropdown`) support:
+
+`:primary` `:secondary` `:ghost` `:danger` `:success` `:warning` `:info`
+
+### Emphasis Props
+Text-like elements (`text`, `icon`, `avatar`) support:
+
+`:high` (large/bold) · `:medium` (default) · `:low` (small/muted)
+
+### State Props
+Interactive elements support (varies by element):
+
+`:disabled` · `:loading` · `:active` · `:checked` · `:error` · `:open`
+
+### Navigation Prop
+Clickable elements (`button`, `text`, `icon`, `image`, `avatar`, `tab`, `crumb`, `box`, `card`, `form`) support:
+
+`:to target` — where target is:
+- `screen-id` — navigate to screen
+- `"#overlay-id"` — open modal/drawer/popover
+- `:close` — close current overlay
+
+---
+
+## All Elements (32)
 
 ### Containers (10)
 
-#### `box`
-Generic flex/grid container. The most common element.
+| Element | Description | Specific Props |
+|---------|-------------|----------------|
+| `box` | Flex/grid container | `:cols N` `:rows N` (grid mode) |
+| `card` | Bordered container | — |
+| `section` | Semantic section | `:title "..."` · content = section name |
+| `header` | Page header (bottom border) | — |
+| `footer` | Page footer (top border) | — |
+| `nav` | Navigation container | — |
+| `form` | Form container | — |
+| `list` | List container | — |
+| `scroll` | Scrollable container | requires `:height` |
+| `group` | Input group | — |
+
+### Content (6)
+
+| Element | Description | Specific Props |
+|---------|-------------|----------------|
+| `text` | Text display | content = displayed text |
+| `icon` | Icon display | content = icon name · `:size N` |
+| `image` | Image placeholder | content = alt text · `:src "..."` |
+| `avatar` | User avatar | content = name/initials · `:src "..."` `:size N` |
+| `badge` | Small label | content = badge text · `:value "..."` |
+| `divider` | Horizontal line | — |
+
+### Interactive (4)
+
+| Element | Description | Specific Props |
+|---------|-------------|----------------|
+| `button` | Clickable button | content = label · `:icon "..."` `:disabled` `:loading` `:active` |
+| `dropdown` | Dropdown menu | content = trigger label · children = menu items · `:open` |
+| `input` | Form input | content = **label** · see Input Types below |
+| `datepicker` | Date picker | `:value "YYYY-MM-DD"` `:placeholder "..."` `:disabled` `:error` |
+
+### Input Types
 
 ```lisp
-(box :col :gap 16 :padding 24 (text "Hello"))
-(box :row :between :gap 8 (button "A") (button "B"))
-(box :grid :cols 3 :gap 16 (card ...) (card ...) (card ...))
-```
-
-| Props | `:gap` `:padding` `:cols` `:rows` `:width` `:height` `:to` |
-| Flags | `:row` `:col` `:grid` `:wrap` `:center` `:between` `:start` `:end` `:full` `:fill` |
-
-#### `card`
-Bordered/elevated container.
-
-```lisp
-(card :col :gap 12 :padding 16
-  (text "Card Title" :high)
-  (text "Card content" :low))
-```
-
-| Props | Same as `box` |
-| Flags | Same as `box`, plus `:primary` `:danger` etc. for colored borders |
-
-#### `section`
-Semantic page section.
-
-```lisp
-(section "hero" :col :center :padding 48
-  (text "Welcome" :high))
-```
-
-| Content | Section name/role (e.g., "hero", "features", "pricing") |
-| Props | `:gap` `:padding` `:title` `:width` `:height` |
-
-#### `header`
-Page header with bottom border.
-
-```lisp
-(header :row :between :padding 16
-  (text "Logo" :high)
-  (button "Sign In" :primary))
-```
-
-| Props | `:gap` `:padding` `:width` `:height` |
-
-#### `footer`
-Page footer with top border.
-
-```lisp
-(footer :row :center :padding 24
-  (text "© 2024 Company" :low))
-```
-
-| Props | `:gap` `:padding` `:width` `:height` |
-
-#### `nav`
-Navigation container with appropriate styling.
-
-```lisp
-(nav :col :gap 4 :padding 16 :width "240px"
-  (button "Dashboard" :ghost :full :start :to dashboard)
-  (button "Settings" :ghost :full :start :to settings))
-```
-
-| Props | `:gap` `:padding` `:width` `:height` |
-
-#### `form`
-Form container.
-
-```lisp
-(form :col :gap 16
-  (input "Email" :type email)
-  (input "Password" :type password)
-  (button "Submit" :primary :full))
-```
-
-| Props | `:gap` `:padding` `:to` (for form action) |
-
-#### `list`
-List container.
-
-```lisp
-(list :col
-  (box :row :padding 12 (text "Item 1"))
-  (divider)
-  (box :row :padding 12 (text "Item 2")))
-```
-
-| Props | `:gap` `:padding` |
-
-#### `scroll`
-Scrollable container.
-
-```lisp
-(scroll :col :height "300px"
-  (repeat :count 20 :as "i"
-    (text "Item ${i}")))
-```
-
-| Props | `:height` (required for scrolling) `:gap` `:padding` |
-
-#### `group`
-Input group container.
-
-```lisp
-(group :row
-  (input :type text :placeholder "Search...")
-  (button "Go" :primary))
-```
-
-| Props | `:gap` `:padding` |
-
----
-
-### Content (10)
-
-#### `text`
-Text display.
-
-```lisp
-(text "Hello World")
-(text "Heading" :high)
-(text "Muted text" :low)
-(text "Error" :danger)
-(text "Click me" :primary :to settings)
-```
-
-| Content | Text to display (required) |
-| Props | `:to` `:width` `:height` |
-| Flags | `:high` `:medium` `:low` `:primary` `:danger` `:success` `:center` |
-
-#### `button`
-Clickable button.
-
-```lisp
-(button "Click Me")
-(button "Primary" :primary)
-(button "Delete" :danger)
-(button "Cancel" :ghost)
-(button "Loading..." :primary :loading :disabled)
-(button "Navigate" :primary :to dashboard)
-(button "Open Modal" :to "#my-modal")
-```
-
-| Content | Button label (required) |
-| Props | `:to` `:width` `:height` |
-| Flags | `:primary` `:secondary` `:ghost` `:danger` `:success` `:warning` `:disabled` `:loading` `:full` `:fit` `:active` |
-
-#### `dropdown`
-Inline dropdown menu. First child is trigger label, remaining children are menu items.
-
-```lisp
-(dropdown "Options"
-  (button "Edit" :ghost)
-  (button "Duplicate" :ghost)
-  (divider)
-  (button "Delete" :danger :ghost))
-
-; In a row with other content
-(box :row :between
-  (text "Item" :medium)
-  (dropdown
-    (button "Edit" :ghost :icon "edit")
-    (button "Delete" :danger :ghost :icon "trash")))
-```
-
-| Content | Trigger label (optional) |
-| Props | `:gap` `:padding` `:width` |
-| Flags | `:disabled` `:open` |
-| Children | Menu items (buttons, dividers) |
-
-#### `input`
-Form input field. **Content is the label, not placeholder.**
-
-```lisp
-(input "Username")
 (input "Email" :type email :placeholder "you@example.com")
-(input "Password" :type password)
 (input "Bio" :type textarea :rows 4)
-(input "Country" :type select :options "US,CA,UK,AU")
-(input "Plan" :type radio :options "Free,Pro,Enterprise")
-(input "Remember me" :type checkbox)
-(input "Notifications" :type toggle)
-(input "Age" :type number :min 0 :max 120)
+(input "Country" :type select :options "US,CA,UK")
+(input "Plan" :type radio :options "Free,Pro")
+(input "Remember" :type checkbox :checked)
+(input "Notify" :type toggle :on)
 (input "Price" :type slider :min 0 :max 1000)
-(input "Invalid field" :type email :error)
 ```
 
-| Content | **Label text** (displayed above input) |
-| Props | `:type` `:placeholder` `:value` `:options` `:min` `:max` `:step` `:width` `:height` |
-| Flags | `:disabled` `:error` `:checked` `:on` `:full` |
+**Types:** `text` `email` `password` `search` `tel` `url` `number` `textarea` `select` `radio` `checkbox` `toggle` `slider` `date` `time` `color` `file`
 
-**Input types:** `text` `email` `password` `search` `tel` `url` `number` `textarea` `select` `radio` `checkbox` `toggle` `slider` `date` `time` `color` `file`
-
-#### `image`
-Image placeholder.
-
-```lisp
-(image "Product photo")
-(image "Hero banner" :width "100%" :height "300px")
-```
-
-| Content | Alt text description |
-| Props | `:src` `:alt` `:width` `:height` |
-
-#### `icon`
-Icon display.
-
-```lisp
-(icon "search")
-(icon "menu")
-(icon "user")
-(icon "settings")
-(icon "chevron-down")
-```
-
-| Content | Icon name |
-| Props | `:name` `:size` `:width` `:height` |
-
-**Common icons:** `search` `menu` `user` `settings` `home` `edit` `delete` `plus` `minus` `check` `x` `chevron-down` `chevron-right` `arrow-left` `arrow-right` `mail` `phone` `calendar` `clock` `star` `heart` `share` `download` `upload` `filter` `sort` `bell` `lock` `eye` `folder` `file` `image` `video` `music` `link` `copy` `save` `refresh-cw` `log-out`
-
-#### `divider`
-Horizontal separator line.
-
-```lisp
-(divider)
-```
-
-| Props | `:width` `:height` |
-
-#### `avatar`
-User avatar display.
-
-```lisp
-(avatar "John Doe")
-(avatar "JD")
-```
-
-| Content | Name or initials |
-| Props | `:src` `:name` `:size` `:width` `:height` |
-
-#### `badge`
-Small label or tag.
-
-```lisp
-(badge "New")
-(badge "3")
-(badge "Pro" :primary)
-(badge "Sold Out" :danger)
-(badge "+12%" :success)
-```
-
-| Content | Badge text |
-| Props | `:value` `:width` `:height` |
-| Flags | `:primary` `:secondary` `:danger` `:success` `:warning` `:info` |
-
-#### `datepicker`
-Date selection input.
-
-```lisp
-(datepicker)
-(datepicker :value "2024-01-15")
-(datepicker :placeholder "Select date")
-```
-
-| Props | `:value` `:placeholder` `:width` `:height` |
-| Flags | `:disabled` `:error` |
-
----
+**Props:** `:type` `:placeholder` `:value` `:options` `:min` `:max` `:step` `:rows` `:disabled` `:error` `:checked` `:on`
 
 ### Data (4)
 
-#### `metric`
-Statistics/KPI display.
-
-```lisp
-(metric :label "Total Users" :value "12,345")
-(metric :label "Revenue" :value "$84,230" :change "+12.5%" :trend up)
-(metric :label "Orders" :value "1,429" :change "-3.1%" :trend down)
-```
-
-| Props | `:label` `:value` `:change` `:trend` (up/down) `:width` `:height` |
-
-#### `chart`
-Chart placeholder.
-
-```lisp
-(chart "Monthly Revenue")
-(chart "Sales by Region" :type bar :height "200px")
-(chart "Market Share" :type pie)
-(chart "Growth Trend" :type line :height "300px")
-(chart "Distribution" :type donut)
-(chart "Performance" :type area)
-```
-
-| Content | Chart title |
-| Props | `:type` (line/bar/pie/area/donut) `:height` `:width` `:gap` `:padding` |
-
-#### `progress`
-Progress bar indicator.
-
-```lisp
-(progress)
-(progress :value 75)
-(progress :value 75 :max 100)
-```
-
-| Props | `:value` `:max` `:width` `:height` |
-| Flags | `:primary` `:success` `:warning` `:danger` |
-
-#### `skeleton`
-Loading placeholder.
-
-```lisp
-(skeleton)
-(skeleton :width "100%" :height "200px")
-(skeleton :width "60%" :height "20px")
-```
-
-| Props | `:width` `:height` `:gap` `:padding` |
-
----
+| Element | Description | Specific Props |
+|---------|-------------|----------------|
+| `metric` | KPI display | `:label "..."` `:value "..."` `:change "+12%"` `:trend up/down` |
+| `chart` | Chart placeholder | content = title · `:type line/bar/pie/area/donut` |
+| `progress` | Progress bar | `:value N` `:max N` |
+| `skeleton` | Loading placeholder | `:circle` `:text` |
 
 ### Navigation (4)
 
-#### `tabs`
-Tab container.
+| Element | Description | Specific Props |
+|---------|-------------|----------------|
+| `tabs` | Tab container | children = `tab` elements |
+| `tab` | Tab item | content = label · `:active` `:disabled` `:to target` |
+| `breadcrumb` | Breadcrumb container | children = `crumb` elements |
+| `crumb` | Breadcrumb item | content = label · `:active` `:to target` |
 
-```lisp
-(tabs
-  (tab "General" :active)
-  (tab "Security")
-  (tab "Notifications"))
-```
+### Overlays (3)
 
-| Props | `:gap` `:padding` |
+**All require `:id "..."`** for targeting with `:to "#id"`
 
-#### `tab`
-Single tab item.
-
-```lisp
-(tab "Tab Label")
-(tab "Active Tab" :active)
-(tab "Linked Tab" :to settings-tab)
-```
-
-| Content | Tab label (required) |
-| Props | `:to` `:width` `:height` |
-| Flags | `:active` `:disabled` |
-
-#### `breadcrumb`
-Breadcrumb trail container.
-
-```lisp
-(breadcrumb
-  (crumb "Home" :to home)
-  (crumb "Products" :to products)
-  (crumb "Details" :active))
-```
-
-| Props | `:gap` `:padding` |
-
-#### `crumb`
-Single breadcrumb item.
-
-```lisp
-(crumb "Home" :to home)
-(crumb "Current Page" :active)
-```
-
-| Content | Crumb label (required) |
-| Props | `:to` `:width` `:height` |
-| Flags | `:active` |
-
----
-
-### Overlay (3)
-
-#### `modal`
-Modal dialog. **Requires `:id`.**
+| Element | Description | Specific Props |
+|---------|-------------|----------------|
+| `modal` | Centered dialog | `:title "..."` `:width` |
+| `drawer` | Side panel | `:left` `:right` `:top` `:bottom` `:width` |
+| `popover` | Attached popup | `:top` `:bottom` `:left` `:right` |
 
 ```lisp
 ; Trigger
-(button "Open Modal" :to "#my-modal")
+(button "Open" :to "#my-modal")
 
-; Modal definition (at end of screen)
+; Definition (at end of screen)
 (modal :id "my-modal"
   (box :col :gap 16 :padding 24
-    (text "Modal Title" :high)
-    (text "Modal content goes here." :low)
-    (box :row :gap 12 :end
-      (button "Cancel" :ghost :to :close)
-      (button "Confirm" :primary))))
+    (text "Title" :high)
+    (button "Close" :ghost :to :close)))
 ```
 
-| Props | `:id` (required) `:title` `:gap` `:padding` `:width` `:height` |
+### Utility (4)
 
-#### `drawer`
-Slide-out side panel. **Requires `:id`.**
-
-```lisp
-; Trigger
-(button "Open Drawer" :to "#settings-drawer")
-
-; Drawer definition
-(drawer :id "settings-drawer" :right :width "400px"
-  (box :col :gap 16 :padding 24
-    (box :row :between
-      (text "Settings" :high)
-      (button "X" :ghost :to :close))
-    (text "Drawer content...")))
-```
-
-| Props | `:id` (required) `:title` `:position` `:gap` `:padding` `:width` `:height` |
-| Flags | `:left` `:right` `:top` `:bottom` |
-
-#### `popover`
-Popover content panel. **Requires `:id`.**
-
-```lisp
-; Trigger
-(button "Info" :ghost :to "#help-popover")
-
-; Popover definition
-(popover :id "help-popover"
-  (text "Helpful information here" :low))
-```
-
-| Props | `:id` (required) `:gap` `:padding` `:width` `:height` |
-| Flags | `:top` `:bottom` `:left` `:right` |
+| Element | Description | Specific Props |
+|---------|-------------|----------------|
+| `tooltip` | Hover tip | content = tip text · child = trigger element |
+| `toast` | Notification | content = message · `:success` `:danger` `:loading` |
+| `empty` | Empty state | content = message · `:icon "..."` · children = action buttons |
+| `slot` | Layout placeholder | used in `layout` definitions only |
 
 ---
 
-### Utility (3)
+## Icons
 
-#### `tooltip`
-Hover tooltip. Wraps trigger element.
+Common icon names (Lucide icons):
 
-```lisp
-(tooltip "Click to copy"
-  (button "Copy" :ghost))
+**Navigation:** `menu` `home` `arrow-left` `arrow-right` `chevron-down` `chevron-right` `x`
 
-(tooltip "More information"
-  (icon "info"))
-```
+**Actions:** `plus` `minus` `edit` `delete` `trash` `save` `copy` `download` `upload` `refresh-cw` `search` `filter` `sort`
 
-| Content | Tip text (shown on hover) |
-| Props | `:content` `:width` `:height` |
-| Children | Element to wrap (the trigger) |
+**Status:** `check` `x` `alert-circle` `info` `bell` `clock` `calendar`
 
-#### `toast`
-Notification message.
-
-```lisp
-(toast "Changes saved successfully" :success)
-(toast "Error occurred" :danger)
-(toast "Please wait..." :info :loading)
-```
-
-| Content | Notification message |
-| Props | `:message` `:duration` `:width` `:height` |
-| Flags | `:success` `:danger` `:warning` `:info` `:loading` |
-
-#### `empty`
-Empty state display.
-
-```lisp
-(empty "No items found")
-(empty "No results" :icon search)
-(empty "No messages yet" :icon mail
-  (button "Send First Message" :primary))
-```
-
-| Content | Empty state message |
-| Props | `:message` `:icon` `:gap` `:padding` |
-| Children | Optional action buttons |
-
----
-
-### Layout (1)
-
-#### `slot`
-Placeholder for screen content in layouts. Must appear exactly once in each layout.
-
-```lisp
-(layout my-layout
-  (box :row :full
-    (nav :col :width "240px" ...)
-    (slot)))  ; Screen content replaces this
-```
-
----
-
-## All Flags
-
-### Layout
-`:row` `:col` `:grid` `:wrap`
-
-### Alignment
-`:start` `:center` `:end` `:between` `:around` `:stretch`
-
-### Emphasis
-`:high` (large/bold) `:medium` (default) `:low` (small/muted)
-
-### Variant
-`:primary` `:secondary` `:ghost` `:danger` `:success` `:warning` `:info`
-
-### State
-`:disabled` `:loading` `:active` `:error` `:checked` `:on` `:open`
-
-### Size
-`:full` (full width) `:fit` (fit content) `:fill` (fill available)
-
-### Position (for overlays)
-`:top` `:bottom` `:left` `:right` `:sticky` `:fixed` `:absolute` `:relative`
+**Objects:** `user` `users` `settings` `mail` `phone` `lock` `eye` `star` `heart` `folder` `file` `image` `link`
 
 ---
 

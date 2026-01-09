@@ -1,5 +1,5 @@
-import { render, screen, waitFor, fireEvent } from '@testing-library/react';
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 // Mock shiki
 vi.mock('shiki', () => ({
@@ -64,21 +64,21 @@ describe('WirePreview', () => {
   });
 
   it('uses default height of 200px', () => {
-    render(<WirePreview code="(text \"Test\")" />);
+    render(<WirePreview code={'(text "Test")'} />);
 
     const previewContainer = screen.getByTitle('WireScript Preview').parentElement;
     expect(previewContainer).toHaveStyle({ height: '200px' });
   });
 
   it('uses custom previewHeight when provided', () => {
-    render(<WirePreview code="(text \"Test\")" previewHeight={400} />);
+    render(<WirePreview code={'(text "Test")'} previewHeight={400} />);
 
     const previewContainer = screen.getByTitle('WireScript Preview').parentElement;
     expect(previewContainer).toHaveStyle({ height: '400px' });
   });
 
   it('renders copy button', async () => {
-    render(<WirePreview code="(text \"Test\")" />);
+    render(<WirePreview code={'(text "Test")'} />);
 
     await waitFor(() => {
       const copyButton = screen.getByRole('button', { name: /copy code/i });
@@ -99,7 +99,7 @@ describe('WirePreview', () => {
   });
 
   it('shows syntax highlighted code', async () => {
-    render(<WirePreview code="(text \"Test\")" />);
+    render(<WirePreview code={'(text "Test")'} />);
 
     await waitFor(() => {
       // The mocked codeToHtml returns mock HTML

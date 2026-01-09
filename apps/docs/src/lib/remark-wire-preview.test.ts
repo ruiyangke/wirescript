@@ -1,6 +1,6 @@
-import { describe, it, expect } from 'vitest';
+import type { Code, Root } from 'mdast';
+import { describe, expect, it } from 'vitest';
 import { remarkWirePreview } from './remark-wire-preview';
-import type { Root, Code } from 'mdast';
 
 // Helper to create a code block node
 function createCodeBlock(lang: string, value: string, meta?: string): Code {
@@ -25,9 +25,7 @@ describe('remarkWirePreview', () => {
 
   describe('wire-preview syntax (hyphenated)', () => {
     it('transforms wire-preview code blocks', () => {
-      const tree = createRoot([
-        createCodeBlock('wire-preview', '(text "Hello")'),
-      ]);
+      const tree = createRoot([createCodeBlock('wire-preview', '(text "Hello")')]);
 
       plugin(tree);
 
@@ -45,34 +43,32 @@ describe('remarkWirePreview', () => {
       const result = tree.children[0] as unknown as {
         attributes: Array<{ name: string; value: string }>;
       };
-      const codeAttr = result.attributes.find(a => a.name === 'code');
+      const codeAttr = result.attributes.find((a) => a.name === 'code');
       expect(codeAttr?.value).toBe(code);
     });
 
     it('extracts height from wire-preview:300 syntax', () => {
-      const tree = createRoot([
-        createCodeBlock('wire-preview:300', '(text "Hello")'),
-      ]);
+      const tree = createRoot([createCodeBlock('wire-preview:300', '(text "Hello")')]);
 
       plugin(tree);
 
       const result = tree.children[0] as unknown as {
         attributes: Array<{ name: string; value: unknown }>;
       };
-      const heightAttr = result.attributes.find(a => a.name === 'previewHeight');
+      const heightAttr = result.attributes.find((a) => a.name === 'previewHeight');
       expect(heightAttr).toBeDefined();
       expect((heightAttr?.value as { value: string }).value).toBe('300');
     });
 
     it('uses no height when not specified', () => {
-      const tree = createRoot([createCodeBlock('wire-preview', '(text "Hello")']);
+      const tree = createRoot([createCodeBlock('wire-preview', '(text "Hello")')]);
 
       plugin(tree);
 
       const result = tree.children[0] as unknown as {
         attributes: Array<{ name: string }>;
       };
-      const heightAttr = result.attributes.find(a => a.name === 'previewHeight');
+      const heightAttr = result.attributes.find((a) => a.name === 'previewHeight');
       expect(heightAttr).toBeUndefined();
     });
   });
@@ -98,7 +94,7 @@ describe('remarkWirePreview', () => {
       const result = tree.children[0] as unknown as {
         attributes: Array<{ name: string; value: unknown }>;
       };
-      const heightAttr = result.attributes.find(a => a.name === 'previewHeight');
+      const heightAttr = result.attributes.find((a) => a.name === 'previewHeight');
       expect(heightAttr).toBeDefined();
       expect((heightAttr?.value as { value: string }).value).toBe('400');
     });
@@ -163,12 +159,12 @@ describe('remarkWirePreview', () => {
       const result = tree.children[0] as unknown as {
         attributes: Array<{ name: string; value: string }>;
       };
-      const codeAttr = result.attributes.find(a => a.name === 'code');
+      const codeAttr = result.attributes.find((a) => a.name === 'code');
       expect(codeAttr?.value).toBe('');
     });
 
     it('handles code with special characters', () => {
-      const code = '(text "Hello <World> & \"Quotes\"")';
+      const code = '(text "Hello <World> & "Quotes"")';
       const tree = createRoot([createCodeBlock('wire-preview', code)]);
 
       plugin(tree);
@@ -176,7 +172,7 @@ describe('remarkWirePreview', () => {
       const result = tree.children[0] as unknown as {
         attributes: Array<{ name: string; value: string }>;
       };
-      const codeAttr = result.attributes.find(a => a.name === 'code');
+      const codeAttr = result.attributes.find((a) => a.name === 'code');
       expect(codeAttr?.value).toBe(code);
     });
 
@@ -192,7 +188,7 @@ describe('remarkWirePreview', () => {
       const result = tree.children[0] as unknown as {
         attributes: Array<{ name: string; value: string }>;
       };
-      const codeAttr = result.attributes.find(a => a.name === 'code');
+      const codeAttr = result.attributes.find((a) => a.name === 'code');
       expect(codeAttr?.value).toBe(code);
     });
 
@@ -205,7 +201,7 @@ describe('remarkWirePreview', () => {
       const result = tree.children[0] as unknown as {
         attributes: Array<{ name: string; value: unknown }>;
       };
-      const heightAttr = result.attributes.find(a => a.name === 'previewHeight');
+      const heightAttr = result.attributes.find((a) => a.name === 'previewHeight');
       expect(heightAttr).toBeDefined();
       expect((heightAttr?.value as { value: string }).value).toBe('300');
     });

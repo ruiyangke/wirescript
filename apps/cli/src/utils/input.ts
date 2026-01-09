@@ -3,10 +3,15 @@
  */
 
 import { readFileSync, statSync } from 'node:fs';
-import { basename } from 'node:path';
-import { type CompileResult, compile } from '@wirescript/dsl';
-import { FileError, RenderError } from './errors.js';
+import { basename, dirname, join, resolve } from 'node:path';
+import {
+  type CompileOptions,
+  type CompileResult,
+  compile,
+  type ResolvedInclude,
+} from '@wirescript/dsl';
 import { STDIN_TIMEOUT_MS } from './constants.js';
+import { FileError, RenderError } from './errors.js';
 
 export interface InputSource {
   content: string;
@@ -140,12 +145,41 @@ export interface CompileWireFileOptions {
 }
 
 /**
+ * Create a file resolver for include resolution.
+ * Resolves paths relative to the including file's directory.
+ */
+function createFileResolver(): CompileOptions['resolver'] {
+  return async (includePath: string, fromPath: string): Promise<ResolvedInclude> => {
+    // Resolve relative to the including file's directory
+    const fromDir = dirname(fromPath);
+    const resolvedPath = resolve(join(fromDir, includePath));
+
+    try {
+      const stat = statSync(resolvedPath);
+      if (stat.isDirectory()) {
+        throw new Error(`Path is a directory, not a file: ${resolvedPath}`);
+      }
+    } catch (error) {
+      if ((error as NodeJS.ErrnoException).code === 'ENOENT') {
+        throw new Error(`File not found: ${resolvedPath}`);
+      }
+      throw error;
+    }
+
+    const content = readFileSync(resolvedPath, 'utf-8');
+    return { content, resolvedPath };
+  };
+}
+
+/**
  * Read, validate, and compile a WireScript file
  *
  * This is a convenience function that combines:
  * - readInput()
  * - validateWireFile()
  * - compile()
+ *
+ * Supports include resolution for files (not stdin).
  *
  * @param filePath - Path to the .wire file or "-" for stdin
  * @param options - Optional settings
@@ -159,7 +193,18 @@ export async function compileWireFile(
   const input = await readInput(filePath);
   validateWireFile(input.filename);
 
-  const result = compile(input.content);
+  // Use async compile with resolver for file input (not stdin)
+  let result: CompileResult;
+  if (!input.isStdin) {
+    const compileOptions: CompileOptions = {
+      filePath: resolve(filePath),
+      resolver: createFileResolver(),
+    };
+    result = await compile(input.content, compileOptions);
+  } else {
+    // Stdin: no include resolution (sync)
+    result = compile(input.content);
+  }
 
   if (options.throwOnError && (!result.success || !result.document)) {
     throw new RenderError(

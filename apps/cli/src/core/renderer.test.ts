@@ -2,8 +2,8 @@
  * Tests for the SSR renderer
  */
 
-import { describe, expect, it } from 'vitest';
 import { compile } from '@wirescript/dsl';
+import { describe, expect, it } from 'vitest';
 import { renderScreen } from './renderer.js';
 
 // Helper to compile WireScript and get the document
@@ -89,9 +89,7 @@ describe('renderScreen', () => {
           (text "Home")))
     `);
 
-    expect(() => renderScreen(document, { screenId: 'nonexistent' })).toThrow(
-      'Screen not found'
-    );
+    expect(() => renderScreen(document, { screenId: 'nonexistent' })).toThrow('Screen not found');
   });
 
   it('renders input with placeholder', () => {

@@ -8,11 +8,11 @@
  * that only includes icons used in the document.
  */
 
-import { mkdirSync, rmSync, writeFileSync, readFileSync } from 'node:fs';
+import { mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { build, type Plugin, type PluginOption } from 'vite';
 import react from '@vitejs/plugin-react';
+import { build, type Plugin, type PluginOption } from 'vite';
 import { generateHydrateEntry } from './hydrate-entry-template.js';
 import { generateMinimalIconsModule } from './icon-analyzer.js';
 

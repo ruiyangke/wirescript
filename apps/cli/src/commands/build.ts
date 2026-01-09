@@ -8,17 +8,17 @@
 
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { renderScreen } from '../core/renderer.js';
 import {
-  generateHydratePageData,
   bundleWithVite,
-  formatBytes,
   extractUsedIcons,
+  formatBytes,
+  generateHydratePageData,
 } from '../core/bundler/index.js';
+import { renderScreen } from '../core/renderer.js';
 import { renderDocsPage, renderIndexRedirect, type ScreenInfo } from '../core/templates/docs.js';
-import { renderStandalone } from '../core/templates/standalone.js';
 import { renderHydrated } from '../core/templates/hydrated.js';
-import { EXIT_CODES, getErrorCode, getErrorMessage, type ExitCode } from '../utils/errors.js';
+import { renderStandalone } from '../core/templates/standalone.js';
+import { EXIT_CODES, type ExitCode, getErrorCode, getErrorMessage } from '../utils/errors.js';
 import { compileWireFile } from '../utils/input.js';
 import {
   createOutputOptions,
@@ -56,7 +56,10 @@ export interface BuildResult {
 export async function build(filePath: string, options: BuildOptions = {}): Promise<BuildResult> {
   // Read, validate, and compile
   const { input, result } = await compileWireFile(filePath, { throwOnError: true });
-  const wireDoc = result.document!;
+  if (!result.document) {
+    throw new Error('Compilation failed: no document');
+  }
+  const wireDoc = result.document;
 
   // Theme name (currently only brutalism is fully supported)
   const themeName = options.theme || 'brutalism';

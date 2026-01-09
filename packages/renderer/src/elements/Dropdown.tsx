@@ -1,7 +1,7 @@
 import type { ChildNode, ElementNode } from '@wirescript/dsl';
 import { MoreHorizontal } from 'lucide-react';
-import { getIcon } from '../icons.js';
 import { useInteraction } from '../InteractionContext.js';
+import { getIcon } from '../icons.js';
 import { getVariant, hasFlag } from '../layout.js';
 import { cn } from '../lib/utils.js';
 import { Button } from '../ui/button.js';

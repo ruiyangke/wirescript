@@ -48,7 +48,6 @@ export function Text({ element }: TextProps) {
     }
   };
 
-
   // Map emphasis to text style classes
   const emphasisClasses = {
     high: 'text-2xl font-semibold text-foreground',

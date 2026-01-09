@@ -1,4 +1,14 @@
 // Types
+
+// Generators
+export {
+  generateCSSVariables,
+  generateRootCSS,
+  getGoogleFontsUrl,
+} from './generators/index.js';
+
+// Themes
+export { brutalism, getTheme, getThemeNames, themes } from './themes/index.js';
 export type {
   Theme,
   ThemeColors,
@@ -8,13 +18,3 @@ export type {
   ThemeShadows,
   ThemeSpacing,
 } from './types.js';
-
-// Themes
-export { brutalism, getTheme, getThemeNames, themes } from './themes/index.js';
-
-// Generators
-export {
-  generateCSSVariables,
-  generateRootCSS,
-  getGoogleFontsUrl,
-} from './generators/index.js';

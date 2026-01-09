@@ -150,10 +150,11 @@ describe('TCK: Components', () => {
           (screen home "Home" (box)))
       `);
       const body = result.document?.components[0]?.body;
-      const innerText = body?.children[0]?.type === 'element'
-        ? body.children[0].children[0]
-        : null;
-      expect(innerText?.type === 'element' && innerText.content).toEqual({ type: 'param', name: 'title' });
+      const innerText = body?.children[0]?.type === 'element' ? body.children[0].children[0] : null;
+      expect(innerText?.type === 'element' && innerText.content).toEqual({
+        type: 'param',
+        name: 'title',
+      });
     });
   });
 

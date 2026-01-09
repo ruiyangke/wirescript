@@ -57,13 +57,7 @@ export function WireRenderer({ document, screenId, viewport, onScreenChange }: W
 /**
  * Internal component that renders the current screen from context
  */
-function DocumentRenderer({
-  document,
-  viewport,
-}: {
-  document: WireDocument;
-  viewport?: Viewport;
-}) {
+function DocumentRenderer({ document, viewport }: { document: WireDocument; viewport?: Viewport }) {
   const { state } = useInteraction();
   const currentScreenId = state.currentScreen;
 
@@ -190,9 +184,7 @@ export function ScreenRenderer({ screen, viewport: externalViewport }: ScreenRen
             />
           );
           // Use portal on client, render directly on server
-          return portalContainer
-            ? createPortal(overlayElement, portalContainer)
-            : overlayElement;
+          return portalContainer ? createPortal(overlayElement, portalContainer) : overlayElement;
         })}
       </div>
     </AutoActiveProvider>

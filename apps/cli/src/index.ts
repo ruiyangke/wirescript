@@ -56,7 +56,11 @@ program
   .command('render')
   .description('Render a WireScript file to HTML or PNG')
   .argument('<file>', 'Path to .wire file (use "-" for stdin)')
-  .option('-f, --format <type>', `Output format: ${VALID_FORMATS.join(', ')} (png requires -o)`, 'html')
+  .option(
+    '-f, --format <type>',
+    `Output format: ${VALID_FORMATS.join(', ')} (png requires -o)`,
+    'html'
+  )
   .option('-o, --output <path>', 'Output file path (required for png, default: stdout for html)')
   .option('-s, --screen <id>', 'Screen to render (default: first)')
   .option('-t, --theme <name>', `Theme: ${THEME_NAMES.join(', ')}`, 'brutalism')

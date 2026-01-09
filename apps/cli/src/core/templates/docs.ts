@@ -4,9 +4,9 @@
  * Uses pre-built CSS from @wirescript/renderer for consistent styling.
  */
 
-import { getTheme, getGoogleFontsUrl } from '@wirescript/theme';
-import { getRendererCSS } from '../css/index.js';
+import { getGoogleFontsUrl, getTheme } from '@wirescript/theme';
 import { escapeHtml, sanitizeContent } from '../../utils/html.js';
+import { getRendererCSS } from '../css/index.js';
 
 export interface ScreenInfo {
   id: string;

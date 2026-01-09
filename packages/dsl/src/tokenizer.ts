@@ -227,7 +227,7 @@ export class Tokenizer {
       this.advance();
     }
 
-    const codePoint = parseInt(hex, 16);
+    const codePoint = Number.parseInt(hex, 16);
     return String.fromCharCode(codePoint);
   }
 
@@ -256,20 +256,12 @@ export class Tokenizer {
     this.advance(); // skip }
 
     if (hex.length === 0 || hex.length > 6) {
-      throw new TokenizerError(
-        'Unicode escape must have 1-6 hex digits',
-        start.line,
-        start.column
-      );
+      throw new TokenizerError('Unicode escape must have 1-6 hex digits', start.line, start.column);
     }
 
-    const codePoint = parseInt(hex, 16);
+    const codePoint = Number.parseInt(hex, 16);
     if (codePoint > 0x10ffff) {
-      throw new TokenizerError(
-        `Unicode code point ${hex} out of range`,
-        start.line,
-        start.column
-      );
+      throw new TokenizerError(`Unicode code point ${hex} out of range`, start.line, start.column);
     }
 
     return String.fromCodePoint(codePoint);
@@ -415,9 +407,7 @@ export class Tokenizer {
 
   private isHexDigit(char: string): boolean {
     return (
-      (char >= '0' && char <= '9') ||
-      (char >= 'a' && char <= 'f') ||
-      (char >= 'A' && char <= 'F')
+      (char >= '0' && char <= '9') || (char >= 'a' && char <= 'f') || (char >= 'A' && char <= 'F')
     );
   }
 

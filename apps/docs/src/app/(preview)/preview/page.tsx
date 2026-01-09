@@ -3,7 +3,7 @@
 import { compile } from '@wirescript/dsl';
 import { WireRenderer } from '@wirescript/renderer';
 import '@wirescript/renderer/styles.css';
-import { useMemo, useState, useEffect } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 function PreviewContent() {
   const [code, setCode] = useState<string | null>(null);
@@ -19,8 +19,8 @@ function PreviewContent() {
       setCode(codeParam);
     }
     if (heightParam) {
-      const parsed = parseInt(heightParam, 10);
-      if (!isNaN(parsed) && parsed > 0) {
+      const parsed = Number.parseInt(heightParam, 10);
+      if (!Number.isNaN(parsed) && parsed > 0) {
         setHeight(parsed);
       }
     }
@@ -50,9 +50,7 @@ function PreviewContent() {
 
   if (!code || !result) {
     return (
-      <div className="flex h-full items-center justify-center text-gray-500">
-        No code provided
-      </div>
+      <div className="flex h-full items-center justify-center text-gray-500">No code provided</div>
     );
   }
 
@@ -68,10 +66,7 @@ function PreviewContent() {
 
   return (
     <div className="h-full w-full flex items-center justify-center">
-      <WireRenderer
-        document={document}
-        viewport={{ width: 'auto', height: height || 'auto' }}
-      />
+      <WireRenderer document={document} viewport={{ width: 'auto', height: height || 'auto' }} />
     </div>
   );
 }

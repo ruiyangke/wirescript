@@ -5,9 +5,9 @@
  * Uses a shared hydrate.js bundle for all pages, with per-page data embedded.
  */
 
-import { getTheme, getGoogleFontsUrl } from '@wirescript/theme';
-import { getPageLayoutCSS, getRendererCSS } from '../css/index.js';
+import { getGoogleFontsUrl, getTheme } from '@wirescript/theme';
 import { escapeHtml, sanitizeContent } from '../../utils/html.js';
+import { getPageLayoutCSS, getRendererCSS } from '../css/index.js';
 
 export interface HydratedOptions {
   title: string;

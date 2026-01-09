@@ -1,5 +1,5 @@
 import { render, screen } from '@testing-library/react';
-import { describe, it, expect, vi } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 
 // Mock the schemas
 vi.mock('@wirescript/dsl/schemas.json', () => ({
@@ -40,7 +40,7 @@ vi.mock('@wirescript/dsl/schemas.json', () => ({
   },
 }));
 
-import { PropsTable, PropsList, FlagsDisplay } from './index';
+import { FlagsDisplay, PropsList, PropsTable } from './index';
 
 describe('PropsTable', () => {
   it('renders props grouped by category', () => {
@@ -75,7 +75,7 @@ describe('PropsTable', () => {
 
     // Find the primary prop row and check its type
     const rows = screen.getAllByRole('row');
-    const primaryRow = rows.find(row => row.textContent?.includes(':primary'));
+    const primaryRow = rows.find((row) => row.textContent?.includes(':primary'));
     expect(primaryRow?.textContent).toContain('flag');
   });
 
@@ -83,7 +83,7 @@ describe('PropsTable', () => {
     render(<PropsTable element="button" />);
 
     const rows = screen.getAllByRole('row');
-    const toRow = rows.find(row => row.textContent?.includes(':to'));
+    const toRow = rows.find((row) => row.textContent?.includes(':to'));
     expect(toRow?.textContent).toContain('target');
   });
 

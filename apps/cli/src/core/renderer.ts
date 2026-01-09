@@ -6,9 +6,9 @@
  */
 
 import type { WireDocument } from '@wirescript/dsl';
+import { WireRenderer } from '@wirescript/renderer';
 import { createElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
-import { WireRenderer } from '@wirescript/renderer';
 import { RenderError } from '../utils/errors.js';
 
 // Viewport default dimensions

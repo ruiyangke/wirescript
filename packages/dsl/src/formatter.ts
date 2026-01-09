@@ -7,8 +7,8 @@
  * - Preserves comments
  */
 
-import { tokenize } from './tokenizer.js';
 import type { Token } from './schema/types.js';
+import { tokenize } from './tokenizer.js';
 
 export interface FormatOptions {
   /** Indentation string (default: 2 spaces) */
@@ -96,18 +96,18 @@ function extractComments(source: string): Comment[] {
  */
 function findCommentStart(line: string): number {
   let inString = false;
-  let escape = false;
+  let isEscaped = false;
 
   for (let i = 0; i < line.length; i++) {
     const char = line[i];
 
-    if (escape) {
-      escape = false;
+    if (isEscaped) {
+      isEscaped = false;
       continue;
     }
 
     if (char === '\\' && inString) {
-      escape = true;
+      isEscaped = true;
       continue;
     }
 
@@ -127,11 +127,7 @@ function findCommentStart(line: string): number {
 /**
  * Format tokens into pretty-printed output
  */
-function formatTokens(
-  tokens: Token[],
-  comments: Comment[],
-  opts: Required<FormatOptions>
-): string {
+function formatTokens(tokens: Token[], comments: Comment[], opts: Required<FormatOptions>): string {
   const output: string[] = [];
   let depth = 0;
   let lastTokenLine = 0;
@@ -155,7 +151,9 @@ function formatTokens(
 
   // Check if this is the first child element in a container
   const isFirstChildInContainer = (): boolean => {
-    return formHasChildrenStack.length > 0 && !formHasChildrenStack[formHasChildrenStack.length - 1];
+    return (
+      formHasChildrenStack.length > 0 && !formHasChildrenStack[formHasChildrenStack.length - 1]
+    );
   };
 
   // Mark that current container has children
@@ -240,27 +238,27 @@ function formatTokens(
       }
 
       case 'KEYWORD': {
-        emit(' :' + token.value);
+        emit(` :${token.value}`);
         break;
       }
 
       case 'STRING': {
-        emit(' "' + escapeString(token.value) + '"');
+        emit(` "${escapeString(token.value)}"`);
         break;
       }
 
       case 'NUMBER': {
-        emit(' ' + token.value);
+        emit(` ${token.value}`);
         break;
       }
 
       case 'HASH_REF': {
-        emit(' #' + token.value);
+        emit(` #${token.value}`);
         break;
       }
 
       case 'PARAM_REF': {
-        emit(' $' + token.value);
+        emit(` $${token.value}`);
         break;
       }
     }

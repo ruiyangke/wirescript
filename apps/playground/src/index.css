@@ -1,5 +1,5 @@
-@import 'tailwindcss';
-@import '@wirescript/renderer/styles.css';
+@import "tailwindcss";
+@import "@wirescript/renderer/styles.css";
 
 html,
 body,
@@ -13,11 +13,5 @@ body,
 
 body {
   font-family:
-    -apple-system,
-    BlinkMacSystemFont,
-    'Segoe UI',
-    Roboto,
-    'Helvetica Neue',
-    Arial,
-    sans-serif;
+    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 }
