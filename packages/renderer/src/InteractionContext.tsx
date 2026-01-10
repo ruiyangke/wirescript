@@ -1,4 +1,4 @@
-import { createContext, type ReactNode, useCallback, useContext, useEffect, useState } from 'react';
+import { createContext, type ReactNode, useCallback, useContext, useEffect, useRef, useState } from 'react';
 
 interface InteractionState {
   openOverlays: Set<string>;
@@ -37,16 +37,21 @@ export function InteractionProvider({
     currentScreen: initialScreen || null,
   });
 
-  // Sync currentScreen when initialScreen prop changes (e.g., from external dropdown)
+  // Track the previous initialScreen value to detect external changes
+  const prevInitialScreenRef = useRef(initialScreen);
+
+  // Sync currentScreen only when initialScreen prop actually changes (e.g., from external dropdown)
+  // Not when currentScreen changes due to internal navigation
   useEffect(() => {
-    if (initialScreen && initialScreen !== state.currentScreen) {
+    if (initialScreen && initialScreen !== prevInitialScreenRef.current) {
+      prevInitialScreenRef.current = initialScreen;
       setState((prev) => ({
         ...prev,
         currentScreen: initialScreen,
         openOverlays: new Set(), // Close overlays on external navigation
       }));
     }
-  }, [initialScreen, state.currentScreen]);
+  }, [initialScreen]);
 
   const openOverlay = useCallback((id: string) => {
     setState((prev) => {
