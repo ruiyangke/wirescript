@@ -2,6 +2,7 @@ import {
   ArrowRight,
   BookOpen,
   Bot,
+  Braces,
   Chrome,
   Code2,
   ExternalLink,
@@ -168,11 +169,45 @@ export default async function HomePage() {
           <div className="text-center">
             <h2 className="text-2xl font-bold md:text-3xl">View wireframes everywhere</h2>
             <p className="mt-4 text-fd-muted-foreground">
-              Render WireScript directly in GitHub, Obsidian, or the command line.
+              Render WireScript in VS Code, GitHub, Obsidian, or the command line.
             </p>
           </div>
 
-          <div className="mt-12 grid gap-6 md:grid-cols-3">
+          <div className="mt-12 grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+            {/* VS Code Extension */}
+            <div className="rounded-xl border border-fd-border bg-fd-card p-6">
+              <div className="flex items-start justify-between">
+                <div className="inline-flex rounded-lg bg-fd-primary/10 p-2.5 text-fd-primary">
+                  <Braces className="h-5 w-5" />
+                </div>
+                <span className="rounded-full bg-green-500/10 px-2.5 py-0.5 text-xs font-medium text-green-600 dark:text-green-400">
+                  Available
+                </span>
+              </div>
+              <h3 className="mt-4 font-semibold">VS Code Extension</h3>
+              <p className="mt-2 text-sm text-fd-muted-foreground">
+                Full language support with syntax highlighting, IntelliSense, live preview, and
+                diagnostics.
+              </p>
+              <div className="mt-4 flex flex-wrap gap-2">
+                <a
+                  href="https://marketplace.visualstudio.com/items?itemName=wirescript.wirescript"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 rounded-lg bg-fd-primary px-3 py-1.5 text-xs font-medium text-fd-primary-foreground transition-colors hover:bg-fd-primary/90"
+                >
+                  Install
+                  <ExternalLink className="h-3 w-3" />
+                </a>
+                <Link
+                  href="/docs/tools/vscode-extension"
+                  className="inline-flex items-center gap-1.5 rounded-lg border border-fd-border px-3 py-1.5 text-xs font-medium transition-colors hover:bg-fd-secondary"
+                >
+                  Learn more
+                </Link>
+              </div>
+            </div>
+
             {/* Chrome Extension */}
             <div className="rounded-xl border border-fd-border bg-fd-card p-6">
               <div className="flex items-start justify-between">

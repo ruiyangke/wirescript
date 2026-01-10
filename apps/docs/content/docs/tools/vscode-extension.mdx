@@ -1,0 +1,124 @@
+---
+title: VS Code Extension
+description: WireScript language support with live preview in Visual Studio Code.
+---
+
+The WireScript VS Code extension provides language support and live preview for `.wire` files.
+
+## Features
+
+- **Syntax Highlighting** - Full TextMate grammar for `.wire` files
+- **Live Preview** - Real-time rendered preview panel
+- **IntelliSense** - Autocomplete for elements, props, and components
+- **Diagnostics** - Real-time error highlighting
+- **Document Outline** - Navigate screens, components, and layouts
+- **Go to Definition** - Jump to component/layout/screen definitions
+- **Hover Information** - Documentation on hover
+- **Format Document** - Auto-format `.wire` files
+
+## Installation
+
+### From VS Code Marketplace (Recommended)
+
+Install directly from the [VS Code Marketplace](https://marketplace.visualstudio.com/items?itemName=wirescript.wirescript).
+
+Or search for "WireScript" in the VS Code Extensions panel.
+
+### From Command Line
+
+```bash
+code --install-extension wirescript.wirescript
+```
+
+### From Source
+
+```bash
+cd apps/vscode-extension
+pnpm install
+pnpm package
+```
+
+Then install the generated `.vsix` file:
+
+1. Open VS Code
+2. Go to Extensions (`Ctrl+Shift+X` / `Cmd+Shift+X`)
+3. Click the `...` menu → "Install from VSIX..."
+4. Select `build/wirescript-0.0.1.vsix`
+
+## Usage
+
+### Live Preview
+
+Open any `.wire` file and press `Ctrl+Shift+V` (or `Cmd+Shift+V` on Mac) to open the preview panel.
+
+The preview updates in real-time as you edit.
+
+### Commands
+
+| Command | Keybinding | Description |
+|---------|------------|-------------|
+| `WireScript: Open Preview` | - | Open preview in current column |
+| `WireScript: Open Preview to Side` | `Ctrl+Shift+V` | Open preview in side column |
+
+### Preview Toolbar
+
+The preview panel includes a toolbar with:
+
+- **Viewport switcher** - Toggle between mobile, tablet, and desktop views
+- **Zoom controls** - Adjust preview zoom level
+- **Screen selector** - Navigate between screens in multi-screen wireframes
+
+### IntelliSense
+
+The extension provides autocomplete for:
+
+- Element names (`box`, `button`, `text`, etc.)
+- Props and flags (`:primary`, `:center`, `:gap`, etc.)
+- Screen references for navigation
+- Component and layout references
+
+### Diagnostics
+
+Syntax errors are highlighted in real-time with:
+
+- Squiggly underlines on errors
+- Hover for error messages
+- Problems panel integration
+
+## Configuration
+
+### Settings
+
+| Setting | Default | Description |
+|---------|---------|-------------|
+| `wirescript.preview.defaultViewport` | `desktop` | Default viewport size (mobile, tablet, desktop) |
+| `wirescript.format.onSave` | `false` | Format `.wire` files on save |
+
+Access settings via `File → Preferences → Settings` and search for "WireScript".
+
+## Troubleshooting
+
+### Preview not showing
+
+- Make sure the file has a `.wire` extension
+- Check the Output panel (View → Output → WireScript) for errors
+- Try reloading the window (`Ctrl+Shift+P` → "Developer: Reload Window")
+
+### Syntax highlighting not working
+
+- Verify the file is recognized as WireScript (check bottom-right status bar)
+- If it shows "Plain Text", click it and select "WireScript"
+
+### IntelliSense not working
+
+- The extension activates only for `.wire` files
+- Try restarting VS Code if recently installed
+
+## Keyboard Shortcuts
+
+| Shortcut | Action |
+|----------|--------|
+| `Ctrl+Shift+V` / `Cmd+Shift+V` | Open preview to side |
+| `Ctrl+Space` | Trigger IntelliSense |
+| `F12` | Go to definition |
+| `Shift+Alt+F` / `Shift+Option+F` | Format document |

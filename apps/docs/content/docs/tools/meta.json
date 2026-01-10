@@ -1,4 +1,4 @@
 {
   "title": "Tools",
-  "pages": ["chrome-extension", "obsidian-plugin", "cli", "viewer"]
+  "pages": ["vscode-extension", "chrome-extension", "obsidian-plugin", "cli", "viewer"]
 }
