@@ -9,7 +9,8 @@
   "scripts": {
     "dev": "node esbuild.config.mjs",
     "build": "node esbuild.config.mjs production",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "package": "pnpm build && mkdir -p build && cd dist && zip -r ../build/wirescript-chrome-$npm_package_version.zip ."
   },
   "dependencies": {
     "@wirescript/dsl": "workspace:*",

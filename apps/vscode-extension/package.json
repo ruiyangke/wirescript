@@ -1,0 +1,136 @@
+{
+  "name": "wirescript",
+  "displayName": "WireScript",
+  "description": "WireScript wireframe language support with live preview",
+  "version": "0.0.1",
+  "publisher": "wirescript",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ruiyangke/wirescript"
+  },
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "Programming Languages",
+    "Visualization"
+  ],
+  "keywords": [
+    "wireframe",
+    "design",
+    "lisp",
+    "dsl",
+    "prototype"
+  ],
+  "icon": "icon.png",
+  "activationEvents": [],
+  "main": "./dist/extension.js",
+  "contributes": {
+    "languages": [
+      {
+        "id": "wire",
+        "aliases": [
+          "WireScript",
+          "wire",
+          "wirescript"
+        ],
+        "extensions": [
+          ".wire"
+        ],
+        "configuration": "./language-configuration.json"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "wire",
+        "scopeName": "source.wire",
+        "path": "./syntaxes/wirescript.tmLanguage.json"
+      }
+    ],
+    "commands": [
+      {
+        "command": "wirescript.openPreview",
+        "title": "Open Preview",
+        "category": "WireScript",
+        "icon": "$(open-preview)"
+      },
+      {
+        "command": "wirescript.openPreviewToSide",
+        "title": "Open Preview to Side",
+        "category": "WireScript",
+        "icon": "$(open-preview)"
+      }
+    ],
+    "menus": {
+      "editor/title": [
+        {
+          "command": "wirescript.openPreviewToSide",
+          "when": "editorLangId == wire",
+          "group": "navigation"
+        }
+      ],
+      "commandPalette": [
+        {
+          "command": "wirescript.openPreview",
+          "when": "editorLangId == wire"
+        },
+        {
+          "command": "wirescript.openPreviewToSide",
+          "when": "editorLangId == wire"
+        }
+      ]
+    },
+    "keybindings": [
+      {
+        "command": "wirescript.openPreviewToSide",
+        "key": "ctrl+shift+v",
+        "mac": "cmd+shift+v",
+        "when": "editorLangId == wire"
+      }
+    ],
+    "configuration": {
+      "title": "WireScript",
+      "properties": {
+        "wirescript.preview.defaultViewport": {
+          "type": "string",
+          "enum": [
+            "mobile",
+            "tablet",
+            "desktop"
+          ],
+          "default": "desktop",
+          "description": "Default viewport for preview"
+        },
+        "wirescript.format.onSave": {
+          "type": "boolean",
+          "default": false,
+          "description": "Format .wire files on save"
+        }
+      }
+    }
+  },
+  "scripts": {
+    "build": "node esbuild.config.mjs",
+    "build:prod": "node esbuild.config.mjs --production",
+    "watch": "node esbuild.config.mjs --watch",
+    "typecheck": "tsc --noEmit",
+    "package": "pnpm build:prod && mkdir -p ./build && vsce package --no-dependencies -o ./build/",
+    "publish": "vsce publish"
+  },
+  "dependencies": {
+    "@wirescript/dsl": "workspace:*",
+    "@wirescript/renderer": "workspace:*",
+    "react": "catalog:",
+    "react-dom": "catalog:"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "@types/react": "catalog:",
+    "@types/react-dom": "catalog:",
+    "@types/vscode": "^1.85.0",
+    "@vscode/vsce": "^2.22.0",
+    "esbuild": "^0.20.0",
+    "typescript": "^5.0.0"
+  }
+}

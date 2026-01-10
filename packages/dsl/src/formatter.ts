@@ -5,9 +5,16 @@
  * - 2-space indentation
  * - One element per line (for non-inline elements)
  * - Preserves comments
+ * - Auto-balances parentheses using schema rules
  */
 
-import type { Token } from './schema/types.js';
+import { ELEMENT_TYPE_LIST, getSchema } from './schema/index.js';
+import {
+  OVERLAY_TYPES_SET,
+  STRUCTURAL_CONTAINERS_SET,
+  TOP_LEVEL_FORMS_SET,
+  type Token,
+} from './schema/types.js';
 import { tokenize } from './tokenizer.js';
 
 export interface FormatOptions {
@@ -22,32 +29,137 @@ const DEFAULT_OPTIONS: Required<FormatOptions> = {
   maxLineLength: 100,
 };
 
+// =============================================================================
+// Schema-Based Helpers
+// =============================================================================
+
 /**
- * Container elements that should have children on separate lines
+ * Check if element can have children.
+ * Uses schema registry for built-in elements, defaults to container for unknown.
+ */
+function canHaveChildren(elementName: string): boolean {
+  // Special structural constructs are always containers
+  if (STRUCTURAL_CONTAINERS_SET.has(elementName)) return true;
+
+  // Check schema registry
+  const schema = getSchema(elementName);
+  if (schema) return schema.children === true;
+
+  // Unknown elements (user components) default to container
+  return true;
+}
+
+/**
+ * Get the required parent for an element (for force-close logic).
+ * Returns undefined if element can appear anywhere.
+ */
+function getRequiredParent(elementName: string): 'wire' | 'screen' | undefined {
+  if (TOP_LEVEL_FORMS_SET.has(elementName)) return 'wire';
+  if (OVERLAY_TYPES_SET.has(elementName)) return 'screen';
+  return undefined;
+}
+
+/**
+ * Container elements that should have children on separate lines.
+ * Derived from schema registry + structural containers.
  */
 const CONTAINER_ELEMENTS = new Set([
-  'wire',
-  'screen',
-  'box',
-  'card',
-  'section',
-  'header',
-  'footer',
-  'nav',
-  'form',
-  'list',
-  'scroll',
-  'group',
-  'tabs',
-  'tab',
-  'modal',
-  'drawer',
-  'popover',
-  'define',
-  'layout',
-  'repeat',
-  'meta',
+  ...STRUCTURAL_CONTAINERS_SET,
+  ...ELEMENT_TYPE_LIST.filter((type) => {
+    const schema = getSchema(type);
+    return schema?.children === true;
+  }),
 ]);
+
+// =============================================================================
+// Auto-Balance
+// =============================================================================
+
+/**
+ * Create an RPAREN token for auto-balancing.
+ */
+function makeRParen(): Token {
+  return {
+    type: 'RPAREN',
+    value: ')',
+    line: 0,
+    column: 0,
+    endLine: 0,
+    endColumn: 0,
+  };
+}
+
+/**
+ * Balance parentheses by inserting missing closing parens.
+ * Uses WireScript's structural rules from schema:
+ * - Leaf elements can't have children (schema.children !== true)
+ * - TOP_LEVEL_FORMS must be direct children of wire
+ * - OVERLAY_TYPES must be direct children of screen
+ */
+function balanceTokens(tokens: Token[]): Token[] {
+  const output: Token[] = [];
+  const stack: string[] = []; // Element names
+  const pushedAtDepth: number[] = []; // Depth at which each element was pushed
+  let depth = 0;
+
+  for (let i = 0; i < tokens.length; i++) {
+    const token = tokens[i];
+
+    if (token.type === 'LPAREN') {
+      const next = tokens[i + 1];
+      if (next?.type === 'SYMBOL') {
+        const elementName = next.value;
+
+        // Force close to required parent level (from schema constants)
+        const requiredParent = getRequiredParent(elementName);
+        if (requiredParent) {
+          while (stack.length > 0 && stack[stack.length - 1] !== requiredParent) {
+            output.push(makeRParen());
+            stack.pop();
+            pushedAtDepth.pop();
+          }
+        }
+
+        // Close leaf parent (leaf can't have children - from schema)
+        const currentParent = stack[stack.length - 1];
+        if (currentParent && !canHaveChildren(currentParent)) {
+          output.push(makeRParen());
+          stack.pop();
+          pushedAtDepth.pop();
+        }
+
+        stack.push(elementName);
+        pushedAtDepth.push(depth);
+      }
+      depth++;
+      output.push(token);
+    } else if (token.type === 'RPAREN') {
+      depth--;
+      // Only pop element if we pushed at this depth (not for param lists like `()`)
+      if (pushedAtDepth.length > 0 && pushedAtDepth[pushedAtDepth.length - 1] === depth) {
+        stack.pop();
+        pushedAtDepth.pop();
+      }
+      output.push(token);
+    } else if (token.type === 'EOF') {
+      // Close all remaining open elements
+      while (stack.length > 0) {
+        output.push(makeRParen());
+        stack.pop();
+        pushedAtDepth.pop();
+      }
+      output.push(token);
+    } else {
+      output.push(token);
+    }
+  }
+
+  return output;
+}
+
+// =============================================================================
+// Comments
+// =============================================================================
 
 interface Comment {
   line: number;
@@ -62,9 +174,10 @@ interface Comment {
 export function format(source: string, options: FormatOptions = {}): string {
   const opts = { ...DEFAULT_OPTIONS, ...options };
   const tokens = tokenize(source);
+  const balanced = balanceTokens(tokens);
   const comments = extractComments(source);
 
-  return formatTokens(tokens, comments, opts);
+  return formatTokens(balanced, comments, opts);
 }
 
 /**
@@ -263,7 +376,10 @@ function formatTokens(tokens: Token[], comments: Comment[], opts: Required<Forma
       }
     }
 
-    lastTokenLine = token.line;
+    // Only update lastTokenLine for real tokens (not auto-balanced ones with line=0)
+    if (token.line > 0) {
+      lastTokenLine = token.line;
+    }
   }
 
   // Final newline

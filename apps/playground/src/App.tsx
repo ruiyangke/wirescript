@@ -490,12 +490,9 @@ export function App() {
                       ))}
                     </div>
                   ) : wireDoc ? (
-                    // biome-ignore lint/a11y/useSemanticElements: Container div with zoom styling, button would affect layout
+                    // biome-ignore lint/a11y/useSemanticElements: Container div for click feedback
                     <div
                       className={`shadow-xl transition-all duration-150 ${clickEffect ? 'ring-2 ring-blue-400 ring-offset-2' : ''}`}
-                      style={{
-                        zoom: zoom / 100,
-                      }}
                       onClick={handlePreviewClick}
                       onKeyDown={(e) => e.key === 'Enter' && handlePreviewClick()}
                       role="button"
@@ -506,6 +503,7 @@ export function App() {
                         screenId={selectedScreen}
                         onScreenChange={setSelectedScreen}
                         viewport={viewport}
+                        zoom={zoom / 100}
                       />
                     </div>
                   ) : (

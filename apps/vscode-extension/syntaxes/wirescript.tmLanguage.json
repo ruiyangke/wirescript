@@ -1,0 +1,93 @@
+{
+  "name": "wire",
+  "scopeName": "source.wire",
+  "fileTypes": ["wire"],
+  "patterns": [{ "include": "#comment" }, { "include": "#list" }],
+  "repository": {
+    "comment": {
+      "name": "comment.line.semicolon.wire",
+      "match": ";.*$"
+    },
+    "list": {
+      "begin": "\\(",
+      "end": "\\)",
+      "beginCaptures": {
+        "0": { "name": "punctuation.section.parens.wire" }
+      },
+      "endCaptures": {
+        "0": { "name": "punctuation.section.parens.wire" }
+      },
+      "patterns": [
+        { "include": "#comment" },
+        { "include": "#declaration" },
+        { "include": "#element" },
+        { "include": "#list-contents" }
+      ]
+    },
+    "declaration": {
+      "match": "\\b(wire|meta|define|screen|layout|repeat|slot|if|cond|when)\\b",
+      "name": "keyword.control.wire"
+    },
+    "element": {
+      "match": "\\b(box|card|section|header|footer|nav|form|list|scroll|group|text|button|input|image|icon|divider|avatar|badge|datepicker|metric|chart|progress|skeleton|tabs|tab|breadcrumb|crumb|modal|drawer|dropdown|popover|tooltip|toast|empty)\\b",
+      "name": "entity.name.tag.wire"
+    },
+    "list-contents": {
+      "patterns": [
+        { "include": "#comment" },
+        { "include": "#string" },
+        { "include": "#number" },
+        { "include": "#param-ref" },
+        { "include": "#action" },
+        { "include": "#flag" },
+        { "include": "#property" },
+        { "include": "#unknown-keyword" },
+        { "include": "#list" },
+        { "include": "#symbol" }
+      ]
+    },
+    "string": {
+      "name": "string.quoted.double.wire",
+      "begin": "\"",
+      "end": "\"",
+      "patterns": [
+        {
+          "name": "constant.character.escape.wire",
+          "match": "\\\\."
+        },
+        {
+          "name": "variable.interpolation.wire",
+          "match": "\\$\\{[^}]+\\}"
+        }
+      ]
+    },
+    "number": {
+      "name": "constant.numeric.wire",
+      "match": "-?\\d+(\\.\\d+)?(%|px|em|rem|vh|vw)?"
+    },
+    "param-ref": {
+      "name": "variable.parameter.wire",
+      "match": "\\$[a-zA-Z_][a-zA-Z0-9_-]*"
+    },
+    "action": {
+      "name": "support.function.wire",
+      "match": ":(close|submit)\\b"
+    },
+    "flag": {
+      "name": "constant.language.flag.wire",
+      "match": ":(row|col|grid|wrap|center|start|end|between|around|evenly|fill|full|fit|primary|secondary|ghost|outline|link|danger|success|warning|info|high|low|medium|small|large|disabled|active|loading|checked|error|hidden|visible|mobile|tablet|desktop|left|right|top|bottom)\\b"
+    },
+    "property": {
+      "name": "entity.other.attribute-name.wire",
+      "match": ":(id|gap|padding|margin|width|height|size|cols|rows|radius|border|shadow|bg|color|opacity|to|type|layout|label|value|change|trend|icon|message|placeholder|count|as|name|title|description|href|src|alt|options|context|audience|goal)\\b"
+    },
+    "unknown-keyword": {
+      "name": "variable.other.keyword.wire",
+      "match": ":[a-zA-Z_][a-zA-Z0-9_-]*"
+    },
+    "symbol": {
+      "name": "variable.other.wire",
+      "match": "[a-zA-Z_][a-zA-Z0-9_-]*"
+    }
+  }
+}

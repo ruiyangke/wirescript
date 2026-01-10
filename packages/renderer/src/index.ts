@@ -13,6 +13,8 @@ export * from './elements/index.js';
 export { InteractionProvider, useInteraction } from './InteractionContext.js';
 // Layouts
 export { LayoutsProvider, useLayoutDef, useLayouts } from './LayoutsContext.js';
+// Zoom (for proper sizing of portaled content inside zoom containers)
+export { ZoomProvider, useZoom } from './ZoomContext.js';
 // Layout utilities
 export { getEmphasis, getLayoutStyles, getVariant, hasFlag } from './layout.js';
 // Utils

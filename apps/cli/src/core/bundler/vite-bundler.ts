@@ -8,7 +8,8 @@
  * that only includes icons used in the document.
  */
 
-import { mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { createRequire } from 'node:module';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import react from '@vitejs/plugin-react';
@@ -16,13 +17,104 @@ import { build, type Plugin, type PluginOption } from 'vite';
 import { generateHydrateEntry } from './hydrate-entry-template.js';
 import { generateMinimalIconsModule } from './icon-analyzer.js';
 
-// Get the CLI package directory for resolving workspace packages
-// File location: apps/cli/dist/core/bundler/vite-bundler.js
-// Need to go up 3 levels: bundler -> core -> dist -> cli
+// Get the CLI package directory
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
-const cliRoot = resolve(__dirname, '../../..'); // apps/cli
-const workspaceRoot = resolve(cliRoot, '../..'); // workspace root
+const cliRoot = resolve(__dirname, '../../..'); // apps/cli or node_modules/@wirescript/cli
+
+// Create require for resolving packages
+const require = createRequire(import.meta.url);
+
+/**
+ * Check if we're in a monorepo development environment
+ */
+function isMonorepo(): boolean {
+  // Check if workspace root exists with packages directory
+  const workspaceRoot = resolve(cliRoot, '../..');
+  return existsSync(join(workspaceRoot, 'packages/renderer/src/index.ts'));
+}
+
+/**
+ * Resolve a package's entry point, handling both npm install and monorepo dev
+ */
+function resolvePackage(packageName: string): string {
+  // First, try monorepo paths (for development)
+  if (isMonorepo()) {
+    const workspaceRoot = resolve(cliRoot, '../..');
+    const monorepoMappings: Record<string, string> = {
+      '@wirescript/renderer': join(workspaceRoot, 'packages/renderer/src/index.ts'),
+      '@wirescript/dsl': join(workspaceRoot, 'packages/dsl/src/index.ts'),
+    };
+
+    if (monorepoMappings[packageName] && existsSync(monorepoMappings[packageName])) {
+      return monorepoMappings[packageName];
+    }
+  }
+
+  // Otherwise, use Node's module resolution (for npm installed packages)
+  try {
+    return require.resolve(packageName);
+  } catch {
+    throw new Error(`Cannot resolve package: ${packageName}. Make sure it's installed.`);
+  }
+}
+
+/**
+ * Get the package directory for a given package name
+ */
+function getPackageDir(packageName: string): string {
+  // First, try monorepo paths
+  if (isMonorepo()) {
+    const workspaceRoot = resolve(cliRoot, '../..');
+    const monorepoMappings: Record<string, string> = {
+      '@wirescript/renderer': join(workspaceRoot, 'packages/renderer'),
+      '@wirescript/dsl': join(workspaceRoot, 'packages/dsl'),
+    };
+
+    if (monorepoMappings[packageName] && existsSync(monorepoMappings[packageName])) {
+      return monorepoMappings[packageName];
+    }
+  }
+
+  // Otherwise, resolve from node_modules
+  const mainEntry = resolvePackage(packageName);
+  let dir = dirname(mainEntry);
+  while (dir !== '/') {
+    try {
+      const pkgPath = join(dir, 'package.json');
+      const pkg = JSON.parse(readFileSync(pkgPath, 'utf-8'));
+      if (pkg.name === packageName) {
+        return dir;
+      }
+    } catch {
+      // Not found, keep walking up
+    }
+    dir = dirname(dir);
+  }
+  return dirname(mainEntry);
+}
+
+/**
+ * Resolve lucide-react from the renderer's dependencies
+ */
+function resolveLucideReact(): string {
+  const rendererDir = getPackageDir('@wirescript/renderer');
+
+  // Try renderer's node_modules first
+  const rendererLucide = join(rendererDir, 'node_modules/lucide-react');
+  if (existsSync(rendererLucide)) {
+    return rendererLucide;
+  }
+
+  // Try hoisted node_modules (common in pnpm/monorepo)
+  try {
+    const rendererRequire = createRequire(join(rendererDir, 'package.json'));
+    return dirname(rendererRequire.resolve('lucide-react/package.json'));
+  } catch {
+    // Fallback to CLI's resolution
+    return dirname(require.resolve('lucide-react/package.json'));
+  }
+}
 
 export interface ViteBundleOptions {
   /** Output directory for the bundle */
@@ -67,13 +159,11 @@ export async function bundleWithVite(options: ViteBundleOptions): Promise<ViteBu
   const entryCode = generateHydrateEntry();
   writeFileSync(entryPath, entryCode);
 
-  // Resolve package paths
-  const rendererPath = resolve(workspaceRoot, 'packages/renderer/src/index.ts');
-  const dslPath = resolve(workspaceRoot, 'packages/dsl/src/index.ts');
+  // Resolve package paths - works in both monorepo and npm installed contexts
+  const rendererPath = resolvePackage('@wirescript/renderer');
+  const dslPath = resolvePackage('@wirescript/dsl');
+  const lucideReactPath = resolveLucideReact();
 
-  // Build aliases - always include renderer and dsl
-  // Also alias lucide-react to ensure it resolves from renderer's node_modules
-  const lucideReactPath = resolve(workspaceRoot, 'packages/renderer/node_modules/lucide-react');
   const aliases: Record<string, string> = {
     '@wirescript/renderer': rendererPath,
     '@wirescript/dsl': dslPath,
@@ -89,9 +179,6 @@ export async function bundleWithVite(options: ViteBundleOptions): Promise<ViteBu
     const minimalIconsCode = generateMinimalIconsModule(usedIcons);
     writeFileSync(minimalIconsPath, minimalIconsCode);
 
-    // The original icons.ts path that should be replaced
-    const originalIconsPath = resolve(workspaceRoot, 'packages/renderer/src/icons.ts');
-
     // Plugin to intercept icons.js/icons.ts resolution
     const iconsAliasPlugin: Plugin = {
       name: 'wirescript-icons-alias',
@@ -99,8 +186,8 @@ export async function bundleWithVite(options: ViteBundleOptions): Promise<ViteBu
       resolveId(source, importer) {
         // Check if this is an icons import from the renderer package
         if (importer && (source.endsWith('/icons.js') || source.endsWith('/icons.ts'))) {
-          const resolved = resolve(dirname(importer), source.replace('.js', '.ts'));
-          if (resolved === originalIconsPath) {
+          // Check if the importer is from the renderer package
+          if (importer.includes('@wirescript/renderer') || importer.includes('wirescript-renderer') || importer.includes('packages/renderer')) {
             return minimalIconsPath;
           }
         }
@@ -136,7 +223,7 @@ export async function bundleWithVite(options: ViteBundleOptions): Promise<ViteBu
           },
         },
       },
-      // Resolve @wirescript packages from workspace and ensure React is found
+      // Resolve @wirescript packages and ensure React is found
       resolve: {
         alias: aliases,
         // Ensure consistent React version

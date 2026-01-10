@@ -156,6 +156,25 @@ export type ActionKeyword = 'close' | 'back' | 'submit';
 export const ACTION_KEYWORDS: ActionKeyword[] = ['close', 'back', 'submit'];
 export const ACTION_KEYWORDS_SET: ReadonlySet<string> = new Set(ACTION_KEYWORDS);
 
+/** Top-level forms that must be direct children of wire */
+export type TopLevelForm = 'screen' | 'define' | 'layout';
+export const TOP_LEVEL_FORMS: TopLevelForm[] = ['screen', 'define', 'layout'];
+export const TOP_LEVEL_FORMS_SET: ReadonlySet<string> = new Set(TOP_LEVEL_FORMS);
+
+/** Special structural constructs (not in ELEMENTS registry but are containers) */
+export const STRUCTURAL_CONTAINERS = [
+  'wire',
+  'screen',
+  'define',
+  'layout',
+  'modal',
+  'drawer',
+  'popover',
+  'repeat',
+  'meta',
+] as const;
+export const STRUCTURAL_CONTAINERS_SET: ReadonlySet<string> = new Set(STRUCTURAL_CONTAINERS);
+
 /** Valid element types */
 export const ELEMENT_TYPES = [
   // Containers

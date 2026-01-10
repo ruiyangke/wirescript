@@ -13,6 +13,7 @@ import { ElementRenderer } from './ElementRenderer.js';
 import { InteractionProvider, useInteraction } from './InteractionContext.js';
 import { LayoutsProvider, useLayoutDef } from './LayoutsContext.js';
 import { cn } from './lib/utils.js';
+import { ZoomProvider } from './ZoomContext.js';
 
 /**
  * Viewport configuration
@@ -27,13 +28,32 @@ interface WireRendererProps {
   document: WireDocument;
   screenId?: string;
   viewport?: Viewport;
+  /**
+   * Zoom level for the rendered content (0.1 to 3, default 1).
+   * When zoom !== 1, the renderer wraps content in a transform container
+   * and sets up ZoomProvider so popovers/dropdowns match the zoom level.
+   */
+  zoom?: number;
   onScreenChange?: (screenId: string) => void;
 }
+
+// Default viewport dimensions for each screen type
+const DEFAULT_VIEWPORT_SIZES = {
+  mobile: { width: 375, height: 667 },
+  tablet: { width: 768, height: 1024 },
+  desktop: { width: 1280, height: 800 },
+};
 
 /**
  * Main renderer component for WireScript documents
  */
-export function WireRenderer({ document, screenId, viewport, onScreenChange }: WireRendererProps) {
+export function WireRenderer({
+  document,
+  screenId,
+  viewport,
+  zoom = 1,
+  onScreenChange,
+}: WireRendererProps) {
   // Find initial screen to render - fall back to first screen if screenId not found
   const initialScreen = screenId
     ? document.screens.find((s) => s.id === screenId) || document.screens[0]
@@ -43,14 +63,60 @@ export function WireRenderer({ document, screenId, viewport, onScreenChange }: W
     return <div className="p-6 text-destructive">No screens defined</div>;
   }
 
+  // Clamp zoom to valid range (0.1 to 3)
+  const clampedZoom = Math.min(Math.max(zoom, 0.1), 3);
+
+  // Calculate dimensions for zoom container
+  const screenViewport = initialScreen.viewport || 'desktop';
+  const defaultSize = DEFAULT_VIEWPORT_SIZES[screenViewport];
+
+  const contentWidth =
+    viewport && typeof viewport.width === 'number' && viewport.width > 0
+      ? viewport.width
+      : defaultSize.width;
+  const contentHeight =
+    viewport && typeof viewport.height === 'number' && viewport.height > 0
+      ? viewport.height
+      : defaultSize.height;
+
+  const content = (
+    <ZoomProvider zoom={clampedZoom}>
+      <InteractionProvider initialScreen={initialScreen.id} onScreenChange={onScreenChange}>
+        <ComponentsProvider components={document.components}>
+          <LayoutsProvider layouts={document.layouts}>
+            <DocumentRenderer document={document} viewport={viewport} />
+          </LayoutsProvider>
+        </ComponentsProvider>
+      </InteractionProvider>
+    </ZoomProvider>
+  );
+
+  // No transformation needed when zoom is 1
+  if (clampedZoom === 1) {
+    return content;
+  }
+
+  // Apply transform: scale() with proper container sizing
+  // Use minHeight to allow content to grow beyond viewport height
   return (
-    <InteractionProvider initialScreen={initialScreen.id} onScreenChange={onScreenChange}>
-      <ComponentsProvider components={document.components}>
-        <LayoutsProvider layouts={document.layouts}>
-          <DocumentRenderer document={document} viewport={viewport} />
-        </LayoutsProvider>
-      </ComponentsProvider>
-    </InteractionProvider>
+    <div
+      style={{
+        width: contentWidth * clampedZoom,
+        minHeight: contentHeight * clampedZoom,
+        overflow: 'visible',
+      }}
+    >
+      <div
+        style={{
+          transformOrigin: 'top left',
+          transform: `scale(${clampedZoom})`,
+          width: contentWidth,
+          minHeight: contentHeight,
+        }}
+      >
+        {content}
+      </div>
+    </div>
   );
 }
 

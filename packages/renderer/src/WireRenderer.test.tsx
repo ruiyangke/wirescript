@@ -68,14 +68,15 @@ describe('WireRenderer', () => {
     expect(screen.getByText('Second Screen')).toBeDefined();
   });
 
-  it('should show error for non-existent screen', () => {
+  it('should fall back to first screen for non-existent screenId', () => {
     const result = compile(`
       (wire
         (screen home "Home" (text "Hello")))
     `);
 
     render(<WireRenderer document={result.document!} screenId="nonexistent" />);
-    expect(screen.getByText(/Screen not found/)).toBeDefined();
+    // Should gracefully fall back to first screen instead of showing error
+    expect(screen.getByText('Hello')).toBeDefined();
   });
 
   it('should handle screen navigation', () => {

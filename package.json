@@ -22,7 +22,9 @@
     "version:minor": "pnpm -r exec -- npm version minor --no-git-tag-version",
     "version:major": "pnpm -r exec -- npm version major --no-git-tag-version",
     "publish:public": "pnpm -r publish --access public --no-git-checks",
-    "publish:dry": "pnpm -r publish --access public --dry-run"
+    "publish:dry": "pnpm -r publish --access public --dry-run",
+    "package:vscode": "pnpm --filter ./apps/vscode-extension package",
+    "package:chrome": "pnpm --filter @wirescript/chrome-extension package"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.3.11",

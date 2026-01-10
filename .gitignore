@@ -3,9 +3,11 @@ node_modules/
 
 # Build outputs
 dist/
+build/
 dist-electron/
 dist-web/
 *.tsbuildinfo
+*.vsix
 
 # Logs
 *.log

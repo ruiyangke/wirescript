@@ -141,13 +141,7 @@ export function Viewer({
       {/* Preview Content - No header, just content */}
       <div ref={containerRef} className="flex-1 overflow-auto p-2 bg-gray-50 min-h-0">
         <div className="flex justify-center">
-          <div
-            ref={previewRef}
-            className="shadow-lg"
-            style={{
-              zoom: zoom / 100,
-            }}
-          >
+          <div ref={previewRef} className="shadow-lg">
             <PreviewErrorBoundary
               key={wireDoc ? 'loaded' : 'empty'}
               fallback={
@@ -166,6 +160,7 @@ export function Viewer({
                 document={wireDoc}
                 screenId={screenId}
                 viewport={viewport}
+                zoom={zoom / 100}
                 onScreenChange={onScreenChange}
               />
             </PreviewErrorBoundary>

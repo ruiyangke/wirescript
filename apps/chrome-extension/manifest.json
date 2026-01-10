@@ -1,8 +1,9 @@
 {
   "manifest_version": 3,
-  "name": "WireScript for GitHub",
+  "name": "WireScript",
   "version": "0.0.1",
-  "description": "Render WireScript wireframes in GitHub markdown",
+  "description": "Renders WireScript code blocks as interactive wireframe previews on GitHub. Click to interact or view source.",
+  "homepage_url": "https://github.com/ruiyangke/wirescript",
   "icons": {
     "16": "icons/icon-16.png",
     "48": "icons/icon-48.png",
