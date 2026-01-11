@@ -151,7 +151,7 @@ export default async function HomePage() {
             />
             <FeatureCard
               icon={<Layers className="h-5 w-5" />}
-              title="35 Components"
+              title="30+ Components"
               description="Containers, inputs, data displays, navigation, overlays — all built in."
             />
             <FeatureCard

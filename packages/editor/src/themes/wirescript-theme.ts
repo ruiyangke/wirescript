@@ -11,7 +11,7 @@ const lightColors = {
   foreground: '#1a1a1a',
   selection: '#d7d4f0',
   cursor: '#528bff',
-  lineHighlight: '#f5f5f5',
+  lineHighlight: '#0000000a', // Semi-transparent to not cover selection layer
   gutterBackground: '#fafafa',
   gutterForeground: '#999999',
 
@@ -36,7 +36,7 @@ const darkColors = {
   foreground: '#d4d4d4',
   selection: '#264f78',
   cursor: '#528bff',
-  lineHighlight: '#2d2d2d',
+  lineHighlight: '#ffffff0a', // Semi-transparent to not cover selection layer
   gutterBackground: '#1e1e1e',
   gutterForeground: '#858585',
 
@@ -134,7 +134,10 @@ function createEditorTheme(colors: typeof lightColors, isDark: boolean): Extensi
         borderLeftColor: colors.cursor,
         borderLeftWidth: '2px',
       },
-      '&.cm-focused .cm-selectionBackground, .cm-selectionBackground, .cm-content ::selection': {
+      '&.cm-focused .cm-selectionBackground, .cm-selectionBackground': {
+        backgroundColor: colors.selection,
+      },
+      '.cm-content ::selection': {
         backgroundColor: colors.selection,
       },
       '.cm-activeLine': {
