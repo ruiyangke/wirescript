@@ -145,7 +145,8 @@ export function App() {
   // Calculate auto-fit zoom
   const autoFitZoom = useMemo(() => {
     if (canvasSize.width === 0 || canvasSize.height === 0) return 100;
-    const padding = 64; // 32px padding on each side
+    // 32px padding on each side + 4px buffer for sub-pixel rounding
+    const padding = 68;
     const availableWidth = canvasSize.width - padding;
     const availableHeight = canvasSize.height - padding;
     const scaleX = availableWidth / viewport.width;
@@ -471,14 +472,14 @@ export function App() {
               {/* Preview canvas */}
               <div
                 ref={canvasRef}
-                className="min-h-0 flex-1 overflow-auto"
+                className={`min-h-0 flex-1 ${autoFit ? 'overflow-hidden' : 'overflow-auto'}`}
                 style={{
                   backgroundColor: '#f8f8f8',
                   backgroundImage: 'radial-gradient(circle, #d1d5db 1px, transparent 1px)',
                   backgroundSize: '16px 16px',
                 }}
               >
-                <div className="flex min-h-full items-start justify-center p-8">
+                <div className="flex items-start justify-center p-8">
                   {errors.length > 0 ? (
                     <div className="max-w-md rounded-lg border border-red-200 bg-red-50 p-4">
                       <h3 className="mb-2 font-medium text-red-800">Parse Error</h3>
