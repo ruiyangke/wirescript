@@ -86,13 +86,15 @@ A semantic list container. Renders like `box` but provides semantic meaning for 
 (list :col :gap 0
   (box :row :gap 12 :padding 12
     (icon "file-text")
-    (text "document.pdf" :fill)
+    (box :fill
+      (text "document.pdf"))
     (text "2.4 MB" :low)
-    (icon "more-horizontal" :to "#file-menu"))
+    (icon "ellipsis" :to "#file-menu"))
   (divider)
   (box :row :gap 12 :padding 12
     (icon "image")
-    (text "photo.jpg" :fill)
+    (box :fill
+      (text "photo.jpg"))
     (text "1.2 MB" :low)
-    (icon "more-horizontal" :to "#file-menu")))
+    (icon "ellipsis" :to "#file-menu")))
 ```

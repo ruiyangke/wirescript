@@ -8,6 +8,44 @@
 import { icons, type LucideIcon } from 'lucide-react';
 
 /**
+ * Common aliases for intuitive icon names.
+ * Maps user-friendly names to actual Lucide icon names.
+ */
+const ICON_ALIASES: Record<string, string> = {
+  // Navigation
+  home: 'house',
+
+  // Actions
+  edit: 'pencil',
+  delete: 'trash',
+  remove: 'trash',
+  close: 'x',
+  add: 'plus',
+
+  // Status (old circle-suffix → new circle-prefix)
+  'alert-circle': 'circle-alert',
+  'check-circle': 'circle-check',
+  'x-circle': 'circle-x',
+  'help-circle': 'circle-question-mark',
+  'circle-help': 'circle-question-mark',
+
+  // Text alignment
+  'align-left': 'text-align-start',
+  'align-center': 'text-align-center',
+  'align-right': 'text-align-end',
+
+  // Charts
+  'bar-chart': 'chart-bar',
+  'line-chart': 'chart-line',
+  'pie-chart': 'chart-pie',
+
+  // Misc
+  'more-horizontal': 'ellipsis',
+  'more-vertical': 'ellipsis-vertical',
+  dots: 'ellipsis',
+};
+
+/**
  * Convert kebab-case to PascalCase
  * e.g., "arrow-left" → "ArrowLeft"
  */
@@ -23,15 +61,19 @@ function kebabToPascal(name: string): string {
  *
  * Supports all 1600+ lucide icons.
  * Names can be kebab-case (arrow-left) or PascalCase (ArrowLeft).
+ * Also supports common aliases (e.g., "home" → "house", "edit" → "pencil").
  */
 export function getIcon(name: string): LucideIcon | undefined {
+  // Check aliases first
+  const aliasedName = ICON_ALIASES[name] || name;
+
   // Try direct lookup first (PascalCase)
-  if (name in icons) {
-    return icons[name as keyof typeof icons];
+  if (aliasedName in icons) {
+    return icons[aliasedName as keyof typeof icons];
   }
 
   // Convert kebab-case to PascalCase
-  const pascalName = kebabToPascal(name);
+  const pascalName = kebabToPascal(aliasedName);
   return icons[pascalName as keyof typeof icons];
 }
 

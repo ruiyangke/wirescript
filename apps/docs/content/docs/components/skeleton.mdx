@@ -43,22 +43,25 @@ Note: When no flags or dimensions are specified, a leaf skeleton defaults to tex
 
 ### Text Lines
 
-```wire preview
-(box :col :gap 8
-  (skeleton :height "24px" :width "60%")
-  (skeleton :height "16px")
-  (skeleton :height "16px")
-  (skeleton :height "16px" :width "80%"))
+```wire preview:250
+(wire
+  (screen main "Main" :desktop
+    (box :col :gap 8 :padding 24
+      (skeleton :height 24 :width "60%")
+      (skeleton :height 16 :width "100%")
+      (skeleton :height 16 :width "100%")
+      (skeleton :height 16 :width "80%"))))
 ```
 
 ### Card Skeleton
 
-```wire preview:300
-(card :col :gap 12 :padding 16
-  (skeleton :height "150px")
-  (skeleton :height "20px" :width "70%")
-  (skeleton :height "16px")
-  (skeleton :height "36px" :width "100%"))
+```wire preview:200
+(card :row :gap 16 :padding 16
+  (skeleton :width 80 :height 80)
+  (box :col :gap 8 :fill
+    (skeleton :height 20 :width "70%")
+    (skeleton :height 14)
+    (skeleton :height 14 :width "50%")))
 ```
 
 ### User List Skeleton
@@ -75,21 +78,23 @@ Note: When no flags or dimensions are specified, a leaf skeleton defaults to tex
 
 ### Dashboard Skeleton
 
-```wire preview:400
-(box :col :gap 24
-  (box :row :gap 16
-    (card :padding 20 :fill
-      (skeleton :height "16px" :width "50%")
-      (skeleton :height "32px" :width "70%"))
-    (card :padding 20 :fill
-      (skeleton :height "16px" :width "50%")
-      (skeleton :height "32px" :width "70%"))
-    (card :padding 20 :fill
-      (skeleton :height "16px" :width "50%")
-      (skeleton :height "32px" :width "70%")))
-  (card :col :gap 16 :padding 20
-    (skeleton :height "20px" :width "30%")
-    (skeleton :height "300px")))
+```wire preview:500
+(wire
+  (screen main "Main" :desktop
+    (box :col :gap 24 :padding 24
+      (box :row :gap 16
+        (card :col :gap 8 :padding 20 :fill
+          (skeleton :height 16 :width "50%")
+          (skeleton :height 32 :width "70%"))
+        (card :col :gap 8 :padding 20 :fill
+          (skeleton :height 16 :width "50%")
+          (skeleton :height 32 :width "70%"))
+        (card :col :gap 8 :padding 20 :fill
+          (skeleton :height 16 :width "50%")
+          (skeleton :height 32 :width "70%")))
+      (card :col :gap 16 :padding 20
+        (skeleton :height 20 :width "30%")
+        (skeleton :height 250 :width "100%")))))
 ```
 
 ### Article Skeleton
@@ -118,14 +123,3 @@ Note: When no flags or dimensions are specified, a leaf skeleton defaults to tex
     (skeleton :width "80px" :height "36px")))
 ```
 
-### Container Skeleton
-
-Skeleton can act as a container with layout props when it has children:
-
-```wire preview:200
-(skeleton :row :gap 12 :padding 16
-  (skeleton :circle :width "48px" :height "48px")
-  (skeleton :col :gap 4 :fill
-    (skeleton :height "16px" :width "60%")
-    (skeleton :height "12px" :width "40%")))
-```

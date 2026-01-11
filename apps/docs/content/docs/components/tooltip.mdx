@@ -56,7 +56,7 @@ A small text hint that appears on hover. Wraps a child element to show tooltip o
 ```wire preview
 (box :row :gap 8
   (tooltip "Edit item"
-    (icon "edit"))
+    (icon "pencil"))
   (tooltip "Copy to clipboard"
     (icon "copy"))
   (tooltip "Delete item"
@@ -76,19 +76,22 @@ A small text hint that appears on hover. Wraps a child element to show tooltip o
 
 ### Toolbar with Tooltips
 
-```wire preview
-(box :row :gap 4 :padding 8
-  (tooltip "Bold (Ctrl+B)"
-    (icon "bold"))
-  (tooltip "Italic (Ctrl+I)"
-    (icon "italic"))
-  (tooltip "Underline (Ctrl+U)"
-    (icon "underline"))
-  (divider)
-  (tooltip "Align left"
-    (icon "align-left"))
-  (tooltip "Align center"
-    (icon "align-center"))
-  (tooltip "Align right"
-    (icon "align-right")))
+```wire preview:200
+(wire
+  (screen main "Main" :desktop
+    (box :col :center :full :padding 24
+      (card :row :center :gap 4 :padding 8
+        (tooltip "Bold (Ctrl+B)" :bottom
+          (button :ghost (icon "bold")))
+        (tooltip "Italic (Ctrl+I)" :bottom
+          (button :ghost (icon "italic")))
+        (tooltip "Underline (Ctrl+U)" :bottom
+          (button :ghost (icon "underline")))
+        (divider :vertical)
+        (tooltip "Align left" :bottom
+          (button :ghost (icon "align-left")))
+        (tooltip "Align center" :bottom
+          (button :ghost (icon "align-center")))
+        (tooltip "Align right" :bottom
+          (button :ghost (icon "align-right")))))))
 ```

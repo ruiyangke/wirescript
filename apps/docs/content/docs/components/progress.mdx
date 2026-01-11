@@ -7,21 +7,23 @@ A progress bar showing completion percentage.
 
 ## Usage
 
-```wire preview
+```wire preview:150
 (progress :value 75)
 ```
 
-## Examples
+## Basic Examples
 
 ```wire preview:250
-; With value
-(progress :value 75)
-
-; With max
-(progress :value 30 :max 100)
-
-; Indeterminate (no value)
-(progress)
+(box :col :gap 16 :padding 24
+  (box :col :gap 4
+    (text "With value" :low)
+    (progress :value 75))
+  (box :col :gap 4
+    (text "With max" :low)
+    (progress :value 30 :max 100))
+  (box :col :gap 4
+    (text "Indeterminate" :low)
+    (progress)))
 ```
 
 ## Properties
@@ -32,28 +34,37 @@ A progress bar showing completion percentage.
 
 ### With Variants
 
-```wire preview:250
-(box :col :gap 12
-  (progress :value 75 :success)
-  (progress :value 50 :warning)
-  (progress :value 25 :danger)
-  (progress :value 90 :primary))
+```wire preview:300
+(box :col :gap 16 :padding 24
+  (box :col :gap 4
+    (text "Success" :low)
+    (progress :value 75 :success))
+  (box :col :gap 4
+    (text "Warning" :low)
+    (progress :value 50 :warning))
+  (box :col :gap 4
+    (text "Danger" :low)
+    (progress :value 25 :danger))
+  (box :col :gap 4
+    (text "Primary" :low)
+    (progress :value 90 :primary)))
 ```
 
 ### Upload Progress
 
-```wire preview
-(card :col :gap 12 :padding 16
-  (box :row :between
-    (text "Uploading file.zip")
-    (text "75%" :low))
-  (progress :value 75))
+```wire preview:200
+(box :col :padding 24
+  (card :col :gap 12 :padding 16
+    (box :row :between :center
+      (text "Uploading file.zip")
+      (text "75%" :low))
+    (progress :value 75)))
 ```
 
 ### Multi-step Progress
 
-```wire preview
-(box :col :gap 16
+```wire preview:200
+(box :col :gap 16 :padding 24
   (progress :value 33)
   (box :row :between
     (text "Step 1" :success)
@@ -64,59 +75,61 @@ A progress bar showing completion percentage.
 ### Goal Progress
 
 ```wire preview:250
-(card :col :gap 12 :padding 20
-  (box :row :between
-    (text "Monthly Goal")
-    (text "$7,500 / $10,000" :low))
-  (progress :value 75)
-  (text "75% complete" :low))
+(box :col :padding 24
+  (card :col :gap 12 :padding 20
+    (box :row :between :center
+      (text "Monthly Goal")
+      (text "$7,500 / $10,000" :low))
+    (progress :value 75)
+    (text "75% complete" :low)))
 ```
 
 ### Skills Display
 
-```wire preview:300
-(box :col :gap 16
+```wire preview:350
+(box :col :gap 16 :padding 24
   (box :col :gap 8
-    (box :row :between
+    (box :row :between :center
       (text "React")
-      (text "90%"))
+      (text "90%" :low))
     (progress :value 90))
   (box :col :gap 8
-    (box :row :between
+    (box :row :between :center
       (text "TypeScript")
-      (text "85%"))
+      (text "85%" :low))
     (progress :value 85))
   (box :col :gap 8
-    (box :row :between
+    (box :row :between :center
       (text "Node.js")
-      (text "70%"))
+      (text "70%" :low))
     (progress :value 70)))
 ```
 
 ### Loading State
 
-```wire preview
-(box :col :center :gap 16 :padding 48
+```wire preview:250
+(box :col :center :full :gap 16 :padding 48
   (progress)
   (text "Loading..." :low))
 ```
 
 ### Storage Usage
 
-```wire preview:250
-(card :col :gap 12 :padding 16
-  (box :row :between
-    (text "Storage")
-    (text "8.5 GB of 15 GB" :low))
-  (progress :value 57)
-  (box :row :gap 16
-    (box :row :gap 8
-      (badge "Documents")
-      (text "4.2 GB" :low))
-    (box :row :gap 8
-      (badge "Photos")
-      (text "3.1 GB" :low))
-    (box :row :gap 8
-      (badge "Other")
-      (text "1.2 GB" :low))))
+```wire preview:280
+(box :col :padding 24
+  (card :col :gap 12 :padding 16
+    (box :row :between :center
+      (text "Storage")
+      (text "8.5 GB of 15 GB" :low))
+    (progress :value 57)
+    (box :row :gap 16
+      (box :row :center :gap 8
+        (badge "Documents")
+        (text "4.2 GB" :low))
+      (box :row :center :gap 8
+        (badge "Photos")
+        (text "3.1 GB" :low))
+      (box :row :center :gap 8
+        (badge "Other")
+        (text "1.2 GB" :low)))))
 ```

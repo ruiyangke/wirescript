@@ -8,16 +8,17 @@ A small overlay that appears near a trigger element. Defined inside screens and 
 ## Usage
 
 ```wire preview:400
-(screen main "Main" :desktop
-  (box :col :padding 24
-    (box :row :gap 8
-      (text "Hover for more info")
-      (icon "info" :to "#info")))
+(wire
+  (screen main "Main" :desktop
+    (box :col :center :full :padding 24
+      (box :row :center :gap 8
+        (text "Hover for more info")
+        (icon "info" :to "#info")))
 
-  (popover :id "info"
-    (box :col :gap 8 :padding 12
-      (text "Additional Information" :high)
-      (text "This popover provides extra context." :low))))
+    (popover :id "info"
+      (box :col :gap 8 :padding 12
+        (text "Additional Information" :high)
+        (text "This popover provides extra context." :low)))))
 ```
 
 ## Opening a Popover
@@ -34,13 +35,8 @@ Use a `button` or clickable `text` with `:to "#id"`:
 | Flag | Effect |
 |------|--------|
 | `:open` | Popover is initially open |
-| `:top` | Position above trigger |
-| `:bottom` | Position below trigger |
-| `:left` | Position to left of trigger |
-| `:right` | Position to right of trigger |
 | `:row` | Horizontal layout |
 | `:col` | Vertical layout |
-| `:grid` | Grid layout |
 | `:center` | Center alignment |
 | `:start` | Start alignment |
 | `:end` | End alignment |
@@ -55,105 +51,116 @@ Use a `button` or clickable `text` with `:to "#id"`:
 | `:id` | string | `:id "info"` |
 | `:gap` | number | `:gap 8` |
 | `:padding` | number | `:padding 12` |
-| `:width` | any | `:width "250px"` |
-| `:height` | any | `:height "200px"` |
+| `:width` | number | `:width 250` |
+| `:height` | number | `:height 200` |
 
 ## Examples
 
 ### Initially Open Popover
 
 ```wire preview:400
-(screen main "Main" :desktop
-  (box :col :padding 24
-    (box :row :gap 8
-      (text "Hover for more info")
-      (icon "info" :to "#info")))
+(wire
+  (screen main "Main" :desktop
+    (box :col :center :full :padding 24
+      (box :row :center :gap 8
+        (text "Hover for more info")
+        (icon "info" :to "#info")))
 
-  (popover :id "info" :open
-    (box :col :gap 8 :padding 12
-      (text "Information" :high)
-      (text "This popover opens automatically." :low))))
+    (popover :id "info" :open
+      (box :col :gap 8 :padding 12
+        (text "Information" :high)
+        (text "This popover opens automatically." :low)))))
 ```
 
 ### Info Popover
 
 ```wire preview:400
-(screen main "Main" :desktop
-  (box :row :gap 8
-    (text "Status")
-    (icon "info" :to "#status-info"))
+(wire
+  (screen main "Main" :desktop
+    (box :col :center :full :padding 24
+      (box :row :center :gap 8
+        (text "Status")
+        (icon "info" :to "#status-info")))
 
-  (popover :id "status-info"
-    (box :col :gap 8 :padding 12
-      (text "Status Information" :high)
-      (text "Your account is currently active and in good standing." :low))))
+    (popover :id "status-info"
+      (box :col :gap 8 :padding 12
+        (text "Status Information" :high)
+        (text "Your account is currently active and in good standing." :low)))))
 ```
 
 ### User Preview
 
 ```wire preview:450
-(screen main "Main" :desktop
-  (box :row :gap 8
-    (avatar "JD" :to "#user-preview")
-    (text "John Doe"))
+(wire
+  (screen main "Main" :desktop
+    (box :col :center :full :padding 24
+      (box :row :center :gap 8
+        (avatar "JD" :to "#user-preview")
+        (text "John Doe")))
 
-  (popover :id "user-preview"
-    (box :col :gap 12 :padding 16
-      (box :row :gap 12
-        (avatar "John Doe")
-        (box :col :gap 4
-          (text "John Doe" :high)
-          (text "Product Designer" :low)))
-      (text "Building great products at Acme Inc." :low)
-      (box :row :gap 8
-        (button "Follow" :primary)
-        (button "Message" :secondary)))))
+    (popover :id "user-preview"
+      (box :col :gap 12 :padding 16
+        (box :row :center :gap 12
+          (avatar "John Doe")
+          (box :col :gap 4
+            (text "John Doe" :high)
+            (text "Product Designer" :low)))
+        (text "Building great products at Acme Inc." :low)
+        (box :row :gap 8
+          (button "Follow" :primary)
+          (button "Message" :secondary))))))
 ```
 
 ### Help Popover
 
 ```wire preview:400
-(screen form "Form" :desktop
-  (form :col :gap 16
-    (box :row :gap 8
-      (input "API Key" :fill)
-      (icon "help-circle" :to "#api-help"))
+(wire
+  (screen form "Form" :desktop
+    (box :col :center :full :padding 24
+      (form :col :gap 16
+        (box :row :center :gap 8
+          (input "API Key" :fill)
+          (icon "circle-help" :to "#api-help"))))
 
     (popover :id "api-help"
-      (box :col :gap 8 :padding 12 :width "250px"
+      (box :col :gap 8 :padding 16
         (text "API Key" :high)
-        (text "You can find your API key in the dashboard under Settings > API." :low)
+        (text "Find your API key in Settings > API." :low)
         (text "Learn more" :to docs)))))
 ```
 
 ### Color Picker Popover
 
 ```wire preview:400
-(screen main "Main" :desktop
-  (box :row :gap 8
-    (text "Color:")
-    (button "Select" :secondary :to "#color-picker"))
+(wire
+  (screen main "Main" :desktop
+    (box :col :center :full :padding 24
+      (box :row :center :gap 8
+        (text "Color:")
+        (button "Select" :secondary :to "#color-picker")))
 
-  (popover :id "color-picker"
-    (box :col :gap 12 :padding 12
-      (text "Choose Color" :low)
-      (box :grid :cols 5 :gap 8
-        (badge "")
-        (badge "" :primary)
-        (badge "" :success)
-        (badge "" :warning)
-        (badge "" :danger)))))
+    (popover :id "color-picker"
+      (box :col :gap 12 :padding 12
+        (text "Choose Color" :low)
+        (box :grid :cols 5 :gap 8
+          (badge "")
+          (badge "" :primary)
+          (badge "" :success)
+          (badge "" :warning)
+          (badge "" :danger))))))
 ```
 
 ### Quick Actions Popover
 
 ```wire preview:400
-(screen main "Main" :desktop
-  (icon "plus" :to "#quick-actions")
+(wire
+  (screen main "Main" :desktop
+    (box :col :center :full :padding 24
+      (icon "plus" :to "#quick-actions"))
 
-  (popover :id "quick-actions"
-    (box :col :gap 4 :padding 8
-      (button "New Task" :ghost :full :start)
-      (button "New Note" :ghost :full :start)
-      (button "New Event" :ghost :full :start))))
+    (popover :id "quick-actions"
+      (box :col :gap 4 :padding 8
+        (button "New Task" :ghost :full :start)
+        (button "New Note" :ghost :full :start)
+        (button "New Event" :ghost :full :start)))))
 ```

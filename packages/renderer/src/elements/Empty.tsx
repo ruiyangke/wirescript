@@ -1,5 +1,6 @@
 import type { ElementNode } from '@wirescript/dsl';
 import { ElementRenderer, generateElementKey } from '../ElementRenderer.js';
+import { getIcon } from '../icons.js';
 import { propToText, toText } from '../layout.js';
 
 interface EmptyProps {
@@ -11,7 +12,8 @@ export function Empty({ element }: EmptyProps) {
 
   const title = propToText(props.title) || toText(content) || 'No data';
   const description = propToText(props.description);
-  const icon = propToText(props.icon);
+  const iconName = propToText(props.icon);
+  const IconComponent = iconName ? getIcon(iconName) : undefined;
 
   // If has children, render custom empty state content
   if (children && children.length > 0) {
@@ -41,10 +43,14 @@ export function Empty({ element }: EmptyProps) {
       }}
     >
       {/* Icon */}
-      {icon && <div className="text-4xl text-muted-foreground mb-4">{icon}</div>}
+      {IconComponent && (
+        <div className="mb-4 text-muted-foreground">
+          <IconComponent size={48} strokeWidth={1.5} />
+        </div>
+      )}
 
       {/* Default icon if none provided */}
-      {!icon && (
+      {!IconComponent && (
         <div className="w-16 h-16 mb-4 text-muted-foreground">
           <svg
             viewBox="0 0 24 24"

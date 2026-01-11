@@ -11,6 +11,7 @@ import { AutoActiveProvider } from './AutoActiveContext.js';
 import { ComponentsProvider } from './ComponentsContext.js';
 import { ElementRenderer } from './ElementRenderer.js';
 import { InteractionProvider, useInteraction } from './InteractionContext.js';
+import { toNumericPx } from './layout.js';
 import { LayoutsProvider, useLayoutDef } from './LayoutsContext.js';
 import { cn } from './lib/utils.js';
 import { ZoomProvider } from './ZoomContext.js';
@@ -66,6 +67,11 @@ export function WireRenderer({
   // Clamp zoom to valid range (0.1 to 3)
   const clampedZoom = Math.min(Math.max(zoom, 0.1), 3);
 
+  // Collect initially open overlays (those with :open flag)
+  const initialOpenOverlays = document.screens.flatMap((screen) =>
+    screen.overlays.filter((overlay) => overlay.props.open === true).map((overlay) => overlay.id)
+  );
+
   // Calculate dimensions for zoom container
   const screenViewport = initialScreen.viewport || 'desktop';
   const defaultSize = DEFAULT_VIEWPORT_SIZES[screenViewport];
@@ -81,7 +87,11 @@ export function WireRenderer({
 
   const content = (
     <ZoomProvider zoom={clampedZoom}>
-      <InteractionProvider initialScreen={initialScreen.id} onScreenChange={onScreenChange}>
+      <InteractionProvider
+        initialScreen={initialScreen.id}
+        initialOpenOverlays={initialOpenOverlays}
+        onScreenChange={onScreenChange}
+      >
         <ComponentsProvider components={document.components}>
           <LayoutsProvider layouts={document.layouts}>
             <DocumentRenderer document={document} viewport={viewport} />
@@ -236,7 +246,7 @@ export function ScreenRenderer({ screen, viewport: externalViewport }: ScreenRen
         {/* During SSR, portalContainer is null, so render directly without portal */}
         {/* During CSR, use portal for proper stacking context */}
         {screen.overlays.map((overlay) => {
-          const isOpen = isOverlayOpen(overlay.id) || overlay.props.open === true;
+          const isOpen = isOverlayOpen(overlay.id);
           const overlayElement = (
             <OverlayRenderer
               key={overlay.id}
@@ -289,7 +299,7 @@ function OverlayRenderer({
   const isDropdown = overlay.overlayType === 'popover';
 
   // Calculate overlay dimensions
-  const drawerWidth = typeof overlay.props.width === 'number' ? overlay.props.width : 400;
+  const drawerWidth = toNumericPx(overlay.props.width) ?? 400;
   const maxModalWidth = containerWidth ? Math.min(containerWidth * 0.9, 600) : 600;
 
   return (

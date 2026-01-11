@@ -8,7 +8,7 @@ Displays an icon from the [Lucide](https://lucide.dev) icon set. The content str
 ## Usage
 
 ```wire preview
-(icon "home")
+(icon "house")
 ```
 
 ## Common Icons
@@ -16,7 +16,7 @@ Displays an icon from the [Lucide](https://lucide.dev) icon set. The content str
 ```wire preview:400
 (box :col :gap 16
   (box :row :gap 12
-    (icon "home")
+    (icon "house")
     (icon "settings")
     (icon "user")
     (icon "menu"))
@@ -25,7 +25,7 @@ Displays an icon from the [Lucide](https://lucide.dev) icon set. The content str
     (icon "minus")
     (icon "x")
     (icon "check")
-    (icon "edit")
+    (icon "pencil")
     (icon "trash"))
   (box :row :gap 12
     (icon "arrow-left")
@@ -47,9 +47,9 @@ Displays an icon from the [Lucide](https://lucide.dev) icon set. The content str
     (icon "bookmark"))
   (box :row :gap 12
     (icon "info")
-    (icon "alert-circle")
-    (icon "check-circle")
-    (icon "x-circle")))
+    (icon "circle-alert")
+    (icon "circle-check")
+    (icon "circle-x")))
 ```
 
 ## Properties
@@ -60,63 +60,100 @@ Displays an icon from the [Lucide](https://lucide.dev) icon set. The content str
 
 ### Navigation Bar
 
-```wire preview
-(header :row :between :padding 16
-  (icon "menu")
-  (text "App" :high)
-  (box :row :gap 12
-    (icon "search")
-    (icon "bell")
-    (icon "user")))
+```wire preview:200
+(wire
+  (screen main "Main" :desktop
+    (box :col :full
+      (header :row :between :center :padding 16
+        (icon "menu" :to "#nav")
+        (text "App" :high)
+        (box :row :center :gap 12
+          (icon "search")
+          (icon "bell")
+          (icon "user")))
+      (box :fill :padding 24
+        (text "Page content" :low)))))
 ```
 
 ### Bottom Navigation
 
-```wire preview:250
-(nav :row :around :padding 12
-  (box :col :center :gap 4
-    (icon "home")
-    (text "Home" :low))
-  (box :col :center :gap 4
-    (icon "search")
-    (text "Search" :low))
-  (box :col :center :gap 4
-    (icon "heart")
-    (text "Saved" :low))
-  (box :col :center :gap 4
-    (icon "user")
-    (text "Profile" :low)))
+```wire preview:450
+(wire
+  (screen main "Main" :mobile
+    (box :col :full
+      (box :fill :padding 16
+        (box :col :gap 12
+          (text "Home" :high)
+          (text "Welcome to the app" :low)
+          (card :padding 16 (text "Featured content"))))
+      (nav :row :around :padding 12
+        (box :col :center :gap 4
+          (icon "house")
+          (text "Home" :low))
+        (box :col :center :gap 4
+          (icon "search")
+          (text "Search" :low))
+        (box :col :center :gap 4
+          (icon "heart")
+          (text "Saved" :low))
+        (box :col :center :gap 4
+          (icon "user")
+          (text "Profile" :low))))))
 ```
 
 ### Status Icons
 
-```wire preview:250
+```wire preview:200
 (box :col :gap 8
-  (box :row :gap 8
-    (icon "check-circle")
+  (box :row :center :gap 8
+    (icon "circle-check")
     (text "Task completed" :success))
-  (box :row :gap 8
-    (icon "alert-circle")
+  (box :row :center :gap 8
+    (icon "circle-alert")
     (text "Warning message" :warning))
-  (box :row :gap 8
-    (icon "x-circle")
+  (box :row :center :gap 8
+    (icon "circle-x")
     (text "Error occurred" :danger)))
 ```
 
 ### Toolbar
 
-```wire preview
-(box :row :gap 4 :padding 8
-  (icon "bold")
-  (icon "italic")
-  (icon "underline")
-  (divider)
-  (icon "align-left")
-  (icon "align-center")
-  (icon "align-right")
-  (divider)
-  (icon "list")
-  (icon "list-ordered"))
+```wire preview:200
+(wire
+  (screen main "Main" :desktop
+    (box :col :full
+      (card :row :gap 12 :padding 8
+        (group :row :gap 2
+          (button :ghost :icon "bold")
+          (button :ghost :icon "italic")
+          (button :ghost :icon "underline"))
+        (divider :vertical)
+        (group :row :gap 2
+          (button :ghost :icon "align-left")
+          (button :ghost :icon "align-center")
+          (button :ghost :icon "align-right"))
+        (divider :vertical)
+        (group :row :gap 2
+          (button :ghost :icon "list")
+          (button :ghost :icon "list-ordered")))
+      (box :fill :padding 16
+        (text "Editor content area" :low)))))
+```
+
+### Action Icons
+
+```wire preview:250
+(wire
+  (screen main "Main" :desktop
+    (box :col :full
+      (header :row :between :center :padding 16
+        (text "Document" :high)
+        (box :row :center :gap 8
+          (icon "download" :to ":download")
+          (icon "share" :to "#share")
+          (icon "ellipsis-vertical" :to "#menu")))
+      (box :fill :padding 24
+        (text "Document content" :low)))))
 ```
 
 ## Icon Reference

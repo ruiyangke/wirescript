@@ -1,4 +1,5 @@
 import type { ElementNode } from '@wirescript/dsl';
+import { useInteraction } from '../InteractionContext.js';
 import { getEmphasis, toText } from '../layout.js';
 import { AvatarFallback, AvatarImage, Avatar as ShadcnAvatar } from '../ui/avatar.js';
 
@@ -8,10 +9,12 @@ interface AvatarProps {
 
 export function Avatar({ element }: AvatarProps) {
   const { content, props } = element;
+  const { handleAction } = useInteraction();
   const emphasis = getEmphasis(props);
   const isActive = props.active === true;
   const src = props.src as string | undefined;
   const textContent = toText(content);
+  const toValue = props.to;
 
   // Generate initials from content
   const initials = textContent
@@ -33,7 +36,30 @@ export function Avatar({ element }: AvatarProps) {
 
   const config = sizeConfig[emphasis];
 
-  return (
+  // Handle click for :to prop
+  const handleClick = () => {
+    if (!toValue) return;
+    if (typeof toValue === 'object' && 'type' in toValue) {
+      switch (toValue.type) {
+        case 'screen':
+          handleAction(toValue.id);
+          break;
+        case 'overlay':
+          handleAction(`#${toValue.id}`);
+          break;
+        case 'action':
+          handleAction(`:${toValue.action}`);
+          break;
+        case 'url':
+          window.open(toValue.url, '_blank');
+          break;
+      }
+    } else if (typeof toValue === 'string') {
+      handleAction(toValue);
+    }
+  };
+
+  const avatarElement = (
     <div className="relative inline-block" style={{ width: config.size, height: config.size }}>
       <ShadcnAvatar
         className={config.className}
@@ -58,4 +84,19 @@ export function Avatar({ element }: AvatarProps) {
       )}
     </div>
   );
+
+  // Wrap in clickable button if :to is provided
+  if (toValue) {
+    return (
+      <button
+        type="button"
+        onClick={handleClick}
+        className="rounded-full hover:opacity-80 transition-opacity focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+      >
+        {avatarElement}
+      </button>
+    );
+  }
+
+  return avatarElement;
 }

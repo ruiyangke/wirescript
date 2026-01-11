@@ -10,7 +10,7 @@ A placeholder element used in layouts to mark where screen content should be ins
 ```wire
 (layout my-layout
   (header (text "Header"))
-  (slot)  ; Screen content goes here
+  (slot)
   (footer (text "Footer")))
 ```
 
@@ -18,84 +18,92 @@ A placeholder element used in layouts to mark where screen content should be ins
 
 When a screen uses a layout, the screen's content replaces the `(slot)` element:
 
-```wire preview
+```wire preview:300
 (wire
-  ; Define layout with slot
   (layout app-layout
     (box :row :full
-      (nav :col :width "200px"
-        (text "Navigation"))
-      (slot)))  ; Content placeholder
+      (nav :col :width 200 :padding 16
+        (text "Navigation" :high))
+      (box :fill
+        (slot))))
 
-  ; Screen content replaces the slot
   (screen home "Home" :desktop :layout app-layout
-    (box :col :padding 24
-      (text "This replaces the slot"))))
+    (card :col :padding 24 :gap 8
+      (text "Page Content" :high)
+      (text "This content replaces the slot" :low))))
 ```
 
 ## Examples
 
 ### Basic Layout
 
-```wire preview
-(layout page-layout
-  (header :row :between :padding 16
-    (text "Logo" :high)
-    (nav :row :gap 16
-      (text "Home")
-      (text "About")))
-  (slot)
-  (footer :center :padding 16
-    (text "© 2024" :low)))
+```wire preview:400
+(wire
+  (layout page-layout
+    (box :col :full
+      (header :row :between :center :padding 16
+        (text "Logo" :high)
+        (nav :row :gap 16
+          (text "Home")
+          (text "About")))
+      (slot)
+      (footer :row :center :padding 16
+        (text "© 2024" :low))))
+
+  (screen main "Main" :desktop :layout page-layout
+    (box :col :center :fill :gap 8
+      (text "Page Content" :high)
+      (text "This content replaces the slot" :low))))
 ```
 
 ### Sidebar Layout
 
-```wire preview
-(layout sidebar-layout
-  (box :row :full
-    (nav :col :width "240px" :padding 16 :gap 8
-      (text "App Name" :high)
-      (divider)
-      (button "Dashboard" :ghost :full :start :to dashboard)
-      (button "Projects" :ghost :full :start :to projects)
-      (button "Settings" :ghost :full :start :to settings))
-    (box :col :fill
-      (slot))))
+```wire preview:450
+(wire
+  (layout sidebar-layout
+    (box :row :full
+      (nav :col :width 200 :padding 16 :gap 8
+        (text "App Name" :high)
+        (divider)
+        (button "Dashboard" :ghost :full :start)
+        (button "Projects" :ghost :full :start)
+        (button "Settings" :ghost :full :start))
+      (box :col :fill
+        (slot))))
+
+  (screen dashboard "Dashboard" :desktop :layout sidebar-layout
+    (box :col :padding 24 :gap 16
+      (text "Dashboard" :high)
+      (text "Welcome back! Here's your overview." :low))))
 ```
 
 ### Dashboard Layout
 
-```wire preview
-(layout dashboard-layout
-  (box :col :full
-    (header :row :between :padding 16
-      (text "Dashboard" :high)
-      (box :row :gap 12
-        (icon "bell")
-        (avatar "User")))
-    (box :row :fill
-      (nav :col :width "200px" :padding 16
-        (button "Overview" :ghost :full :start :to overview)
-        (button "Analytics" :ghost :full :start :to analytics))
-      (slot))))
-```
+```wire preview:500
+(wire
+  (layout dashboard-layout
+    (box :col :full
+      (header :row :between :center :padding 16
+        (text "Dashboard" :high)
+        (box :row :center :gap 12
+          (icon "bell")
+          (avatar "User")))
+      (box :row :fill
+        (nav :col :width 180 :padding 16 :gap 4
+          (button "Overview" :ghost :full :start)
+          (button "Analytics" :ghost :full :start))
+        (slot))))
 
-### Using the Layout
-
-```wire preview
-(screen overview "Overview" :desktop :layout dashboard-layout
-  (box :col :padding 24 :gap 24
-    (text "Overview" :high)
-    (box :row :gap 16
-      (metric :label "Users" :value "1,234")
-      (metric :label "Revenue" :value "$5,678"))
-    (chart :type line :height 300)))
-
-(screen analytics "Analytics" :desktop :layout dashboard-layout
-  (box :col :padding 24 :gap 24
-    (text "Analytics" :high)
-    (chart :type bar :height 400)))
+  (screen overview "Overview" :desktop :layout dashboard-layout
+    (box :col :padding 24 :gap 16
+      (text "Overview" :high)
+      (box :row :gap 16
+        (card :col :gap 8 :padding 16 :fill
+          (text "Users" :low)
+          (text "1,234" :high))
+        (card :col :gap 8 :padding 16 :fill
+          (text "Revenue" :low)
+          (text "$5,678" :high))))))
 ```
 
 ## See Also

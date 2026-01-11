@@ -19,7 +19,7 @@ function wrapInWireDocument(code: string): string {
   }
   return `(wire
   (screen preview "Preview" :desktop
-    (box :col :gap 16 :padding 16
+    (box :col :center :full :padding 24 :gap 16
       ${trimmed})))`;
 }
 

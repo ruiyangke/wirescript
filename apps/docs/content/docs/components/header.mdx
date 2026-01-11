@@ -7,28 +7,43 @@ A semantic header element with a bottom border, typically used for page headers 
 
 ## Usage
 
-```wire preview
-(header :row :between :padding 16
-  (text "Logo" :high)
-  (nav :row :gap 16
-    (text "Home")
-    (text "About")))
+```wire preview:200
+(wire
+  (screen main "Main" :desktop
+    (box :col :full
+      (header :row :between :center :padding 16
+        (text "Logo" :high)
+        (nav :row :gap 16
+          (text "Home")
+          (text "About")))
+      (box :fill :padding 24
+        (text "Page content" :low)))))
 ```
 
 ## Basic Examples
 
-```wire preview
-; Simple header
-(header :padding 16
-  (text "My App" :high))
+```wire preview:300
+(wire
+  (screen simple "Simple" :desktop
+    (box :col :full
+      (header :padding 16
+        (text "My App" :high))
+      (box :fill :padding 24
+        (text "Content area" :low)))))
+```
 
-; Header with navigation
-(header :row :between :padding 16
-  (text "Logo" :high)
-  (box :row :gap 16
-    (text "Home" :to home)
-    (text "About" :to about)
-    (text "Contact" :to contact)))
+```wire preview:200
+(wire
+  (screen nav "Navigation" :desktop
+    (box :col :full
+      (header :row :between :center :padding 16
+        (text "Logo" :high)
+        (nav :row :center :gap 16
+          (text "Home" :to home)
+          (text "About" :to about)
+          (text "Contact" :to contact)))
+      (box :fill :padding 24
+        (text "Page content" :low)))))
 ```
 
 ## Properties
@@ -39,41 +54,77 @@ A semantic header element with a bottom border, typically used for page headers 
 
 ### App Header
 
-```wire preview
-(header :row :between :padding 16
-  (box :row :gap 12 :center
-    (icon "box")
-    (text "AppName" :high))
-  (box :row :gap 16
-    (text "Dashboard" :to dashboard)
-    (text "Settings" :to settings)
-    (avatar "JD")))
+```wire preview:250
+(wire
+  (screen app "App" :desktop
+    (box :col :full
+      (header :row :between :center :padding 16
+        (box :row :center :gap 12
+          (icon "box")
+          (text "AppName" :high))
+        (nav :row :center :gap 16
+          (text "Dashboard" :to dashboard)
+          (text "Settings" :to settings)
+          (avatar "JD")))
+      (box :fill :padding 24
+        (text "Dashboard content" :low)))))
 ```
 
 ### Header with Search
 
-```wire preview
-(header :row :between :padding 16
-  (text "Logo" :high)
-  (input "Search" :type search :width "300px")
-  (box :row :gap 12
-    (icon "bell")
-    (avatar "User")))
+```wire preview:250
+(wire
+  (screen search "Search" :desktop
+    (box :col :full
+      (header :row :between :center :padding 16
+        (text "Logo" :high)
+        (input "Search" :type search :width 300)
+        (box :row :center :gap 12
+          (icon "bell")
+          (avatar "User")))
+      (box :fill :padding 24
+        (text "Search results will appear here" :low)))))
 ```
 
 ### Sticky Header
 
-```wire preview
-(header :row :between :padding 16 :sticky :top 0
-  (text "Sticky Header" :high)
-  (button "Action" :primary))
+```wire preview:350
+(wire
+  (screen sticky "Sticky" :desktop
+    (box :col :full
+      (header :row :between :center :padding 16 :sticky :top 0
+        (text "Sticky Header" :high)
+        (button "Action" :primary))
+      (scroll :fill :padding 24
+        (box :col :gap 16
+          (text "Scroll down to see sticky behavior" :low)
+          (card :padding 16 (text "Card 1"))
+          (card :padding 16 (text "Card 2"))
+          (card :padding 16 (text "Card 3"))
+          (card :padding 16 (text "Card 4"))
+          (card :padding 16 (text "Card 5")))))))
 ```
 
 ### Mobile Header
 
-```wire preview
-(header :row :between :padding 12
-  (icon "menu" :to "#mobile-nav")
-  (text "App" :high)
-  (icon "bell"))
+```wire preview:400
+(wire
+  (screen mobile "Mobile" :mobile
+    (box :col :full
+      (header :row :between :center :padding 12
+        (icon "menu" :to "#mobile-nav")
+        (text "App" :high)
+        (icon "bell"))
+      (box :fill :padding 16
+        (box :col :gap 16
+          (text "Mobile content" :low)
+          (card :padding 16 (text "Item 1"))
+          (card :padding 16 (text "Item 2")))))
+
+    (drawer :id "mobile-nav" :left :width 280
+      (box :col :gap 4 :padding 16
+        (text "Navigation" :high)
+        (button "Home" :ghost :full :start)
+        (button "Profile" :ghost :full :start)
+        (button "Settings" :ghost :full :start)))))
 ```

@@ -40,7 +40,7 @@ Always use named arguments:
       (text $value :high)))
 
   (screen dashboard "Dashboard" :desktop
-    (box :row :gap 16
+    (box :row :gap 16 :padding 24
       (stat-card :label "Users" :value "1,234")
       (stat-card :label "Revenue" :value "$5,678")
       (stat-card :label "Orders" :value "890"))))
@@ -59,7 +59,7 @@ Always use named arguments:
       (badge $role)))
 
   (screen users "Users" :desktop
-    (box :col :gap 8
+    (box :col :gap 8 :padding 24
       (user-card :name "Alice" :email "alice@example.com" :role "Admin")
       (user-card :name "Bob" :email "bob@example.com" :role "Editor"))))
 ```
@@ -69,12 +69,12 @@ Always use named arguments:
 ```wire preview:400
 (wire
   (define nav-item (label icon target)
-    (button $label :ghost :full :start :to $target))
+    (button $label :ghost :full :start :icon $icon :to $target))
 
   (layout app-layout
     (box :row :full
       (nav :col :width "200px" :padding 16 :gap 4
-        (nav-item :label "Dashboard" :icon "home" :target dashboard)
+        (nav-item :label "Dashboard" :icon "house" :target dashboard)
         (nav-item :label "Projects" :icon "folder" :target projects)
         (nav-item :label "Settings" :icon "settings" :target settings))
       (slot)))
@@ -122,12 +122,13 @@ Always use named arguments:
       (button $action :ghost)))
 
   (screen settings "Settings" :desktop
-    (card :col :gap 0
-      (list-item :title "Account" :subtitle "Manage your account" :action "Edit")
-      (divider)
-      (list-item :title "Privacy" :subtitle "Control your privacy" :action "Edit")
-      (divider)
-      (list-item :title "Notifications" :subtitle "Configure alerts" :action "Edit"))))
+    (box :padding 24
+      (card :col :gap 0
+        (list-item :title "Account" :subtitle "Manage your account" :action "Edit")
+        (divider)
+        (list-item :title "Privacy" :subtitle "Control your privacy" :action "Edit")
+        (divider)
+        (list-item :title "Notifications" :subtitle "Configure alerts" :action "Edit")))))
 ```
 
 ### Metric Card
@@ -143,10 +144,10 @@ Always use named arguments:
       (text $change :low)))
 
   (screen analytics "Analytics" :desktop
-    (box :row :gap 16
-      (metric-card :label "Revenue" :value "$12,345" :change "+12% from last month" :icon "dollar-sign")
-      (metric-card :label "Users" :value "1,234" :change "+5% from last month" :icon "users")
-      (metric-card :label "Orders" :value "567" :change "+8% from last month" :icon "shopping-cart"))))
+    (box :row :gap 16 :padding 24
+      (metric-card :label "Revenue" :value "$12,345" :change "+12%" :icon "dollar-sign")
+      (metric-card :label "Users" :value "1,234" :change "+5%" :icon "users")
+      (metric-card :label "Orders" :value "567" :change "+8%" :icon "shopping-cart"))))
 ```
 
 ### Action Card
@@ -161,7 +162,7 @@ Always use named arguments:
       (button $buttonText :primary :to $target)))
 
   (screen home "Home" :desktop
-    (box :grid :cols 2 :gap 16
+    (box :grid :cols 2 :gap 16 :padding 24
       (action-card
         :title "Create Project"
         :description "Start a new project from scratch"

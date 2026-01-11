@@ -29,6 +29,9 @@ import { wireScriptTheme } from './themes/wirescript-theme.js';
 const themeCompartment = new Compartment();
 const readOnlyCompartment = new Compartment();
 
+// Stable default to avoid recreating editor on every render
+const DEFAULT_EXTENSIONS: Extension[] = [];
+
 export interface WireScriptEditorProps {
   /** Initial source code */
   value?: string;
@@ -58,7 +61,7 @@ export function WireScriptEditor({
   onChange,
   dark = false,
   readOnly = false,
-  extensions = [],
+  extensions = DEFAULT_EXTENSIONS,
   className,
   style,
   autoFocus = false,

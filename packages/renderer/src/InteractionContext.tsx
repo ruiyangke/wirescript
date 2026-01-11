@@ -24,16 +24,18 @@ export const InteractionContext = createContext<InteractionContextValue | null>(
 interface InteractionProviderProps {
   children: ReactNode;
   initialScreen?: string;
+  initialOpenOverlays?: string[];
   onScreenChange?: (screenId: string) => void;
 }
 
 export function InteractionProvider({
   children,
   initialScreen,
+  initialOpenOverlays,
   onScreenChange,
 }: InteractionProviderProps) {
   const [state, setState] = useState<InteractionState>({
-    openOverlays: new Set(),
+    openOverlays: new Set(initialOpenOverlays),
     currentScreen: initialScreen || null,
   });
 

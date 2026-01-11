@@ -312,10 +312,10 @@ export default async function HomePage() {
               <ArrowRight className="h-4 w-4" />
             </Link>
             <Link
-              href="/docs/examples"
+              href="/docs/components"
               className="inline-flex items-center gap-2 rounded-lg border border-fd-border bg-fd-background px-6 py-3 text-sm font-medium transition-colors hover:bg-fd-secondary"
             >
-              View Examples
+              View Components
             </Link>
           </div>
         </div>

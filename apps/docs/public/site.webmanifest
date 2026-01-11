@@ -1,6 +1,12 @@
 {
   "name": "WireScript",
   "short_name": "WireScript",
+  "description": "A Lisp dialect for creating wireframes that embed directly into Markdown",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "theme_color": "#6366F1",
+  "background_color": "#ffffff",
   "icons": [
     {
       "src": "/favicon-32x32.png",
@@ -12,8 +18,5 @@
       "sizes": "180x180",
       "type": "image/png"
     }
-  ],
-  "theme_color": "#6366F1",
-  "background_color": "#ffffff",
-  "display": "standalone"
+  ]
 }

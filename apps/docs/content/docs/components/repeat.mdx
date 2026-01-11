@@ -50,39 +50,43 @@ Generate repeated content a specified number of times.
 
 ### Numbered Items
 
-```wire preview:450
-(list :col :gap 0
-  (repeat :count 10 :as "n"
-    (box :row :between :padding 12
-      (text "Item ${n}")
-      (icon "chevron-right"))))
+```wire preview:350
+(scroll :height 300
+  (list :col :gap 0
+    (repeat :count 10 :as "n"
+      (box :row :between :center :padding 12
+        (text "Item ${n}")
+        (icon "chevron-right")))))
 ```
 
 ### Card Grid
 
-```wire preview:400
-(box :grid :cols 3 :gap 16
-  (repeat :count 6
-    (card :col :padding 16
-      (skeleton :height "100px")
-      (skeleton :height "20px" :width "70%")
-      (skeleton :height "16px"))))
+```wire preview:550
+(wire
+  (screen main "Main" :desktop
+    (box :col :padding 24
+      (box :grid :cols 2 :gap 16
+        (repeat :count 4
+          (card :col :gap 16 :padding 20
+            (skeleton :height 120)
+            (skeleton :height 24 :width "70%")
+            (skeleton :height 16)))))))
 ```
 
 ### Table Rows
 
 ```wire preview:350
 (box :col
-  (box :row :padding 12
+  (box :row :gap 16 :padding 12
     (text "Name" :fill)
     (text "Email" :fill)
     (text "Role" :fill))
   (divider)
   (repeat :count 5
-    (box :row :padding 12
-      (skeleton :width "120px" :height "16px")
-      (skeleton :width "180px" :height "16px")
-      (skeleton :width "80px" :height "16px"))))
+    (box :row :gap 16 :padding 12
+      (box :fill (skeleton :height 16 :width "100%"))
+      (box :fill (skeleton :height 16 :width "100%"))
+      (box :fill (skeleton :height 16 :width "100%")))))
 ```
 
 ### Chat Messages

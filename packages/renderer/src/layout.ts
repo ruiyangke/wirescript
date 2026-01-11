@@ -162,7 +162,9 @@ export function getLayoutStyles(element: ElementNode): CSSProperties {
   // Width
   const width = getStringProp(props, 'width');
   if (width) {
-    styles.width = width.includes('%') || width.includes('px') ? width : `${width}%`;
+    // If already has a unit, use as-is; otherwise add px (not %)
+    const hasUnit = width.includes('%') || width.includes('px') || width.includes('em') || width.includes('rem');
+    styles.width = hasUnit ? width : `${width}px`;
     styles.flexShrink = 0;
   }
 
@@ -213,4 +215,26 @@ export function getVariant(props: Record<string, PropValue>): string | undefined
  */
 export function hasFlag(props: Record<string, PropValue>, flag: string): boolean {
   return hasProp(props, flag);
+}
+
+/**
+ * Parse a dimension value to numeric pixels.
+ * - Numbers pass through: 220 → 220
+ * - Pixel strings are parsed: "220px" → 220
+ * - Numeric strings are parsed: "220" → 220
+ * - Other units (%, em, rem) return undefined (can't convert to px)
+ */
+export function toNumericPx(value: PropValue | undefined): number | undefined {
+  if (value === undefined) return undefined;
+  if (typeof value === 'number') return value;
+  if (typeof value === 'string') {
+    // Has non-px unit - can't convert
+    if (value.includes('%') || value.includes('em') || value.includes('rem')) {
+      return undefined;
+    }
+    // Parse numeric value (handles "220px" and "220")
+    const num = Number.parseFloat(value);
+    if (!Number.isNaN(num)) return num;
+  }
+  return undefined;
 }

@@ -1,0 +1,8 @@
+# WireScript Documentation
+# https://wirescript.org
+
+User-agent: *
+Allow: /
+
+# Sitemap location
+Sitemap: https://wirescript.org/sitemap.xml

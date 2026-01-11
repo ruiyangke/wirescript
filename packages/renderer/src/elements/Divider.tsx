@@ -9,5 +9,10 @@ export function Divider({ element }: DividerProps) {
   const { props } = element;
   const isVertical = props.vertical === true;
 
-  return <Separator orientation={isVertical ? 'vertical' : 'horizontal'} className="my-2" />;
+  return (
+    <Separator
+      orientation={isVertical ? 'vertical' : 'horizontal'}
+      className={isVertical ? 'mx-2 h-auto self-stretch' : 'my-2'}
+    />
+  );
 }

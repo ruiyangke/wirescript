@@ -11,17 +11,15 @@ A line to visually separate content, either horizontally (default) or vertically
 (divider)
 ```
 
-## Orientation
+## Vertical Divider
 
-```wire preview:250
-(box :col :gap 16
-  (text "Horizontal (default)")
-  (divider :row)
-  (text "In a row layout:")
-  (box :row :gap 8 :height "40px"
-    (text "Left")
-    (divider :col)
-    (text "Right")))
+Use `:vertical` in row layouts:
+
+```wire preview:200
+(box :row :gap 8 :padding 16
+  (text "Left")
+  (divider :vertical)
+  (text "Right"))
 ```
 
 ## Properties
@@ -78,9 +76,28 @@ A line to visually separate content, either horizontally (default) or vertically
     (button "Save" :primary)))
 ```
 
+### In Toolbars
+
+```wire preview:200
+(wire
+  (screen main "Main" :desktop
+    (box :col :center :full :padding 24
+      (card :row :center :gap 12 :padding 8
+        (group :row :gap 2
+          (button :ghost :icon "bold")
+          (button :ghost :icon "italic"))
+        (divider :vertical)
+        (group :row :gap 2
+          (button :ghost :icon "align-left")
+          (button :ghost :icon "align-right"))
+        (divider :vertical)
+        (group :row :gap 2
+          (button :ghost :icon "list"))))))
+```
+
 ### In Dropdowns
 
-```wire preview
+```wire preview:360
 (dropdown :id "menu"
   (button "Edit" :ghost :full)
   (button "Duplicate" :ghost :full)
@@ -92,7 +109,7 @@ A line to visually separate content, either horizontally (default) or vertically
 
 ### In Forms
 
-```wire preview:500
+```wire preview:600
 (form :col :gap 16
   (text "Account Info" :high)
   (input "Email" :type email)

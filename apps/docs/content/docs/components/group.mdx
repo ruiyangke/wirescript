@@ -54,19 +54,22 @@ A generic grouping element. Renders like `box` but provides semantic grouping me
 
 ### Toolbar
 
-```wire preview
-(group :row :gap 16
-  (group :row :gap 4
-    (icon "bold")
-    (icon "italic")
-    (icon "underline"))
-  (divider)
-  (group :row :gap 4
-    (icon "align-left")
-    (icon "align-center")
-    (icon "align-right"))
-  (divider)
-  (group :row :gap 4
-    (icon "list")
-    (icon "list-ordered")))
+```wire preview:200
+(wire
+  (screen main "Main" :desktop
+    (box :col :center :full :padding 24
+      (card :row :center :gap 12 :padding 8
+        (group :row :gap 2
+          (button :ghost :icon "bold")
+          (button :ghost :icon "italic")
+          (button :ghost :icon "underline"))
+        (divider :vertical)
+        (group :row :gap 2
+          (button :ghost :icon "align-left")
+          (button :ghost :icon "align-center")
+          (button :ghost :icon "align-right"))
+        (divider :vertical)
+        (group :row :gap 2
+          (button :ghost :icon "list")
+          (button :ghost :icon "list-ordered"))))))
 ```

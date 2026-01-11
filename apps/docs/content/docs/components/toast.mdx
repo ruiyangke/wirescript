@@ -13,7 +13,7 @@ A notification message that appears temporarily to provide feedback.
 
 ## Variants
 
-```wire preview:300
+```wire preview:400
 (toast "Changes saved successfully" :success)
 (toast "Something went wrong" :danger)
 (toast "Please check your input" :warning)
@@ -68,16 +68,15 @@ A notification message that appears temporarily to provide feedback.
 ### Toast in Context
 
 ```wire preview:350
-(screen main "Main" :desktop
-  (box :col :full
-    ; Main content
-    (box :col :padding 24 :fill
-      (text "Dashboard" :high)
-      (text "Welcome back!"))
+(box :col :full
+  ; Main content
+  (box :col :padding 24 :fill
+    (text "Dashboard" :high)
+    (text "Welcome back!"))
 
-    ; Toast notification (typically positioned at bottom)
-    (box :row :center :padding 16
-      (toast "Settings saved successfully" :success))))
+  ; Toast notification (typically positioned at bottom)
+  (box :row :center :padding 16
+    (toast "Settings saved successfully" :success)))
 ```
 
 ### Action Toast
