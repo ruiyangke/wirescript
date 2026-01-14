@@ -5,7 +5,9 @@ import schemas from '@wirescript/dsl/schemas.json';
 
 interface PropsTableProps {
   /** Element name to show props for */
-  element: string;
+  element?: string;
+  /** Overlay name to show props for (modal, drawer, popover) */
+  overlay?: string;
   /** Only show specific prop categories */
   only?: string[];
   /** Exclude specific prop categories */
@@ -14,6 +16,10 @@ interface PropsTableProps {
 
 // Categorize props by their semantic group
 const PROP_CATEGORIES: Record<string, { label: string; props: string[] }> = {
+  identity: {
+    label: 'Identity',
+    props: ['id'],
+  },
   layout: {
     label: 'Layout',
     props: ['row', 'col', 'grid', 'wrap', 'cols', 'rows'],
@@ -36,7 +42,7 @@ const PROP_CATEGORIES: Record<string, { label: string; props: string[] }> = {
   },
   position: {
     label: 'Position',
-    props: ['sticky', 'fixed', 'absolute', 'relative', 'top', 'left', 'right', 'bottom'],
+    props: ['sticky', 'fixed', 'absolute', 'relative', 'top', 'left', 'right', 'bottom', 'position'],
   },
   variant: {
     label: 'Variants',
@@ -56,11 +62,15 @@ const PROP_CATEGORIES: Record<string, { label: string; props: string[] }> = {
   },
   input: {
     label: 'Input',
-    props: ['type', 'placeholder', 'value', 'options', 'min', 'max', 'step'],
+    props: ['type', 'placeholder', 'value', 'options', 'min', 'max', 'step', 'rows'],
   },
   content: {
     label: 'Content',
     props: ['icon', 'src', 'alt', 'name', 'label', 'title', 'change', 'trend', 'message'],
+  },
+  shape: {
+    label: 'Shape',
+    props: ['circle', 'text'],
   },
 };
 
@@ -83,19 +93,35 @@ function categorizeProp(propName: string): string {
   return 'other';
 }
 
-export function PropsTable({ element, only, exclude }: PropsTableProps) {
-  const schema = (schemas.elements as Record<string, ElementSchema>)[element];
+export function PropsTable({ element, overlay, only, exclude }: PropsTableProps) {
+  let schema: ElementSchema;
+  let props: Record<string, PropSchema>;
 
-  if (!schema) {
+  if (overlay) {
+    // For overlays, use the shared overlay props
+    const overlayProps = (schemas.overlays as { props: Record<string, PropSchema> }).props;
+    props = overlayProps;
+    schema = { type: overlay, content: true, children: true, props: overlayProps };
+  } else if (element) {
+    const elementSchema = (schemas.elements as Record<string, ElementSchema>)[element];
+    if (!elementSchema) {
+      return (
+        <div className="text-red-500 p-4 border border-red-200 rounded">
+          Unknown element: {element}
+        </div>
+      );
+    }
+    schema = elementSchema;
+    props = elementSchema.props;
+  } else {
     return (
       <div className="text-red-500 p-4 border border-red-200 rounded">
-        Unknown element: {element}
+        PropsTable requires either element or overlay prop
       </div>
     );
   }
 
-  const { props } = schema;
-  const propEntries = Object.entries(props);
+  const propEntries = Object.entries(props) as [string, PropSchema][];
 
   // Group props by category
   const grouped: Record<string, [string, PropSchema][]> = {};
@@ -112,12 +138,14 @@ export function PropsTable({ element, only, exclude }: PropsTableProps) {
 
   // Sort categories in a logical order
   const categoryOrder = [
+    'identity',
     'layout',
     'alignment',
     'sizing',
     'spacing',
     'dimensions',
     'position',
+    'shape',
     'variant',
     'emphasis',
     'state',
