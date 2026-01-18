@@ -1,6 +1,6 @@
 {
   "name": "@wirescript/claude-plugin",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "private": true,
   "description": "Claude Code plugin for WireScript DSL authoring",
   "license": "Apache-2.0",

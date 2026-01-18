@@ -12,11 +12,11 @@ import type { WireDocument, ComponentDef, LayoutNode, ScreenNode } from '@wiresc
 export class DefinitionProvider implements vscode.DefinitionProvider {
   private cache = CompilationCache.getInstance();
 
-  provideDefinition(
+  async provideDefinition(
     document: vscode.TextDocument,
     position: vscode.Position
-  ): vscode.ProviderResult<vscode.Definition> {
-    const result = this.cache.get(document);
+  ): Promise<vscode.Definition | null> {
+    const result = await this.cache.get(document);
     if (!result.success || !result.document) {
       return null;
     }

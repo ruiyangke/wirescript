@@ -748,4 +748,173 @@ describe('TCK: Includes', () => {
       expect(result.success).toBe(true);
     });
   });
+
+  // ===========================================================================
+  // 11.10 VFS (Virtual File System)
+  // ===========================================================================
+
+  describe('11.10 VFS (Virtual File System)', () => {
+    it('resolves includes via VFS', async () => {
+      const vfs = new Map([
+        ['/main.wire', '(wire (include "lib.wire") (screen home "Home" (my-comp)))'],
+        ['/lib.wire', '(wire (define my-comp () (box (text "Hello"))))'],
+      ]);
+
+      const result = await compile(vfs.get('/main.wire')!, {
+        filePath: '/main.wire',
+        vfs,
+      });
+
+      expect(result.success).toBe(true);
+      expect(result.document?.components).toHaveLength(1);
+      expect(result.document?.components[0].name).toBe('my-comp');
+    });
+
+    it('VFS takes precedence over custom resolver', async () => {
+      const vfs = new Map([
+        ['/main.wire', '(wire (include "comp.wire") (screen home "Home" (test-comp)))'],
+        ['/comp.wire', '(wire (define test-comp () (text "From VFS")))'],
+      ]);
+
+      const customResolver = async (): Promise<import('../../index.js').ResolvedInclude> => {
+        return {
+          content: '(wire (define test-comp () (text "From Resolver")))',
+          resolvedPath: '/comp.wire',
+        };
+      };
+
+      const result = await compile(vfs.get('/main.wire')!, {
+        filePath: '/main.wire',
+        vfs,
+        resolver: customResolver,
+      });
+
+      expect(result.success).toBe(true);
+      const comp = result.document?.components[0];
+      expect(comp?.body.content).toBe('From VFS');
+    });
+
+    it('VFS resolves relative paths correctly', async () => {
+      const vfs = new Map([
+        ['/project/main.wire', '(wire (include "lib/comp.wire") (screen home "Home" (my-comp)))'],
+        ['/project/lib/comp.wire', '(wire (define my-comp () (box)))'],
+      ]);
+
+      const result = await compile(vfs.get('/project/main.wire')!, {
+        filePath: '/project/main.wire',
+        vfs,
+      });
+
+      expect(result.success).toBe(true);
+      expect(result.document?.components).toHaveLength(1);
+    });
+
+    it('VFS resolves parent directory references', async () => {
+      const vfs = new Map([
+        ['/project/screens/home.wire', '(wire (include "../lib/comp.wire") (screen home "Home" (my-comp)))'],
+        ['/project/lib/comp.wire', '(wire (define my-comp () (box)))'],
+      ]);
+
+      const result = await compile(vfs.get('/project/screens/home.wire')!, {
+        filePath: '/project/screens/home.wire',
+        vfs,
+      });
+
+      expect(result.success).toBe(true);
+      expect(result.document?.components).toHaveLength(1);
+    });
+
+    it('VFS handles nested includes', async () => {
+      const vfs = new Map([
+        ['/main.wire', '(wire (include "a.wire") (screen home "Home" (box (comp-a) (comp-b))))'],
+        ['/a.wire', '(wire (include "b.wire") (define comp-a () (box)))'],
+        ['/b.wire', '(wire (define comp-b () (box)))'],
+      ]);
+
+      const result = await compile(vfs.get('/main.wire')!, {
+        filePath: '/main.wire',
+        vfs,
+      });
+
+      expect(result.success).toBe(true);
+      expect(result.document?.components).toHaveLength(2);
+    });
+
+    it('VFS detects missing files', async () => {
+      const vfs = new Map([
+        ['/main.wire', '(wire (include "missing.wire") (screen home "Home" (box)))'],
+      ]);
+
+      const result = await compile(vfs.get('/main.wire')!, {
+        filePath: '/main.wire',
+        vfs,
+      });
+
+      expect(result.success).toBe(false);
+      expect(result.errors.some((e) => e.message.includes('File not found in VFS'))).toBe(true);
+    });
+
+    it('VFS detects circular includes', async () => {
+      const vfs = new Map([
+        ['/a.wire', '(wire (include "b.wire") (screen _a "_" (box)))'],
+        ['/b.wire', '(wire (include "a.wire") (screen _b "_" (box)))'],
+      ]);
+
+      const result = await compile(vfs.get('/a.wire')!, {
+        filePath: '/a.wire',
+        vfs,
+      });
+
+      expect(result.success).toBe(false);
+      expect(result.errors.some((e) => e.message.includes('Circular include'))).toBe(true);
+    });
+
+    it('VFS merges components with last-wins strategy', async () => {
+      const vfs = new Map([
+        ['/main.wire', '(wire (include "lib.wire") (define my-btn () (button "Main" :primary)) (screen home "Home" (my-btn)))'],
+        ['/lib.wire', '(wire (define my-btn () (button "Lib" :ghost)))'],
+      ]);
+
+      const result = await compile(vfs.get('/main.wire')!, {
+        filePath: '/main.wire',
+        vfs,
+      });
+
+      expect(result.success).toBe(true);
+      expect(result.document?.components).toHaveLength(1);
+      // Main file wins
+      expect(result.document?.components[0].body.props.primary).toBe(true);
+    });
+
+    it('VFS merges layouts and screens', async () => {
+      const vfs = new Map([
+        ['/main.wire', '(wire (include "lib.wire") (screen home "Home" :layout app-layout (box)))'],
+        ['/lib.wire', '(wire (layout app-layout (box (slot))))'],
+      ]);
+
+      const result = await compile(vfs.get('/main.wire')!, {
+        filePath: '/main.wire',
+        vfs,
+      });
+
+      expect(result.success).toBe(true);
+      expect(result.document?.layouts).toHaveLength(1);
+      expect(result.document?.screens).toHaveLength(1);
+    });
+
+    it('VFS clears includes array after resolution', async () => {
+      const vfs = new Map([
+        ['/main.wire', '(wire (include "lib.wire") (screen home "Home" (box)))'],
+        ['/lib.wire', '(wire (define comp () (box)))'],
+      ]);
+
+      const result = await compile(vfs.get('/main.wire')!, {
+        filePath: '/main.wire',
+        vfs,
+      });
+
+      expect(result.success).toBe(true);
+      expect(result.document?.includes).toHaveLength(0);
+    });
+  });
 });

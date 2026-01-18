@@ -2,7 +2,7 @@
   "name": "wirescript",
   "displayName": "WireScript",
   "description": "WireScript wireframe language support with live preview",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "publisher": "wirescript",
   "license": "Apache-2.0",
   "repository": {

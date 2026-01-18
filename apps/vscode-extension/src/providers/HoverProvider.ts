@@ -50,10 +50,10 @@ const ELEMENT_DOCS: Record<string, { description: string; props?: string[] }> = 
 export class HoverProvider implements vscode.HoverProvider {
   private cache = CompilationCache.getInstance();
 
-  provideHover(
+  async provideHover(
     document: vscode.TextDocument,
     position: vscode.Position
-  ): vscode.ProviderResult<vscode.Hover> {
+  ): Promise<vscode.Hover | null> {
     const wordRange = document.getWordRangeAtPosition(
       position,
       /[a-zA-Z_][a-zA-Z0-9_-]*/
@@ -91,7 +91,7 @@ export class HoverProvider implements vscode.HoverProvider {
     }
 
     // Check if it's a user-defined component
-    const result = this.cache.get(document);
+    const result = await this.cache.get(document);
     if (result.success && result.document) {
       const component = this.findComponent(result.document, word);
       if (component) {

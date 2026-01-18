@@ -51,7 +51,22 @@ All data processing occurs entirely within your browser:
 
 ## Third-Party Services
 
-This extension does not integrate with or send data to any third-party services.
+### GitHub API
+
+When viewing WireScript files that use the `(include)` directive to import other `.wire` files, the extension makes requests to the GitHub API to fetch the included files:
+
+- **What**: Requests to `https://api.github.com/repos/{owner}/{repo}/contents/{path}`
+- **When**: Only when viewing files with `(include)` statements
+- **Data Sent**: Repository owner, name, branch, and directory path (all public information from the URL)
+- **Data Received**: List of files in the directory and content of `.wire` files
+- **Purpose**: Enable multi-file WireScript projects on GitHub
+- **Rate Limits**: Subject to GitHub's unauthenticated API limits (60 requests/hour per IP)
+
+All fetched content is processed locally in your browser and not sent elsewhere.
+
+### No Other Third-Party Services
+
+The extension does not integrate with or send data to any other third-party services.
 
 ## Changes to This Policy
 

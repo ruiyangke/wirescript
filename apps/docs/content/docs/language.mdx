@@ -41,12 +41,50 @@ Properties come in two forms:
 
 ```wire
 (wire
+  (include "components.wire")   ; Include other files (0+)
   (meta :title "App")           ; Document metadata (optional)
   (define name (p) (text $p))   ; Component definitions (0+)
   (layout name (slot))          ; Layout definitions (0+)
   (screen id "Name" :desktop    ; Screens (1+)
     (text "Content")))
 ```
+
+## Includes
+
+Import components, layouts, and screens from other files:
+
+```wire
+(wire
+  (include "components.wire")
+  (include "layouts/app-layout.wire")
+  (include "../common/helpers.wire")
+
+  (screen home "Home" :desktop
+    (my-component)))  ; From components.wire
+```
+
+**Rules:**
+- Include paths are relative to the current file
+- Supports `./`, `../` for navigation
+- Multiple includes allowed
+- Last definition wins for conflicts
+- Library files don't need screens (components/layouts only)
+- Circular includes are detected and reported as errors
+
+**Example structure:**
+```
+project/
+  ├── main.wire           # Entry file (requires screens)
+  ├── components.wire     # Reusable components (no screens)
+  └── layouts/
+      └── app.wire        # Reusable layouts (no screens)
+```
+
+**Resolution behavior:**
+- **VS Code**: Reads files from workspace on-demand
+- **Obsidian**: Loads from vault via VFS (Virtual File System)
+- **Chrome Extension**: Fetches from GitHub API via VFS
+- **Node.js CLI**: Reads files from filesystem
 
 ### Meta
 

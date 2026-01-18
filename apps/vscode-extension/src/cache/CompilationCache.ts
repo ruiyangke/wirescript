@@ -1,5 +1,7 @@
-import type * as vscode from 'vscode';
-import { compile, type CompileResult } from '@wirescript/dsl';
+import * as vscode from 'vscode';
+import { compile, type CompileResult, type ResolvedInclude } from '@wirescript/dsl';
+import { readFile } from 'node:fs/promises';
+import { resolve, dirname } from 'node:path';
 
 interface CacheEntry {
   version: number;
@@ -9,6 +11,7 @@ interface CacheEntry {
 /**
  * Shared compilation cache to avoid re-compiling on every provider call.
  * Caches compile results by document URI and version.
+ * Uses a file resolver for include resolution.
  */
 export class CompilationCache {
   private static instance: CompilationCache;
@@ -22,10 +25,20 @@ export class CompilationCache {
   }
 
   /**
+   * File resolver for includes - reads files on-demand from disk
+   */
+  private async resolver(includePath: string, fromPath: string): Promise<ResolvedInclude> {
+    const resolvedPath = resolve(dirname(fromPath), includePath);
+    const content = await readFile(resolvedPath, 'utf-8');
+    return { content, resolvedPath };
+  }
+
+  /**
    * Get compilation result for a document.
    * Returns cached result if document version matches, otherwise recompiles.
+   * Supports includes via file resolver.
    */
-  get(document: vscode.TextDocument): CompileResult {
+  async get(document: vscode.TextDocument): Promise<CompileResult> {
     const key = document.uri.toString();
     const cached = this.cache.get(key);
 
@@ -33,7 +46,12 @@ export class CompilationCache {
       return cached.result;
     }
 
-    const result = compile(document.getText());
+    // Compile with file resolver for include support
+    const result = await compile(document.getText(), {
+      filePath: document.uri.fsPath,
+      resolver: this.resolver.bind(this),
+    });
+
     this.cache.set(key, { version: document.version, result });
     return result;
   }

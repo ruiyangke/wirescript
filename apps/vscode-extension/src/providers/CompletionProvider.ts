@@ -13,12 +13,12 @@ import {
 export class CompletionProvider implements vscode.CompletionItemProvider {
   private cache = CompilationCache.getInstance();
 
-  provideCompletionItems(
+  async provideCompletionItems(
     document: vscode.TextDocument,
     position: vscode.Position,
     _token: vscode.CancellationToken,
     context: vscode.CompletionContext
-  ): vscode.ProviderResult<vscode.CompletionItem[]> {
+  ): Promise<vscode.CompletionItem[]> {
     const line = document.lineAt(position.line).text;
     const textBeforeCursor = line.substring(0, position.character);
 
@@ -29,29 +29,29 @@ export class CompletionProvider implements vscode.CompletionItemProvider {
 
     // After ( suggest elements/keywords
     if (context.triggerCharacter === '(' || textBeforeCursor.match(/\(\s*$/)) {
-      return this.getElementCompletions(document);
+      return await this.getElementCompletions(document);
     }
 
     // After $ suggest parameter names from current component scope
     if (context.triggerCharacter === '$' || textBeforeCursor.match(/\$\w*$/)) {
-      return this.getParameterCompletions(document, position);
+      return await this.getParameterCompletions(document, position);
     }
 
     // After # suggest screen ids
     if (textBeforeCursor.match(/#\w*$/)) {
-      return this.getScreenCompletions(document);
+      return await this.getScreenCompletions(document);
     }
 
     // Default: show all completions
     return [
-      ...this.getElementCompletions(document),
+      ...(await this.getElementCompletions(document)),
       ...this.getPropertyCompletions(),
     ];
   }
 
-  private getElementCompletions(
+  private async getElementCompletions(
     document: vscode.TextDocument
-  ): vscode.CompletionItem[] {
+  ): Promise<vscode.CompletionItem[]> {
     const items: vscode.CompletionItem[] = [];
 
     // Built-in elements
@@ -87,7 +87,7 @@ export class CompletionProvider implements vscode.CompletionItemProvider {
     }
 
     // User-defined components
-    const result = this.cache.get(document);
+    const result = await this.cache.get(document);
     if (result.success && result.document) {
       for (const component of result.document.components) {
         const item = new vscode.CompletionItem(
@@ -164,11 +164,11 @@ export class CompletionProvider implements vscode.CompletionItemProvider {
     return items;
   }
 
-  private getParameterCompletions(
+  private async getParameterCompletions(
     document: vscode.TextDocument,
     position: vscode.Position
-  ): vscode.CompletionItem[] {
-    const result = this.cache.get(document);
+  ): Promise<vscode.CompletionItem[]> {
+    const result = await this.cache.get(document);
     if (!result.success || !result.document) {
       return [];
     }
@@ -192,10 +192,10 @@ export class CompletionProvider implements vscode.CompletionItemProvider {
     });
   }
 
-  private getScreenCompletions(
+  private async getScreenCompletions(
     document: vscode.TextDocument
-  ): vscode.CompletionItem[] {
-    const result = this.cache.get(document);
+  ): Promise<vscode.CompletionItem[]> {
+    const result = await this.cache.get(document);
     if (!result.success || !result.document) {
       return [];
     }

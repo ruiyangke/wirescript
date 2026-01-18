@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-import { compile } from '@wirescript/dsl';
+import { CompilationCache } from '../cache/CompilationCache.js';
 import { getWebviewContent } from './getWebviewContent.js';
 
 /**
@@ -13,6 +13,7 @@ export class PreviewPanel {
   private readonly extensionUri: vscode.Uri;
   private document: vscode.TextDocument | undefined;
   private disposables: vscode.Disposable[] = [];
+  private cache = CompilationCache.getInstance();
 
   private constructor(
     panel: vscode.WebviewPanel,
@@ -109,7 +110,7 @@ export class PreviewPanel {
   /**
    * Update the preview with current document content.
    */
-  public update(document?: vscode.TextDocument): void {
+  public async update(document?: vscode.TextDocument): Promise<void> {
     if (document) {
       this.document = document;
     }
@@ -118,8 +119,7 @@ export class PreviewPanel {
       return;
     }
 
-    const source = this.document.getText();
-    const result = compile(source);
+    const result = await this.cache.get(this.document);
 
     if (result.success && result.document) {
       this.panel.webview.postMessage({

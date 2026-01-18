@@ -1,6 +1,6 @@
 {
   "name": "@wirescript/docs",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "private": true,
   "description": "Documentation website for WireScript",
   "license": "Apache-2.0",

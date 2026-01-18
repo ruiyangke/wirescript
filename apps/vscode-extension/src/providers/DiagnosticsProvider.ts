@@ -16,8 +16,8 @@ export class DiagnosticsProvider implements vscode.Disposable {
   /**
    * Update diagnostics for a document.
    */
-  update(document: vscode.TextDocument): void {
-    const result = this.cache.get(document);
+  async update(document: vscode.TextDocument): Promise<void> {
+    const result = await this.cache.get(document);
     const diagnostics: vscode.Diagnostic[] = [];
 
     if (!result.success) {

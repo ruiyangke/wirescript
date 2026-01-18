@@ -1,5 +1,5 @@
 import { compile, type WireDocument } from '@wirescript/dsl';
-import { type MarkdownPostProcessorContext, MarkdownRenderChild, Plugin } from 'obsidian';
+import { type MarkdownPostProcessorContext, MarkdownRenderChild, Plugin, TFile } from 'obsidian';
 
 // Renderer CSS injected at build time
 declare const __RENDERER_CSS__: string;
@@ -106,9 +106,9 @@ function looksLikeWireScript(source: string): boolean {
 }
 
 // Parse source and extract metadata (with document)
-function parseSource(source: string): Metadata {
+async function parseSource(source: string, filePath: string, vfs: Map<string, string>): Promise<Metadata> {
   try {
-    const result = compile(source);
+    const result = await compile(source, { filePath, vfs });
     if (!result.success || !result.document) {
       return {
         title: 'Error',
@@ -253,21 +253,22 @@ function waitForIframe(iframe: HTMLIFrameElement): Promise<Document> {
   });
 }
 
-// Lazy-loaded renderer module
-let rendererModule: {
+// Lazy-loaded renderer module type
+type RendererModule = {
   React: typeof import('react');
   render: (vnode: import('react').ReactNode, parent: Element) => void;
   WireScriptRenderer: typeof import('./WireScriptRenderer').WireScriptRenderer;
   html2canvas: typeof import('html2canvas-pro').default;
-} | null = null;
+};
 
-let loadingPromise: Promise<typeof rendererModule> | null = null;
+let rendererModule: RendererModule | null = null;
+let loadingPromise: Promise<RendererModule> | null = null;
 
-async function loadRenderer(): Promise<NonNullable<typeof rendererModule>> {
+async function loadRenderer(): Promise<RendererModule> {
   if (rendererModule) return rendererModule;
-  if (loadingPromise) return loadingPromise as Promise<NonNullable<typeof rendererModule>>;
+  if (loadingPromise) return loadingPromise;
 
-  loadingPromise = (async () => {
+  loadingPromise = (async (): Promise<RendererModule> => {
     const [reactMod, reactDomMod, rendererMod, html2canvasMod] = await Promise.all([
       import('react'),
       import('react-dom'),
@@ -275,17 +276,19 @@ async function loadRenderer(): Promise<NonNullable<typeof rendererModule>> {
       import('html2canvas-pro'),
     ]);
 
-    rendererModule = {
+    const module: RendererModule = {
       React: reactMod,
+      // @ts-ignore - Preact compat has render, but React 18+ types don't
       render: reactDomMod.render,
       WireScriptRenderer: rendererMod.WireScriptRenderer,
       html2canvas: html2canvasMod.default,
     };
 
-    return rendererModule;
+    rendererModule = module;
+    return module;
   })();
 
-  return loadingPromise as Promise<NonNullable<typeof rendererModule>>;
+  return loadingPromise;
 }
 
 // Inline box-shadows for html2canvas
@@ -310,6 +313,9 @@ export default class WireScriptPlugin extends Plugin {
   private pngCache = new LRUCache<string, string>(MAX_CACHE_SIZE, MAX_CACHE_AGE_MS);
   private metaCache = new Map<string, Metadata>();
 
+  // Virtual File System for includes
+  private vfs = new Map<string, string>();
+
   // Element tracking (replaces MutationObserver on body)
   private elements = new Map<HTMLElement, ElementState>();
   private pendingRenders = new Map<HTMLElement, AbortController>();
@@ -323,6 +329,35 @@ export default class WireScriptPlugin extends Plugin {
   private fullscreenKeyHandler: ((e: KeyboardEvent) => void) | null = null;
 
   async onload() {
+    // Build VFS from vault
+    await this.rebuildVFS();
+
+    // Watch for .wire file changes
+    this.registerEvent(
+      this.app.vault.on('modify', (file) => {
+        if (file.path.endsWith('.wire') && file instanceof TFile) {
+          this.updateVFSFile(file);
+        }
+      })
+    );
+
+    this.registerEvent(
+      this.app.vault.on('delete', (file) => {
+        if (file.path.endsWith('.wire')) {
+          this.vfs.delete('/' + file.path);
+        }
+      })
+    );
+
+    this.registerEvent(
+      this.app.vault.on('rename', (file, oldPath) => {
+        if (oldPath.endsWith('.wire') && file instanceof TFile) {
+          this.vfs.delete('/' + oldPath);
+          this.updateVFSFile(file);
+        }
+      })
+    );
+
     // Create shared IntersectionObserver
     this.intersectionObserver = new IntersectionObserver(
       (entries) => this.handleIntersection(entries),
@@ -335,6 +370,32 @@ export default class WireScriptPlugin extends Plugin {
     this.registerMarkdownCodeBlockProcessor('wirescript', (source, el, ctx) =>
       this.processWireBlock(source, el, ctx)
     );
+  }
+
+  private async rebuildVFS() {
+    this.vfs.clear();
+
+    const wireFiles = this.app.vault.getFiles().filter((f) => f.path.endsWith('.wire'));
+
+    for (const file of wireFiles) {
+      try {
+        const content = await this.app.vault.read(file);
+        this.vfs.set('/' + file.path, content);
+      } catch (error) {
+        console.error(`Failed to read ${file.path}:`, error);
+      }
+    }
+  }
+
+  private async updateVFSFile(file: TFile) {
+    if (file.path.endsWith('.wire')) {
+      try {
+        const content = await this.app.vault.read(file);
+        this.vfs.set('/' + file.path, content);
+      } catch (error) {
+        console.error(`Failed to update VFS for ${file.path}:`, error);
+      }
+    }
   }
 
   async onunload() {
@@ -401,17 +462,17 @@ export default class WireScriptPlugin extends Plugin {
     }
   }
 
-  private getMetadata(source: string): Metadata {
+  private async getMetadata(source: string, filePath: string): Promise<Metadata> {
     const cacheKey = hashSource(source);
     let meta = this.metaCache.get(cacheKey);
     if (!meta) {
-      meta = parseSource(source);
+      meta = await parseSource(source, '/' + filePath, this.vfs);
       this.metaCache.set(cacheKey, meta);
     }
     return meta;
   }
 
-  private processWireBlock(source: string, el: HTMLElement, ctx: MarkdownPostProcessorContext) {
+  private async processWireBlock(source: string, el: HTMLElement, ctx: MarkdownPostProcessorContext) {
     // Skip if content doesn't look like valid WireScript
     if (!looksLikeWireScript(source)) {
       // Show as plain code block
@@ -425,7 +486,7 @@ export default class WireScriptPlugin extends Plugin {
 
     el.addClass('wirescript-container');
 
-    const meta = this.getMetadata(source);
+    const meta = await this.getMetadata(source, ctx.sourcePath);
     const cacheKey = hashSource(source);
     const cachedPng = this.pngCache.get(cacheKey);
 
@@ -609,7 +670,7 @@ export default class WireScriptPlugin extends Plugin {
     }
   }
 
-  private deactivateElement(el: HTMLElement) {
+  private async deactivateElement(el: HTMLElement) {
     const state = this.elements.get(el);
     if (!state?.active) return;
 
@@ -622,7 +683,8 @@ export default class WireScriptPlugin extends Plugin {
     state.active = false;
 
     // Restore placeholder
-    const meta = this.getMetadata(state.source);
+    // Note: We don't have ctx.sourcePath here, so we'll use a fallback path
+    const meta = await this.getMetadata(state.source, 'unknown.wire');
     const cacheKey = hashSource(state.source);
     const cachedPng = this.pngCache.get(cacheKey);
 

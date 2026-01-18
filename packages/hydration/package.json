@@ -1,6 +1,6 @@
 {
   "name": "@wirescript/hydration",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Client-side hydration for WireScript wireframes",
   "type": "module",
   "license": "Apache-2.0",

@@ -8,10 +8,10 @@ import { CompilationCache } from '../cache/CompilationCache.js';
 export class DocumentSymbolProvider implements vscode.DocumentSymbolProvider {
   private cache = CompilationCache.getInstance();
 
-  provideDocumentSymbols(
+  async provideDocumentSymbols(
     document: vscode.TextDocument
-  ): vscode.ProviderResult<vscode.DocumentSymbol[]> {
-    const result = this.cache.get(document);
+  ): Promise<vscode.DocumentSymbol[]> {
+    const result = await this.cache.get(document);
     if (!result.success || !result.document) {
       return [];
     }

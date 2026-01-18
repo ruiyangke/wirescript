@@ -1,6 +1,6 @@
 {
   "name": "@wirescript/cli",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "CLI for WireScript - validate, render, and build wireframes",
   "type": "module",
   "license": "Apache-2.0",

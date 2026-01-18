@@ -1,6 +1,6 @@
 {
   "name": "@wirescript/dsl",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Parser and compiler for WireScript, a Lisp-like DSL for wireframes",
   "type": "module",
   "license": "Apache-2.0",

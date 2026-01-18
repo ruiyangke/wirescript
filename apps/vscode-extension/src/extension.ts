@@ -124,7 +124,8 @@ export function activate(context: vscode.ExtensionContext) {
   // Initial diagnostics for already open documents
   for (const document of vscode.workspace.textDocuments) {
     if (document.languageId === 'wire') {
-      diagnosticsProvider.update(document);
+      // Async update, no need to await
+      diagnosticsProvider.update(document).catch(console.error);
     }
   }
 

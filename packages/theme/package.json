@@ -1,6 +1,6 @@
 {
   "name": "@wirescript/theme",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Theme definitions and CSS generators for WireScript wireframes",
   "type": "module",
   "license": "Apache-2.0",

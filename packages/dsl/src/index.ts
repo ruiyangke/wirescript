@@ -20,7 +20,7 @@ export { Tokenizer, TokenizerError, tokenize } from './tokenizer.js';
 export { type ValidationResult, Validator, validate } from './validator.js';
 
 import { parse } from './schema/parser.js';
-import type { ComponentDef, LayoutNode, ParseError, WireDocument } from './schema/types.js';
+import type { ComponentDef, LayoutNode, ParseError, ScreenNode, WireDocument } from './schema/types.js';
 import { validate } from './validator.js';
 
 export interface CompileResult {
@@ -42,10 +42,60 @@ export interface CompileOptions {
   filePath?: string;
   /** Resolver function to load included files. Must return both content and resolved absolute path. */
   resolver?: (includePath: string, fromPath: string) => Promise<ResolvedInclude>;
+  /** Virtual file system - a map of absolute paths to file contents. If provided, takes precedence over resolver. */
+  vfs?: Map<string, string>;
 }
 
 /** Maximum include depth to prevent infinite recursion */
 const MAX_INCLUDE_DEPTH = 100;
+
+/**
+ * Simple path resolver that works in both Node and browser.
+ * Resolves a relative path from a base path to an absolute path.
+ */
+function resolvePath(base: string, relative: string): string {
+  // If relative is already absolute (starts with /), return it
+  if (relative.startsWith('/')) {
+    return relative;
+  }
+
+  // Get directory of base path
+  const lastSlash = base.lastIndexOf('/');
+  const baseDir = lastSlash >= 0 ? base.substring(0, lastSlash) : '';
+
+  // Split relative path into segments
+  const segments = relative.split('/').filter((s) => s.length > 0);
+  const baseSegments = baseDir.split('/').filter((s) => s.length > 0);
+
+  // Process relative path segments
+  for (const segment of segments) {
+    if (segment === '..') {
+      baseSegments.pop();
+    } else if (segment !== '.') {
+      baseSegments.push(segment);
+    }
+  }
+
+  // Join with /
+  return '/' + baseSegments.join('/');
+}
+
+/**
+ * Create a resolver function from a VFS (Virtual File System).
+ * The VFS is a map of absolute paths to file contents.
+ */
+function createVFSResolver(vfs: Map<string, string>): (includePath: string, fromPath: string) => Promise<ResolvedInclude> {
+  return async (includePath: string, fromPath: string): Promise<ResolvedInclude> => {
+    const resolvedPath = resolvePath(fromPath, includePath);
+
+    const content = vfs.get(resolvedPath);
+    if (content === undefined) {
+      throw new Error(`File not found in VFS: ${includePath} (resolved to ${resolvedPath})`);
+    }
+
+    return { content, resolvedPath };
+  };
+}
 
 /**
  * Parse and validate WireScript source code.
@@ -82,15 +132,27 @@ export function compile(
 
   const document = parseResult.document;
 
-  // If no includes or no resolver, return sync result
-  if (document.includes.length === 0 || !options?.resolver) {
+  // If no includes, return sync result
+  if (document.includes.length === 0) {
     return finalize(document, parseResult.errors);
   }
 
-  // Async resolution with includes (we've verified resolver exists above)
-  const resolverOptions = options as CompileOptions & {
-    resolver: NonNullable<CompileOptions['resolver']>;
+  // Determine resolver: VFS takes precedence over custom resolver
+  const resolver = options?.vfs
+    ? createVFSResolver(options.vfs)
+    : options?.resolver;
+
+  // If no resolver available, return sync result without resolving includes
+  if (!resolver) {
+    return finalize(document, parseResult.errors);
+  }
+
+  // Async resolution with includes
+  const resolverOptions: CompileOptions & { resolver: NonNullable<CompileOptions['resolver']> } = {
+    ...options,
+    resolver,
   };
+
   return resolveIncludes(document, resolverOptions, new Set()).then((result) => {
     if (!result.success || !result.document) {
       return result;
@@ -155,9 +217,10 @@ async function resolveIncludes(
     };
   }
 
-  // Collect merged components and layouts (last wins)
+  // Collect merged components, layouts, and screens (last wins)
   const componentsMap = new Map<string, ComponentDef>();
   const layoutsMap = new Map<string, LayoutNode>();
+  const screensMap = new Map<string, ScreenNode>();
 
   // Process each include
   for (const include of document.includes) {
@@ -215,6 +278,7 @@ async function resolveIncludes(
         Object.assign(includedDoc, {
           components: nestedResult.document.components,
           layouts: nestedResult.document.layouts,
+          screens: nestedResult.document.screens,
         });
       }
 
@@ -227,6 +291,11 @@ async function resolveIncludes(
       for (const layout of includedDoc.layouts) {
         layoutsMap.set(layout.name, layout);
       }
+
+      // Merge screens (last wins)
+      for (const screen of includedDoc.screens) {
+        screensMap.set(screen.id, screen);
+      }
     } catch (err) {
       errors.push({
         message: `Cannot resolve include '${includePath}': ${err instanceof Error ? err.message : String(err)}`,
@@ -236,12 +305,15 @@ async function resolveIncludes(
     }
   }
 
-  // Add components and layouts from the main document (last wins)
+  // Add components, layouts, and screens from the main document (last wins)
   for (const comp of document.components) {
     componentsMap.set(comp.name, comp);
   }
   for (const layout of document.layouts) {
     layoutsMap.set(layout.name, layout);
+  }
+  for (const screen of document.screens) {
+    screensMap.set(screen.id, screen);
   }
 
   // Create merged document
@@ -249,6 +321,7 @@ async function resolveIncludes(
     ...document,
     components: Array.from(componentsMap.values()),
     layouts: Array.from(layoutsMap.values()),
+    screens: Array.from(screensMap.values()),
     includes: [], // Clear includes after resolution
   };
 

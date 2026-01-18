@@ -20,6 +20,7 @@ interface WireBlockState {
   renderState: 'placeholder' | 'loading' | 'active' | 'error' | 'code';
   iframe?: HTMLIFrameElement;
   cleanupFns: Array<() => void>;
+  filePath: string; // GitHub file path for include resolution
 }
 
 // Constants
@@ -222,11 +223,78 @@ function extractLightweightMeta(source: string): {
   return { title, viewport, screenCount };
 }
 
+/**
+ * Extract GitHub file path from current URL
+ * Returns path like "/docs/features/wireframes/main.wire"
+ */
+function extractGitHubFilePath(): string {
+  // Parse GitHub URL: /owner/repo/blob/branch/path
+  const match = window.location.pathname.match(/\/([^/]+)\/([^/]+)\/blob\/([^/]+)\/(.+)/);
+  if (!match) {
+    return '/unknown.wire';
+  }
+  return '/' + match[4]; // Return absolute path
+}
+
+// Build VFS from GitHub repository
+async function buildGitHubVFS(currentFilePath: string): Promise<Map<string, string>> {
+  const vfs = new Map<string, string>();
+
+  // Parse GitHub URL: /owner/repo/blob/branch/path
+  const match = window.location.pathname.match(/\/([^/]+)\/([^/]+)\/blob\/([^/]+)\/(.+)/);
+  if (!match) {
+    console.warn('Not a GitHub file view, VFS will be empty');
+    return vfs;
+  }
+
+  const [, owner, repo, branch, filePath] = match;
+  const dirPath = filePath.substring(0, filePath.lastIndexOf('/'));
+
+  if (!dirPath) {
+    // File is in root directory
+    console.warn('File is in repository root, no includes available');
+    return vfs;
+  }
+
+  try {
+    // Fetch directory contents via GitHub API
+    const apiUrl = `https://api.github.com/repos/${owner}/${repo}/contents/${dirPath}?ref=${branch}`;
+    const response = await fetch(apiUrl);
+
+    if (!response.ok) {
+      console.error('Failed to fetch directory contents:', response.statusText);
+      return vfs;
+    }
+
+    const files = await response.json();
+
+    // Load all .wire files in parallel
+    const wireFiles = files.filter((f: any) => f.name.endsWith('.wire') && f.download_url);
+
+    await Promise.all(
+      wireFiles.map(async (f: any) => {
+        try {
+          const content = await fetch(f.download_url).then((r) => r.text());
+          vfs.set(`/${dirPath}/${f.name}`, content);
+        } catch (err) {
+          console.error(`Failed to fetch ${f.name}:`, err);
+        }
+      })
+    );
+
+    console.log(`Built VFS with ${vfs.size} files from ${dirPath}`);
+  } catch (err) {
+    console.error('Failed to build GitHub VFS:', err);
+  }
+
+  return vfs;
+}
+
 // Full parse (called only when rendering)
-async function parseSource(source: string): Promise<ParsedMeta> {
+async function parseSource(source: string, filePath: string, vfs: Map<string, string>): Promise<ParsedMeta> {
   try {
     const dsl = await loadDSL();
-    const result = dsl.compile(source);
+    const result = await dsl.compile(source, { filePath, vfs });
 
     if (!result.success || !result.document) {
       return {
@@ -564,7 +632,7 @@ async function renderToPng(source: string, meta: ParsedMeta): Promise<string | n
 
 // Start background PNG render
 function startBackgroundRender(state: WireBlockState) {
-  const { container, source } = state;
+  const { container, source, filePath } = state;
   const lightMeta = extractLightweightMeta(source);
 
   // Cancel any existing background render for this container
@@ -579,8 +647,11 @@ function startBackgroundRender(state: WireBlockState) {
     if (controller.signal.aborted) return;
 
     try {
+      // Build VFS for include resolution
+      const vfs = await buildGitHubVFS(filePath);
+
       // First we need to parse the source to get the document
-      const meta = await parseSource(source);
+      const meta = await parseSource(source, filePath, vfs);
       if (controller.signal.aborted || meta.error || !meta.document) return;
 
       const pngDataUrl = await renderToPng(source, meta);
@@ -859,7 +930,7 @@ function showCodeView(state: WireBlockState) {
 
 // Activate and render wireframe
 async function activateWireframe(state: WireBlockState) {
-  const { container, source } = state;
+  const { container, source, filePath } = state;
 
   // Prevent duplicate activation
   if (state.renderState === 'loading' || state.renderState === 'active') {
@@ -881,15 +952,19 @@ async function activateWireframe(state: WireBlockState) {
   container.innerHTML = generateLoading(lightMeta.title);
 
   try {
-    // Load DSL and renderer in parallel, then parse
-    const [, renderer] = await Promise.all([loadDSL(), loadRenderer()]);
+    // Load DSL and renderer in parallel, build VFS, then parse
+    const [, renderer, vfs] = await Promise.all([
+      loadDSL(),
+      loadRenderer(),
+      buildGitHubVFS(filePath),
+    ]);
 
     // Check if state changed during async load or container removed
     if (state.renderState !== 'loading' || !container.isConnected) {
       return;
     }
 
-    const meta = await parseSource(source);
+    const meta = await parseSource(source, filePath, vfs);
 
     // Check again after parsing
     if (state.renderState !== 'loading' || !container.isConnected) {
@@ -1081,6 +1156,9 @@ function processCodeBlock(block: HTMLElement) {
   // Insert after original block
   block.insertAdjacentElement('afterend', container);
 
+  // Extract file path from GitHub URL for include resolution
+  const filePath = extractGitHubFilePath();
+
   // Create state
   const state: WireBlockState = {
     source,
@@ -1089,6 +1167,7 @@ function processCodeBlock(block: HTMLElement) {
     originalElement: block,
     renderState: 'placeholder',
     cleanupFns: [],
+    filePath,
   };
 
   // Store state keyed by BOTH container and original element
